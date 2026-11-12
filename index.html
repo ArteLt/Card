@@ -24,27 +24,30 @@
           ? window.SmartWalletCrypto.parseUrlCredentials(window.location)
           : { user: '', key: '' };
         var params = new URLSearchParams(window.location.search);
-        var targetUser = params.get('u') || creds.user || '';
+        var rawTargetUser = params.get('u') || params.get('user') || params.get('id') || creds.user || '';
         var isAdmin = params.get('admin') === '1';
 
-        var store = null;
-        try {
-          var local = localStorage.getItem('smart_wallet_profiles_v2_4');
-          if (local) store = JSON.parse(local);
-        } catch (e) {}
-        if (!store && window.SMART_WALLET_DEFAULT_PROFILES) {
-          store = window.SMART_WALLET_DEFAULT_PROFILES;
+        // Fresh profiles-data.js payload is authoritative over any stale localStorage cache
+        var store = window.SMART_WALLET_DEFAULT_PROFILES || null;
+        if (!store) {
+          try {
+            var local = localStorage.getItem('smart_wallet_profiles_v2_4');
+            if (local) store = JSON.parse(local);
+          } catch (e) {}
         }
 
         var defaultId = (store && store.defaultProfile) || 'artautas';
-        var prof =
-          store && store.profiles
-            ? (targetUser && store.profiles[targetUser]) || store.profiles[defaultId] || Object.values(store.profiles)[0]
-            : null;
-        var resolvedSlug = (prof && prof.id) || targetUser || defaultId;
+        var resolved =
+          store && window.SmartWalletCrypto && typeof window.SmartWalletCrypto.resolveProfileEntry === 'function'
+            ? window.SmartWalletCrypto.resolveProfileEntry(store, rawTargetUser, defaultId)
+            : { id: rawTargetUser || defaultId, profile: store && store.profiles ? store.profiles[rawTargetUser || defaultId] : null };
+
+        var prof = resolved && resolved.profile ? resolved.profile : null;
+        var resolvedSlug = (resolved && resolved.id) || (prof && prof.id) || rawTargetUser || defaultId;
 
         window.__SWC_BOOTSTRAP = {
           user: resolvedSlug,
+          requestedUser: rawTargetUser,
           key: creds.key || '',
           isAdmin: isAdmin
         };
@@ -1231,27 +1234,39 @@
       }
 
       async function loadProfilesDatabase() {
-        try {
-          const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (parsed && parsed.profiles) {
-              profilesStore = parsed;
-            }
-          }
-        } catch (e) {}
-
-        if (!profilesStore) {
+        profilesStore = null;
+        // 1. Live server/GitHub Pages: fetch fresh profiles.json first (cache-busted) and clear any stale localStorage cache
+        if (window.location.protocol !== 'file:') {
           try {
-            const res = await fetch('./profiles.json', { cache: 'no-store' });
+            const res = await fetch('./profiles.json?t=' + Date.now(), { cache: 'no-store' });
             if (res.ok) {
-              profilesStore = await res.json();
+              const fresh = await res.json();
+              if (fresh && fresh.profiles) {
+                profilesStore = fresh;
+                try {
+                  localStorage.removeItem(STORAGE_KEY);
+                } catch (e) {}
+              }
             }
           } catch (e) {}
         }
 
+        // 2. Next authoritative source: embedded profiles-data.js payload
         if (!profilesStore && window.SMART_WALLET_DEFAULT_PROFILES) {
           profilesStore = window.SMART_WALLET_DEFAULT_PROFILES;
+        }
+
+        // 3. Last-resort offline fallback
+        if (!profilesStore) {
+          try {
+            const cached = localStorage.getItem(STORAGE_KEY);
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (parsed && parsed.profiles) {
+                profilesStore = parsed;
+              }
+            }
+          } catch (e) {}
         }
 
         return profilesStore;
@@ -1344,8 +1359,12 @@
         applyThemeColors(currentProfile.theme);
 
         // Decrypt with URL key if passed (backward compat), or automatically decode via slug wrapper for clean ?u=<user> URLs
-        let phoneDec = SmartWalletCrypto.decryptField(currentProfile.encryptedPhone, currentKey);
-        let emailDec = SmartWalletCrypto.decryptField(currentProfile.encryptedEmail, currentKey);
+        const contact =
+          typeof SmartWalletCrypto.unsealProfileContact === 'function'
+            ? SmartWalletCrypto.unsealProfileContact(currentProfile, currentKey, currentProfile.id)
+            : { unlocked: false, phone: '', email: '' };
+        let phoneDec = contact.phoneResult || SmartWalletCrypto.decryptField(currentProfile.encryptedPhone, currentKey);
+        let emailDec = contact.emailResult || SmartWalletCrypto.decryptField(currentProfile.encryptedEmail, currentKey);
         if (!phoneDec.unlocked && currentProfile.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
           phoneDec = SmartWalletCrypto.unsealForSlug(currentProfile.obfuscatedPhone, currentProfile.id);
         }
@@ -1685,12 +1704,13 @@
         // Listen for hash changes (e.g. #artautas:KEY)
         window.addEventListener('hashchange', () => {
           const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
-          if (profilesStore && profilesStore.profiles[creds.user]) {
-            currentProfile = profilesStore.profiles[creds.user];
+          const resolved = SmartWalletCrypto.resolveProfileEntry(profilesStore, creds.user);
+          if (resolved && resolved.profile) {
+            currentProfile = resolved.profile;
           }
           currentKey = creds.key || '';
           const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
-          const uid = (currentProfile && currentProfile.id) || creds.user;
+          const uid = (currentProfile && currentProfile.id) || resolved.id || creds.user;
           try {
             window.history.replaceState(
               {},
@@ -1706,11 +1726,11 @@
         await loadProfilesDatabase();
         const boot = window.__SWC_BOOTSTRAP || {};
         const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
-        const profileMap = (profilesStore && profilesStore.profiles) || {};
         const defaultId = (profilesStore && profilesStore.defaultProfile) || 'artautas';
-        const targetUser = boot.user || creds.user || defaultId;
+        const targetUser = boot.requestedUser || boot.user || creds.user || defaultId;
 
-        currentProfile = profileMap[targetUser] || profileMap[defaultId] || Object.values(profileMap)[0];
+        const resolved = SmartWalletCrypto.resolveProfileEntry(profilesStore, targetUser, defaultId);
+        currentProfile = resolved.profile;
         // Backward compatibility: preserve ?k= in memory if passed, while keeping address bar clean
         currentKey = boot.key || creds.key || '';
 
@@ -1720,7 +1740,10 @@
           document.getElementById('adminTopBar').classList.add('visible');
         }
 
-        const resolvedUid = (currentProfile && currentProfile.id) || targetUser;
+        const resolvedUid = (currentProfile && currentProfile.id) || resolved.id || targetUser;
+        if (currentProfile && currentProfile.name) {
+          document.title = `${currentProfile.name} — Digital Executive Card`;
+        }
         try {
           window.history.replaceState(
             {},

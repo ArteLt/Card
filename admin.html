@@ -783,15 +783,16 @@
     .wallet-phone-mock {
       max-width: 412px;
       margin: 0 auto 16px;
-      background: #163A63;
+      background: var(--mock-wallet-bg, #181B20);
       border-radius: 20px;
-      border: 1px solid rgba(180, 200, 225, 0.28);
+      border: 1px solid rgba(var(--mock-accent-rgb, 200, 210, 220), 0.28);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
       padding: 20px;
-      color: #D6DEE7;
+      color: var(--mock-text-main, #E8ECF2);
       display: flex;
       flex-direction: column;
       gap: 14px;
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
 
     .wallet-mock-header {
@@ -805,8 +806,8 @@
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid rgba(180, 200, 225, 0.45);
-      background: #0B213B;
+      border: 2px solid var(--mock-accent, #C8D2DC);
+      background: var(--mock-wallet-bg, #181B20);
       flex-shrink: 0;
     }
 
@@ -815,7 +816,7 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #93C5FD;
+      color: var(--mock-accent, #C8D2DC);
       margin-bottom: 2px;
     }
 
@@ -828,7 +829,7 @@
 
     .wallet-mock-sub {
       font-size: 10.5px;
-      color: #B8C4D0;
+      color: rgba(var(--mock-accent-rgb, 200, 210, 220), 0.85);
       letter-spacing: 0.06em;
       text-transform: uppercase;
       margin-top: 1px;
@@ -857,16 +858,18 @@
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.14em;
-      color: #0B213B;
+      color: var(--mock-qr-ink, #14171D);
       margin-top: 6px;
     }
 
     .wallet-mock-row {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      border-top: 1px solid rgba(180, 200, 225, 0.15);
-      padding-top: 10px;
+      gap: 4px;
+      background: var(--mock-drawer-bg, rgba(0, 0, 0, 0.22));
+      border: 1px solid rgba(var(--mock-accent-rgb, 200, 210, 220), 0.16);
+      border-radius: 12px;
+      padding: 10px 12px;
     }
 
     .wallet-mock-row-label {
@@ -874,13 +877,13 @@
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #93C5FD;
+      color: var(--mock-accent, #C8D2DC);
     }
 
     .wallet-mock-row-val {
       font-size: 11.5px;
       font-weight: 500;
-      color: #EBF0F5;
+      color: #EEF2F6;
       line-height: 1.45;
       word-break: break-word;
     }
@@ -889,9 +892,11 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      border-top: 1px solid rgba(180, 200, 225, 0.15);
-      padding-top: 10px;
-      margin-top: 4px;
+      background: var(--mock-drawer-bg, rgba(0, 0, 0, 0.18));
+      border: 1px solid rgba(var(--mock-accent-rgb, 200, 210, 220), 0.14);
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 2px;
     }
 
     .wallet-mock-btn {
@@ -900,10 +905,10 @@
       gap: 7px;
       font-size: 11px;
       font-weight: 500;
-      color: #E2E8F0;
+      color: #EEF2F6;
       text-decoration: none;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--mock-btn-bg, rgba(255, 255, 255, 0.08));
+      border: 1px solid rgba(var(--mock-accent-rgb, 200, 210, 220), 0.18);
       border-radius: 8px;
       padding: 7px 10px;
       transition: all 0.15s ease;
@@ -911,9 +916,9 @@
     }
 
     .wallet-mock-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--mock-btn-hover-bg, rgba(255, 255, 255, 0.16));
       color: #FFFFFF;
-      border-color: rgba(255, 255, 255, 0.25);
+      border-color: rgba(var(--mock-accent-rgb, 200, 210, 220), 0.36);
     }
 
     .jwt-qr-showcase {
@@ -1701,6 +1706,17 @@
         return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
       }
 
+      function mixHexColors(hexA, hexB, weightA) {
+        const a = parseHexRgb(hexA);
+        const b = parseHexRgb(hexB);
+        const w = typeof weightA === 'number' ? Math.max(0, Math.min(1, weightA)) : 0.5;
+        const toHex = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0').toUpperCase();
+        const r = a[0] * w + b[0] * (1 - w);
+        const g = a[1] * w + b[1] * (1 - w);
+        const bl = a[2] * w + b[2] * (1 - w);
+        return `#${toHex(r)}${toHex(g)}${toHex(bl)}`;
+      }
+
       function hexToRgb(hex) {
         const rgb = parseHexRgb(hex);
         return `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`;
@@ -2141,37 +2157,67 @@
       }
 
       async function loadDatabase() {
-        try {
-          const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (parsed && parsed.profiles) db = parsed;
-          }
-        } catch (e) {}
+        db = null;
 
-        if (!db) {
+        // 1. Live HTTP/Studio Server: always fetch fresh profiles.json first and overwrite stale localStorage
+        if (window.location.protocol !== 'file:') {
           try {
-            const res = await fetch('./profiles.json', { cache: 'no-store' });
-            if (res.ok) db = await res.json();
+            const res = await fetch('./profiles.json?t=' + Date.now(), { cache: 'no-store' });
+            if (res.ok) {
+              const fresh = await res.json();
+              if (fresh && fresh.profiles) {
+                db = fresh;
+                try {
+                  localStorage.removeItem(STORAGE_KEY);
+                } catch (e) {}
+              }
+            }
           } catch (e) {}
         }
 
-        if (!db && window.SMART_WALLET_DEFAULT_PROFILES) {
-          db = JSON.parse(JSON.stringify(window.SMART_WALLET_DEFAULT_PROFILES));
+        // 2. Offline / file:// fallback: prefer whichever is newer between embedded profiles-data.js and localStorage
+        if (!db) {
+          let cachedDb = null;
+          try {
+            const cached = localStorage.getItem(STORAGE_KEY);
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (parsed && parsed.profiles) cachedDb = parsed;
+            }
+          } catch (e) {}
+
+          const defaultDb = window.SMART_WALLET_DEFAULT_PROFILES
+            ? JSON.parse(JSON.stringify(window.SMART_WALLET_DEFAULT_PROFILES))
+            : null;
+
+          if (cachedDb && defaultDb) {
+            const cachedTime = Date.parse(cachedDb.updatedAt || 0) || 0;
+            const defaultTime = Date.parse(defaultDb.updatedAt || 0) || 0;
+            db = cachedTime > defaultTime ? cachedDb : defaultDb;
+          } else {
+            db = defaultDb || cachedDb;
+          }
         }
 
         if (db) {
           db.customPresets = db.customPresets || [];
           syncCustomPresetsIntoRegistry();
+          persistToLocal();
         }
 
         const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+        const searchParams = new URLSearchParams(window.location.search);
+        const requestedUser = searchParams.get('u') || searchParams.get('user') || creds.user || '';
         try {
           const cachedKeys = JSON.parse(localStorage.getItem(KEYS_STORAGE_KEY) || '{}');
           Object.assign(sessionKeys, cachedKeys, DEFAULT_PROFILE_KEYS);
         } catch (e) {}
-        if (creds.user && db.profiles[creds.user]) {
-          activeUserId = creds.user;
+
+        if (db && db.profiles) {
+          const resolved = SmartWalletCrypto.resolveProfileEntry(db, requestedUser, db.defaultProfile || 'artautas');
+          if (resolved && resolved.id && db.profiles[resolved.id]) {
+            activeUserId = resolved.id;
+          }
         }
         if (creds.key) {
           sessionKeys[activeUserId] = creds.key;
@@ -2664,6 +2710,123 @@
           opt1Desc.innerHTML =
             `Synchronized with your <strong>${cleanThemeName}</strong> (<code>${bgStartHex}</code> → <code>${walletHex}</code> → <code>${bgEndHex}</code>) design: brushed paper grain, thin metallic frame, circular portrait badge, single-line auto-fitted Tagline, <code>${slogan}</code> + NFC wave, high-contrast QR code on a clean pad, and metallic contact details at the bottom.`;
         }
+
+        // Immediately sync Option 2 Wallet Pass mockup colors synchronously (never stuck blue)
+        applyOption2MockupTheme(prof);
+      }
+
+      /**
+       * Synchronously paints the Option 2 Google Wallet Pass Mockup & its inner drawers
+       * using the active profile's walletBgHex and derived darker/lighter shades.
+       */
+      function applyOption2MockupTheme(prof, genericObject) {
+        if (!prof) return;
+        const themeObj = prof.theme || THEME_PRESETS['deep-sapphire'];
+        const walletBgHex = themeObj.walletBgHex || themeObj.bgCenter || '#0F2B4C';
+        const bgStartHex = themeObj.bgGradientStart || themeObj.bgPrimary || '#163A63';
+        const bgEndHex = themeObj.bgGradientEnd || themeObj.bgSecondary || '#0B213B';
+        const accentHex = themeObj.accentColor || themeObj.accentPrimary || '#C8D2DC';
+        const accentRgb = hexToRgb(accentHex);
+
+        const topShade = mixHexColors(walletBgHex, bgStartHex, 0.72);
+        const bottomShade = mixHexColors(walletBgHex, bgEndHex, 0.45);
+        const drawerShade = mixHexColors(walletBgHex, '#000000', 0.68);
+        const btnShade = mixHexColors(walletBgHex, accentHex, 0.86);
+        const btnHoverShade = mixHexColors(walletBgHex, accentHex, 0.76);
+
+        const mockPassCard = document.getElementById('walletPassMockCard');
+        if (mockPassCard) {
+          mockPassCard.style.setProperty('--mock-wallet-bg', walletBgHex);
+          mockPassCard.style.setProperty('--mock-drawer-bg', drawerShade);
+          mockPassCard.style.setProperty('--mock-btn-bg', btnShade);
+          mockPassCard.style.setProperty('--mock-btn-hover-bg', btnHoverShade);
+          mockPassCard.style.setProperty('--mock-accent', accentHex);
+          mockPassCard.style.setProperty('--mock-accent-rgb', accentRgb);
+          mockPassCard.style.setProperty('--mock-qr-ink', bgEndHex);
+          mockPassCard.style.backgroundColor = walletBgHex;
+          mockPassCard.style.background = `linear-gradient(180deg, ${topShade} 0%, ${walletBgHex} 55%, ${bottomShade} 100%)`;
+          mockPassCard.style.borderColor = `rgba(${accentRgb}, 0.34)`;
+        }
+
+        const mockAvatar = document.getElementById('mockPassAvatar');
+        if (mockAvatar) {
+          mockAvatar.style.borderColor = accentHex;
+          mockAvatar.style.backgroundColor = walletBgHex;
+          if (prof.avatarPngBase64) {
+            mockAvatar.src = prof.avatarPngBase64;
+          } else if (prof.photoBase64) {
+            mockAvatar.src = prof.photoBase64;
+          } else {
+            mockAvatar.src = `avatar-${prof.id || 'artautas'}.png`;
+          }
+        }
+
+        const mockTopTitle = document.getElementById('mockPassTopTitle');
+        if (mockTopTitle) {
+          mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
+          mockTopTitle.style.color = accentHex;
+        }
+
+        const mockName = document.getElementById('mockPassName');
+        if (mockName) {
+          mockName.textContent =
+            (genericObject && genericObject.header && genericObject.header.defaultValue.value) ||
+            prof.name ||
+            '';
+        }
+
+        const mockSub = document.getElementById('mockPassSubheader');
+        if (mockSub) {
+          const fallbackLines = autoBalanceTagline(prof.tagline);
+          mockSub.textContent =
+            (genericObject && genericObject.subheader && genericObject.subheader.defaultValue.value) ||
+            fallbackLines[0] ||
+            '';
+          mockSub.style.color = `rgba(${accentRgb}, 0.85)`;
+        }
+
+        const mockFocus = document.getElementById('mockPassFocus');
+        const mockFocusLabel = document.getElementById('mockPassFocusLabel');
+        const focusMod =
+          genericObject && Array.isArray(genericObject.textModulesData)
+            ? genericObject.textModulesData.find((m) => m.id === 'focus')
+            : null;
+        if (mockFocusLabel) {
+          mockFocusLabel.textContent = (focusMod && focusMod.header) || 'FOCUS & LOCATION';
+          mockFocusLabel.style.color = accentHex;
+        }
+        if (mockFocus && focusMod) {
+          mockFocus.textContent = focusMod.body;
+        }
+
+        const mockAltText = document.getElementById('mockPassAltText');
+        if (mockAltText) mockAltText.style.color = bgEndHex;
+
+        const hubBaseUrl =
+          document.getElementById('gwHubBaseUrl').value.trim() || 'https://artelt.github.io/Card/';
+        const qrVal =
+          (genericObject && genericObject.barcode && genericObject.barcode.value) ||
+          SmartWalletCrypto.buildCleanUrl(hubBaseUrl, prof.id || 'artautas');
+        const mockQr = document.getElementById('mockPassQrCode');
+        if (mockQr) {
+          mockQr.innerHTML = SmartWalletQR.toSvgString(qrVal, {
+            ecLevel: 'M',
+            margin: 1,
+            darkColor: bgEndHex,
+            lightColor: '#FFFFFF',
+            rounded: false
+          });
+        }
+
+        const mockButtons = document.getElementById('mockPassButtons');
+        if (mockButtons && genericObject && genericObject.linksModuleData && Array.isArray(genericObject.linksModuleData.uris)) {
+          mockButtons.innerHTML = genericObject.linksModuleData.uris
+            .map(
+              (u) =>
+                `<a href="${u.uri}" target="_blank" rel="noopener" class="wallet-mock-btn">${u.description}</a>`
+            )
+            .join('');
+        }
       }
 
       /**
@@ -3063,139 +3226,80 @@
         const secretKey = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
         const heroBannerUrl = `https://artelt.github.io/Card/hero-${prof.id || 'artautas'}.png`;
 
-        let result = await SmartWalletPassAPI.createSaveToWalletJwt(prof, {
-          issuerId,
-          classSuffix,
-          objectSuffix,
-          secretKey,
-          hubBaseUrl,
-          heroBannerUrl,
-          skinnyJwt: true,
-          serviceAccountEmail:
-            (loadedServiceAccount && loadedServiceAccount.client_email) ||
-            'wallet-pass-issuer@project-71308897-865e-49aa-830.iam.gserviceaccount.com',
-          privateKeyPem: (loadedServiceAccount && loadedServiceAccount.private_key) || ''
-        });
-
-        // If browser is running on file:// where WebCrypto may fallback, use the pre-signed RS256 JWT from local-keys.js if matching
-        if (
-          result.signedMode !== 'service-account-rs256' &&
-          window.SMART_WALLET_PRE_SIGNED_JWTS &&
-          window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id]
-        ) {
-          const preSigned = window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id];
-          if (preSigned.objectId === `${issuerId}.${objectSuffix}`) {
-            result.jwt = preSigned.jwt;
-            result.saveUrl = preSigned.saveUrl;
-            result.signedMode = 'service-account-rs256';
-          }
-        }
-
-        lastJwtResult = result;
-
-        const badge = document.getElementById('jwtSignModeBadge');
-        if (result.signedMode === 'service-account-rs256') {
-          badge.textContent = '✓ Signed with GCP Service Account (RS256)';
-          badge.style.color = 'var(--emerald)';
-        } else {
-          badge.textContent = 'Preview JWT (Upload service-account.json for Production RS256)';
-          badge.style.color = '#93C5FD';
-        }
-
-        document.getElementById('saveToGoogleWalletAnchor').href = result.saveUrl;
-        document.getElementById('jwtUrlCodeBlock').textContent = result.saveUrl;
-        document.getElementById('patchCmdCodeBlock').textContent =
-          `# 1. Node.js Auto-Update Helper:\n${result.patchCommand.nodeCommand}\n\n` +
-          `# 2. Direct Google Wallet REST API PATCH:\n${result.patchCommand.curlCommand}`;
-
-        document.getElementById('genericObjectCodeBlock').textContent = JSON.stringify(
-          {
-            genericClass: result.genericClass,
-            genericObject: result.genericObject
-          },
-          null,
-          2
-        );
-
-        // Update Google Wallet Pass Visual Mockup
-        const themeObj = prof.theme || THEME_PRESETS['deep-sapphire'];
-        const walletBgHex = themeObj.walletBgHex || themeObj.bgCenter || '#0F2B4C';
-        const accentHex = themeObj.accentColor || themeObj.accentPrimary || '#C8D2DC';
-        const bgEndHex = themeObj.bgGradientEnd || themeObj.bgSecondary || '#0B213B';
-
-        const mockPassCard = document.getElementById('walletPassMockCard');
-        if (mockPassCard) {
-          mockPassCard.style.backgroundColor = walletBgHex;
-          mockPassCard.style.borderColor = `rgba(${hexToRgb(accentHex)}, 0.34)`;
-        }
-        const mockAvatar = document.getElementById('mockPassAvatar');
-        if (mockAvatar) {
-          mockAvatar.style.borderColor = accentHex;
-          mockAvatar.style.backgroundColor = walletBgHex;
-          if (prof.avatarPngBase64) {
-            mockAvatar.src = prof.avatarPngBase64;
-          } else if (prof.photoBase64) {
-            mockAvatar.src = prof.photoBase64;
-          } else {
-            mockAvatar.src = `avatar-${prof.id || 'artautas'}.png`;
-          }
-        }
-        const mockTopTitle = document.getElementById('mockPassTopTitle');
-        if (mockTopTitle) {
-          mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
-          mockTopTitle.style.color = accentHex;
-        }
-        const mockName = document.getElementById('mockPassName');
-        if (mockName) {
-          mockName.textContent =
-            (result.genericObject.header && result.genericObject.header.defaultValue.value) ||
-            prof.name ||
-            '';
-        }
-        const mockSub = document.getElementById('mockPassSubheader');
-        if (mockSub) {
-          mockSub.textContent =
-            (result.genericObject.subheader && result.genericObject.subheader.defaultValue.value) || '';
-          mockSub.style.color = `rgba(${hexToRgb(accentHex)}, 0.85)`;
-        }
-        const mockFocus = document.getElementById('mockPassFocus');
-        const mockFocusLabel = document.getElementById('mockPassFocusLabel');
-        const focusMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'focus');
-        if (mockFocusLabel && focusMod) {
-          mockFocusLabel.textContent = focusMod.header || 'FOCUS & LOCATION';
-          mockFocusLabel.style.color = accentHex;
-        }
-        if (mockFocus && focusMod) mockFocus.textContent = focusMod.body;
-
-        const mockButtons = document.getElementById('mockPassButtons');
-        if (mockButtons && result.genericObject.linksModuleData && Array.isArray(result.genericObject.linksModuleData.uris)) {
-          mockButtons.innerHTML = result.genericObject.linksModuleData.uris
-            .map(
-              (u) =>
-                `<a href="${u.uri}" target="_blank" rel="noopener" class="wallet-mock-btn">${u.description}</a>`
-            )
-            .join('');
-        }
-
-        const mockAltText = document.getElementById('mockPassAltText');
-        if (mockAltText) mockAltText.style.color = bgEndHex;
-
-        const mockQr = document.getElementById('mockPassQrCode');
-        if (mockQr) {
-          mockQr.innerHTML = SmartWalletQR.toSvgString(result.genericObject.barcode.value, {
-            ecLevel: 'M',
-            margin: 1,
-            darkColor: bgEndHex,
-            lightColor: '#FFFFFF',
-            rounded: false
+        try {
+          let result = await SmartWalletPassAPI.createSaveToWalletJwt(prof, {
+            issuerId,
+            classSuffix,
+            objectSuffix,
+            secretKey,
+            hubBaseUrl,
+            heroBannerUrl,
+            skinnyJwt: true,
+            serviceAccountEmail:
+              (loadedServiceAccount && loadedServiceAccount.client_email) ||
+              'wallet-pass-issuer@project-71308897-865e-49aa-830.iam.gserviceaccount.com',
+            privateKeyPem: (loadedServiceAccount && loadedServiceAccount.private_key) || ''
           });
-        }
 
-        renderOption2Qr();
+          // If browser is running on file:// where WebCrypto may fallback, use the pre-signed RS256 JWT from local-keys.js if matching
+          if (
+            result.signedMode !== 'service-account-rs256' &&
+            window.SMART_WALLET_PRE_SIGNED_JWTS &&
+            window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id]
+          ) {
+            const preSigned = window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id];
+            if (preSigned.objectId === `${issuerId}.${objectSuffix}`) {
+              result.jwt = preSigned.jwt;
+              result.saveUrl = preSigned.saveUrl;
+              result.signedMode = 'service-account-rs256';
+            }
+          }
+
+          lastJwtResult = result;
+
+          const badge = document.getElementById('jwtSignModeBadge');
+          if (result.signedMode === 'service-account-rs256') {
+            badge.textContent = '✓ Signed with GCP Service Account (RS256)';
+            badge.style.color = 'var(--emerald)';
+          } else {
+            badge.textContent = 'Preview JWT (Upload service-account.json for Production RS256)';
+            badge.style.color = '#93C5FD';
+          }
+
+          document.getElementById('saveToGoogleWalletAnchor').href = result.saveUrl;
+          document.getElementById('jwtUrlCodeBlock').textContent = result.saveUrl;
+          document.getElementById('patchCmdCodeBlock').textContent =
+            `# 1. Node.js Auto-Update Helper:\n${result.patchCommand.nodeCommand}\n\n` +
+            `# 2. Direct Google Wallet REST API PATCH:\n${result.patchCommand.curlCommand}`;
+
+          document.getElementById('genericObjectCodeBlock').textContent = JSON.stringify(
+            {
+              genericClass: result.genericClass,
+              genericObject: result.genericObject
+            },
+            null,
+            2
+          );
+
+          applyOption2MockupTheme(prof, result.genericObject);
+          renderOption2Qr();
+        } catch (err) {
+          const fallbackObj = SmartWalletPassAPI.buildGenericObject(prof, {
+            issuerId,
+            classSuffix,
+            objectSuffix,
+            secretKey,
+            hubBaseUrl
+          });
+          applyOption2MockupTheme(prof, fallbackObj);
+        }
       }
 
       function renderOption2Qr() {
         if (!lastJwtResult) return;
+        const prof = getActiveProfile();
+        const themeObj = (prof && prof.theme) || THEME_PRESETS['deep-sapphire'];
+        const qrInk = themeObj.bgGradientEnd || themeObj.walletBgHex || '#14171D';
         const qrPayload =
           opt2QrTarget === 'saveUrl'
             ? lastJwtResult.saveUrl
@@ -3205,7 +3309,7 @@
         document.getElementById('opt2ScreenQrBox').innerHTML = SmartWalletQR.toSvgString(qrPayload, {
           ecLevel: ec,
           margin: 1,
-          darkColor: '#0B213B',
+          darkColor: qrInk,
           lightColor: '#FFFFFF',
           rounded: false
         });
@@ -3319,8 +3423,10 @@
             return;
           }
           const prof = db.profiles[activeUserId];
+          const oldId = activeUserId;
           delete db.profiles[activeUserId];
           prof.id = newId;
+          prof.aliases = Array.from(new Set([...(prof.aliases || []), oldId]));
           const plainPhone = document.getElementById('profPhoneInput').value.trim();
           const plainEmail = document.getElementById('profEmailInput').value.trim();
           if (plainPhone) prof.obfuscatedPhone = SmartWalletCrypto.sealForSlug(plainPhone, newId);

@@ -365,6 +365,121 @@
     return decryptField(String(cipherString), deriveSlugKey(userId));
   }
 
+  /**
+   * Resolves a profile entry from either a store object (`{ profiles, defaultProfile }`) or a raw map
+   * by matching top-level key, `profile.id`, `profile.slug`, `profile.aliases`, or known legacy aliases,
+   * case-insensitively. Only falls back to defaultProfile when no requested slug matches.
+   */
+  function resolveProfileEntry(storeOrMap, rawSlug, fallbackSlug) {
+    const profilesMap =
+      storeOrMap && storeOrMap.profiles && typeof storeOrMap.profiles === 'object'
+        ? storeOrMap.profiles
+        : storeOrMap && typeof storeOrMap === 'object'
+          ? storeOrMap
+          : {};
+
+    const defaultId =
+      fallbackSlug || (storeOrMap && storeOrMap.defaultProfile) || 'artautas';
+    const reqRaw = String(rawSlug || '').trim();
+    const reqLower = reqRaw.toLowerCase();
+
+    function findExactOrField(candidateRaw) {
+      const cand = String(candidateRaw || '').trim();
+      const candLower = cand.toLowerCase();
+      if (!candLower) return null;
+      if (profilesMap[cand]) {
+        return { id: cand, profile: profilesMap[cand], matched: true };
+      }
+      if (profilesMap[candLower]) {
+        return { id: candLower, profile: profilesMap[candLower], matched: true };
+      }
+      const entries = Object.entries(profilesMap);
+      for (let i = 0; i < entries.length; i++) {
+        const key = entries[i][0];
+        const prof = entries[i][1];
+        if (!prof || typeof prof !== 'object') continue;
+        if (
+          key.toLowerCase() === candLower ||
+          String(prof.id || '').toLowerCase() === candLower ||
+          String(prof.slug || '').toLowerCase() === candLower ||
+          (Array.isArray(prof.aliases) &&
+            prof.aliases.some((a) => String(a || '').toLowerCase() === candLower))
+        ) {
+          return { id: key, profile: prof, matched: true };
+        }
+      }
+      return null;
+    }
+
+    if (reqLower) {
+      const direct = findExactOrField(reqRaw);
+      if (direct) return direct;
+      const LEGACY_ALIASES = { brother: 'radvila' };
+      if (LEGACY_ALIASES[reqLower]) {
+        const aliased = findExactOrField(LEGACY_ALIASES[reqLower]);
+        if (aliased) return aliased;
+      }
+    }
+
+    const defMatch = findExactOrField(defaultId);
+    if (defMatch) return { id: defMatch.id, profile: defMatch.profile, matched: !reqLower };
+
+    const firstKey = Object.keys(profilesMap)[0];
+    return firstKey
+      ? { id: firstKey, profile: profilesMap[firstKey], matched: false }
+      : { id: defaultId, profile: null, matched: false };
+  }
+
+  /**
+   * Unlocks phone & email using an explicit secret key (if provided) or the slug-derived obfuscation wrapper.
+   */
+  function unsealProfileContact(profile, secretKey, resolvedKey) {
+    if (!profile) {
+      return {
+        unlocked: false,
+        phone: '',
+        email: '',
+        phoneResult: { unlocked: false, value: '', ciphertextPreview: 'ENCRYPTED' },
+        emailResult: { unlocked: false, value: '', ciphertextPreview: 'ENCRYPTED' }
+      };
+    }
+
+    const candidateSlugs = [profile.id, profile.slug, resolvedKey]
+      .concat(Array.isArray(profile.aliases) ? profile.aliases : [])
+      .filter(Boolean);
+
+    let phoneRes = decryptField(profile.encryptedPhone, secretKey);
+    if (!phoneRes.unlocked && profile.obfuscatedPhone) {
+      for (let i = 0; i < candidateSlugs.length; i++) {
+        const attempt = unsealForSlug(profile.obfuscatedPhone, candidateSlugs[i]);
+        if (attempt.unlocked) {
+          phoneRes = attempt;
+          break;
+        }
+      }
+    }
+
+    let emailRes = decryptField(profile.encryptedEmail, secretKey);
+    if (!emailRes.unlocked && profile.obfuscatedEmail) {
+      for (let i = 0; i < candidateSlugs.length; i++) {
+        const attempt = unsealForSlug(profile.obfuscatedEmail, candidateSlugs[i]);
+        if (attempt.unlocked) {
+          emailRes = attempt;
+          break;
+        }
+      }
+    }
+
+    const unlocked = Boolean(phoneRes.unlocked && emailRes.unlocked);
+    return {
+      unlocked,
+      phone: phoneRes.unlocked ? phoneRes.value : '',
+      email: emailRes.unlocked ? emailRes.value : '',
+      phoneResult: phoneRes,
+      emailResult: emailRes
+    };
+  }
+
   return {
     sha256Hex,
     encryptField,
@@ -374,6 +489,8 @@
     buildCleanUrl,
     deriveSlugKey,
     sealForSlug,
-    unsealForSlug
+    unsealForSlug,
+    resolveProfileEntry,
+    unsealProfileContact
   };
 });

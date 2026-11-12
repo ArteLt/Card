@@ -139,8 +139,12 @@
     const classId = `${opts.issuerId}.${opts.classSuffix}`;
     const objectId = `${opts.issuerId}.${opts.objectSuffix}`;
 
-    let phoneDec = SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
-    let emailDec = SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
+    const contact =
+      typeof SmartWalletCrypto.unsealProfileContact === 'function'
+        ? SmartWalletCrypto.unsealProfileContact(profile, opts.secretKey, profile.id)
+        : { unlocked: false, phone: '', email: '' };
+    let phoneDec = contact.phoneResult || SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
+    let emailDec = contact.emailResult || SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
     if (!phoneDec.unlocked && profile.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
       phoneDec = SmartWalletCrypto.unsealForSlug(profile.obfuscatedPhone, profile.id);
     }
@@ -920,7 +924,11 @@
       }
 
       const db = JSON.parse(nodeFs.readFileSync(profilesPath, 'utf8'));
-      const profile = db.profiles[userId];
+      const resolvedCli =
+        typeof SmartWalletCrypto.resolveProfileEntry === 'function'
+          ? SmartWalletCrypto.resolveProfileEntry(db, userId, db.defaultProfile)
+          : { id: userId, profile: db.profiles[userId], matched: Boolean(db.profiles[userId]) };
+      const profile = resolvedCli.matched ? resolvedCli.profile : db.profiles[userId];
       if (!profile) {
         console.error(
           `Error: Profile "${userId}" not found in profiles.json. Available: ${Object.keys(db.profiles).join(', ')}`
