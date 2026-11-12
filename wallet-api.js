@@ -638,6 +638,154 @@
     };
   }
 
+  function normalizeAvatarCrop(rawCrop) {
+    const src = rawCrop && typeof rawCrop === 'object' ? rawCrop : {};
+    const zoom = Math.min(2.5, Math.max(1.0, Number(src.zoom) || 1.0));
+    const offsetX = Math.min(50, Math.max(-50, Number(src.offsetX) || 0));
+    const offsetY = Math.min(50, Math.max(-50, Number(src.offsetY) || 0));
+    return {
+      zoom: Number(zoom.toFixed(2)),
+      offsetX: Math.round(offsetX),
+      offsetY: Math.round(offsetY)
+    };
+  }
+
+  /**
+   * Server-side 300x300 circular metallic-ringed PNG generator respecting profile.avatarCrop
+   * (zoom: 1.0..2.5, offsetX: -50..50, offsetY: -50..50) and profile theme colors.
+   */
+  function generateAvatarPngWithCropServer(profile, activeUser, outPath) {
+    if (!nodeFs || !nodePath || process.platform !== 'win32') return false;
+    try {
+      const os = require('os');
+      const { execFileSync } = require('child_process');
+      const crop = normalizeAvatarCrop(profile && profile.avatarCrop);
+      const theme = (profile && profile.theme) || {};
+      const walletBg = /^#[0-9A-Fa-f]{6}$/.test(theme.walletBgHex || '') ? theme.walletBgHex : '#0F2B4C';
+      const accentColor = /^#[0-9A-Fa-f]{6}$/.test(theme.accentColor || '') ? theme.accentColor : '#C8D2DC';
+      const rawDataUrl = (profile && (profile.avatarSourceBase64 || profile.photoBase64)) || '';
+
+      let tmpSrcPath = '';
+      if (rawDataUrl.startsWith('data:image/')) {
+        const match = rawDataUrl.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+        if (match) {
+          const ext = match[1] === 'png' ? 'png' : 'jpg';
+          tmpSrcPath = nodePath.join(os.tmpdir(), `swc-src-${activeUser}-${Date.now()}.${ext}`);
+          nodeFs.writeFileSync(tmpSrcPath, Buffer.from(match[2], 'base64'));
+        }
+      } else {
+        const diskJpg = nodePath.join(process.cwd(), `${activeUser}.jpg`);
+        if (nodeFs.existsSync(diskJpg)) tmpSrcPath = diskJpg;
+      }
+
+      const displayName = String((profile && (profile.name || profile.id)) || activeUser || 'SW')
+        .replace(/,.*$/, '')
+        .trim();
+      const parts = displayName.split(/\s+/).filter(Boolean);
+      const initials =
+        parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : (parts[0] || 'SW').slice(0, 2);
+
+      const scriptPath = nodePath.join(os.tmpdir(), `swc-crop-${activeUser}-${Date.now()}.ps1`);
+      const psScript = `
+param([string]$srcPath, [string]$outPath, [string]$bgHex, [string]$ringHex, [double]$zoom, [double]$offX, [double]$offY, [string]$initials)
+Add-Type -AssemblyName System.Drawing
+$size = 300
+$inner = 284
+$bmp = New-Object System.Drawing.Bitmap($size, $size)
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+$bgColor = [System.Drawing.ColorTranslator]::FromHtml($bgHex)
+$ringColor = [System.Drawing.ColorTranslator]::FromHtml($ringHex)
+$g.Clear($bgColor)
+
+if ($srcPath -and (Test-Path -LiteralPath $srcPath)) {
+  $srcImg = [System.Drawing.Image]::FromFile($srcPath)
+  try {
+    $imgW = [double]$srcImg.Width
+    $imgH = [double]$srcImg.Height
+    $minDim = [Math]::Min($imgW, $imgH)
+    $coverScale = ($inner / $minDim) * $zoom
+    $drawW = $imgW * $coverScale
+    $drawH = $imgH * $coverScale
+    $baseX = ($inner - $drawW) / 2.0
+    if ($imgH -gt $imgW) {
+      $baseY = -[Math]::Max(0.0, ($drawH - $inner) * 0.2)
+    } else {
+      $baseY = ($inner - $drawH) / 2.0
+    }
+    $panRangeX = [Math]::Max($inner * 0.22, ($drawW - $inner) / 2.0)
+    $panRangeY = [Math]::Max($inner * 0.22, ($drawH - $inner) / 2.0)
+    $dx = 8.0 + $baseX + ($offX / 50.0) * $panRangeX
+    $dy = 8.0 + $baseY + ($offY / 50.0) * $panRangeY
+
+    $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $path.AddEllipse(8, 8, 284, 284)
+    $g.SetClip($path)
+    $g.DrawImage($srcImg, [float]$dx, [float]$dy, [float]$drawW, [float]$drawH)
+    $g.ResetClip()
+    $path.Dispose()
+  } finally {
+    $srcImg.Dispose()
+  }
+} else {
+  $font = New-Object System.Drawing.Font("Segoe UI", 64, [System.Drawing.FontStyle]::Bold)
+  $brush = New-Object System.Drawing.SolidBrush($ringColor)
+  $sf = New-Object System.Drawing.StringFormat
+  $sf.Alignment = [System.Drawing.StringAlignment]::Center
+  $sf.LineAlignment = [System.Drawing.StringAlignment]::Center
+  $g.DrawString($initials.ToUpper(), $font, $brush, [System.Drawing.RectangleF]::new(0, 0, 300, 304), $sf)
+  $font.Dispose()
+  $brush.Dispose()
+  $sf.Dispose()
+}
+
+$pen = New-Object System.Drawing.Pen($ringColor, 8)
+$g.DrawEllipse($pen, 9, 9, 282, 282)
+$pen.Dispose()
+$sheenPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(89, 255, 255, 255), 1)
+$g.DrawEllipse($sheenPen, 13, 13, 274, 274)
+$sheenPen.Dispose()
+
+$bmp.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)
+$g.Dispose()
+$bmp.Dispose()
+`;
+      nodeFs.writeFileSync(scriptPath, psScript, 'utf8');
+      try {
+        execFileSync(
+          'powershell.exe',
+          [
+            '-NoProfile',
+            '-ExecutionPolicy',
+            'Bypass',
+            '-File',
+            scriptPath,
+            tmpSrcPath || '',
+            outPath,
+            walletBg,
+            accentColor,
+            String(crop.zoom),
+            String(crop.offsetX),
+            String(crop.offsetY),
+            initials
+          ],
+          { stdio: 'pipe', timeout: 15000 }
+        );
+      } finally {
+        try {
+          if (tmpSrcPath && tmpSrcPath.startsWith(os.tmpdir())) nodeFs.unlinkSync(tmpSrcPath);
+          nodeFs.unlinkSync(scriptPath);
+        } catch (cleanupErr) {}
+      }
+      return nodeFs.existsSync(outPath);
+    } catch (e) {
+      console.warn('[STUDIO] Server-side avatar crop fallback note:', e.message);
+      return false;
+    }
+  }
+
   /**
    * Starts a local studio server on http://localhost:<port> that serves admin.html / index.html
    * and provides a POST /api/save-and-sync endpoint to update profiles.json, profiles-data.js,
@@ -669,13 +817,24 @@
             const payload = JSON.parse(bodyStr || '{}');
             const { profiles, activeUser = 'artautas', avatarPngBase64, key } = payload;
 
-            // 1. Save avatar PNG if provided
+            const userProfileForCrop =
+              (profiles && profiles.profiles && profiles.profiles[activeUser]) ||
+              (profiles && profiles[activeUser]) ||
+              payload.profile ||
+              (profiles && profiles.id === activeUser ? profiles : null);
+
+            // 1. Save avatar PNG (from canvas payload, or regenerate server-side with avatarCrop)
+            const avatarFileName = `avatar-${activeUser}.png`;
+            const avatarFilePath = nodePath.join(process.cwd(), avatarFileName);
             if (avatarPngBase64) {
               const cleanB64 = avatarPngBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-              const avatarFileName = `avatar-${activeUser}.png`;
-              const avatarFilePath = nodePath.join(process.cwd(), avatarFileName);
               nodeFs.writeFileSync(avatarFilePath, Buffer.from(cleanB64, 'base64'));
               console.log(`[STUDIO] Saved ${avatarFileName} (${Buffer.from(cleanB64, 'base64').length} bytes)`);
+            } else if (userProfileForCrop && (userProfileForCrop.avatarCrop || userProfileForCrop.avatarSourceBase64 || userProfileForCrop.photoBase64)) {
+              const generated = generateAvatarPngWithCropServer(userProfileForCrop, activeUser, avatarFilePath);
+              if (generated) {
+                console.log(`[STUDIO] Server-generated cropped ${avatarFileName} from profile.avatarCrop`);
+              }
             }
 
             // 2. Isolated Per-Profile Save: only update activeUser in profiles.json & profiles-data.js
@@ -1096,6 +1255,7 @@
     createSaveToWalletJwt,
     buildPatchCliCommand,
     syncClassAndObjectToGoogleWallet,
+    generateAvatarPngWithCropServer,
     startStudioServer
   };
 });

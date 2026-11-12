@@ -114,6 +114,11 @@
             if (th.textureIntensity) {
               root.setAttribute('data-texture', th.textureIntensity);
             }
+            var metaThemeHex = th.walletBgHex || th.bgCenter || bgEnd || '#121316';
+            var metaThemeEl = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeEl && metaThemeHex) {
+              metaThemeEl.setAttribute('content', metaThemeHex);
+            }
           }
         }
       } catch (e) {}
@@ -1472,6 +1477,12 @@
           'radial-spotlight': '0.04'
         };
         root.style.setProperty('--texture-opacity', textureOpacities[texture] || '0.08');
+
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        const browserThemeHex = theme.walletBgHex || theme.bgCenter || bgEnd || '#121316';
+        if (metaThemeColor && browserThemeHex) {
+          metaThemeColor.setAttribute('content', browserThemeHex);
+        }
       }
 
       function getCurrentShareUrl() {

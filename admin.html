@@ -153,18 +153,40 @@
       color: #FCA5A5;
     }
 
-    /* Main 2-Column Studio Grid */
+    /* Main 2-Column Independent Scroll Studio Grid */
     .studio-grid {
-      max-width: 1380px;
+      max-width: 1420px;
       margin: 22px auto 0;
       padding: 0 20px;
       display: grid;
-      grid-template-columns: 500px 1fr;
+      grid-template-columns: 520px 1fr;
       gap: 22px;
       align-items: start;
     }
 
-    @media (max-width: 1080px) {
+    @media (min-width: 1100px) {
+      .studio-scroll-pane {
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(180, 200, 225, 0.26) transparent;
+      }
+
+      .studio-scroll-pane::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .studio-scroll-pane::-webkit-scrollbar-thumb {
+        background: rgba(180, 200, 225, 0.24);
+        border-radius: 99px;
+      }
+
+      .studio-scroll-pane::-webkit-scrollbar-thumb:hover {
+        background: rgba(180, 200, 225, 0.42);
+      }
+    }
+
+    @media (max-width: 1099px) {
       .studio-grid {
         grid-template-columns: 1fr;
       }
@@ -374,13 +396,98 @@
       cursor: pointer;
     }
 
-    /* Live Mini-Card Preview right inside the Typography Sliders section */
+    /* Live Mini-Card Preview pinned inside unified Section 3 */
     .mini-card-preview-stage {
       background: #121316;
       border: 1px solid rgba(180, 200, 225, 0.15);
       border-radius: 8px;
       padding: 12px;
       margin-top: 4px;
+    }
+
+    .mini-card-preview-stage.sticky-design-preview {
+      position: sticky;
+      top: -2px;
+      z-index: 14;
+      background: #14161B;
+      border: 1px solid rgba(180, 200, 225, 0.26);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.78);
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    .copy-design-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: #101216;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      border-radius: 9px;
+      padding: 9px 11px;
+      margin-bottom: 12px;
+    }
+
+    .avatar-crop-box {
+      margin-top: 10px;
+      background: #121419;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      border-radius: 10px;
+      padding: 11px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nfc-share-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(135deg, rgba(22, 58, 99, 0.34) 0%, rgba(16, 18, 22, 0.92) 100%);
+      border: 1px solid rgba(110, 231, 183, 0.28);
+      border-radius: 10px;
+      padding: 9px 13px;
+      margin-bottom: 12px;
+    }
+
+    .right-view-switcher {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: #101216;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      border-radius: 10px;
+      padding: 5px;
+      margin-bottom: 16px;
+    }
+
+    .right-view-btn {
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--silver-matte);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .right-view-btn.active {
+      background: linear-gradient(135deg, #163A63 0%, #0B213B 100%);
+      border-color: rgba(180, 200, 225, 0.34);
+      color: var(--silver-bright);
+    }
+
+    #rightStudioPanel[data-view-mode="card"] #rightWalletGeneratorBlock {
+      display: none;
+    }
+
+    #rightStudioPanel[data-view-mode="wallet"] #rightCardPreviewBlock {
+      display: none;
     }
 
     .mini-card-surface {
@@ -1196,9 +1303,9 @@
 
   <main class="studio-grid">
     <!-- ======================================================================
-         LEFT COLUMN: MULTI-USER PROFILE MANAGER & TYPOGRAPHY ENGINE
+         LEFT COLUMN: 3 LOGICAL SECTIONS (IDENTITY, VAULT & PORTRAIT, VISUAL STUDIO)
          ====================================================================== -->
-    <section class="studio-panel" aria-label="Multi-User Profile Manager">
+    <section class="studio-panel studio-scroll-pane" aria-label="Multi-User Profile Manager">
       <div class="panel-header">
         <div class="panel-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1217,10 +1324,10 @@
       <!-- User Switcher Pills -->
       <div id="userTabsContainer" class="user-tabs-bar"></div>
 
-      <!-- 1. Identity & Taglines -->
+      <!-- SECTION 1: CARD IDENTITY & HEADLINES -->
       <div class="form-section">
         <div class="section-subtitle">
-          <span>1. Card Identity &amp; Content</span>
+          <span>1. Card Identity &amp; Headlines</span>
           <span id="activeSlugBadge" style="font-family:var(--font-mono);color:#6EE7B7;">?u=artautas</span>
         </div>
         <div class="field-grid">
@@ -1244,6 +1351,10 @@
             <label for="profTaglineInput">Tagline (Pipe `|` or Newline separated — each row stays on 1 line)</label>
             <textarea id="profTaglineInput" class="form-textarea"></textarea>
           </div>
+          <div class="field-group field-full">
+            <label for="profFocusInput">Wallet Focus / Specialties (Optional — shown under QR code)</label>
+            <input type="text" id="profFocusInput" class="form-input" placeholder="e.g. Creative Retoucher · High-End Beauty &amp; Commercial" />
+          </div>
           <div class="field-group">
             <label for="profSloganInput">Back Slogan Header</label>
             <input type="text" id="profSloganInput" class="form-input" placeholder="LET'S CONNECT." />
@@ -1260,67 +1371,25 @@
             <label for="profWalletTopLabelInput">Google Wallet Pass Top Label (e.g. <code>HEIDELBERG · GERMANY</code>)</label>
             <input type="text" id="profWalletTopLabelInput" class="form-input" placeholder="HEIDELBERG · GERMANY" />
           </div>
-          <div class="field-group field-full">
-            <label for="profFocusInput">Wallet Focus / Specialties (Optional — shown under QR code)</label>
-            <input type="text" id="profFocusInput" class="form-input" placeholder="e.g. Creative Retoucher · High-End Beauty &amp; Commercial" />
-          </div>
         </div>
       </div>
 
-      <!-- 2. Per-Profile Typography Controls + Real-Time Mini-Card Preview -->
+      <!-- SECTION 2: CONTACT VAULT & AVATAR PORTRAIT -->
       <div class="form-section">
         <div class="section-subtitle">
-          <span>2. Typography Controls &amp; Auto-Fit Single-Line Engine</span>
-          <button type="button" id="resetTypoBtn" class="preset-pill" style="padding:2px 8px;">Reset Default</button>
-        </div>
-        <div class="typo-controls-box">
-          <div class="slider-row">
-            <div class="slider-label-line">
-              <label for="typoNameScale">Main Name Scale (<code>nameScale</code>)</label>
-              <span id="typoNameScaleVal" class="slider-val-badge">100%</span>
-            </div>
-            <input type="range" id="typoNameScale" min="70" max="130" step="1" value="100" />
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label-line">
-              <label for="typoTaglineScale">Tagline Block Scale (<code>taglineScale</code>)</label>
-              <span id="typoTaglineScaleVal" class="slider-val-badge">90%</span>
-            </div>
-            <input type="range" id="typoTaglineScale" min="70" max="130" step="1" value="90" />
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-label-line">
-              <label for="typoLetterSpacing">Tagline Letter Spacing (<code>letterSpacing</code>)</label>
-              <span id="typoLetterSpacingVal" class="slider-val-badge">0.11em</span>
-            </div>
-            <input type="range" id="typoLetterSpacing" min="0.04" max="0.22" step="0.005" value="0.11" />
-          </div>
-
-          <label class="checkbox-row" for="typoAutoFitLines">
-            <input type="checkbox" id="typoAutoFitLines" checked />
-            <span>Auto-Fit Single-Line Engine (<code>autoFitLines</code> — zero orphan line wraps)</span>
-          </label>
-
-          <!-- Live Mini-Card Preview right inside the Typography Sliders panel -->
-          <div class="mini-card-preview-stage">
-            <div class="mini-card-surface" id="miniCardSurface">
-              <div id="miniCardTitle" class="preview-front-title">ARTAUTAS ŠIMKUS, LL.M.</div>
-              <div id="miniCardTaglines" class="preview-tagline-stack"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Bot-Proof AES/XOR Encryption Vault -->
-      <div class="form-section">
-        <div class="section-subtitle">
-          <span>3. Bot-Proof Encryption Vault (Zero Plaintext PII)</span>
+          <span>2. Contact Vault &amp; Avatar Portrait</span>
           <span id="vaultLockState" style="color:var(--emerald);">🔓 Auto-Unlocked</span>
         </div>
         <div class="vault-box">
           <div class="field-grid">
+            <div class="field-group">
+              <label for="profPhoneInput">Phone (Decrypted in Memory)</label>
+              <input type="text" id="profPhoneInput" class="form-input mono-input" />
+            </div>
+            <div class="field-group">
+              <label for="profEmailInput">Email (Decrypted in Memory)</label>
+              <input type="email" id="profEmailInput" class="form-input mono-input" />
+            </div>
             <div class="field-group field-full">
               <label for="profSecretKeyInput">Per-User Secret Encryption Key (`k` in `?u=...&amp;k=KEY`)</label>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1332,7 +1401,7 @@
                   placeholder="16-char secret key..."
                 />
                 <button type="button" id="generateRandomKeyBtn" class="btn btn-secondary" style="white-space:nowrap;">
-                  🎲 Generate 16-Char Secure Key
+                  🎲 Generate 16-Char Key
                 </button>
                 <button type="button" id="copyShareUrlBtn" class="btn btn-secondary" style="white-space:nowrap;">
                   Copy Share URL
@@ -1354,26 +1423,84 @@
                 </a>
               </div>
             </div>
-            <div class="field-group">
-              <label for="profPhoneInput">Phone (Decrypted in Memory)</label>
-              <input type="text" id="profPhoneInput" class="form-input mono-input" />
-            </div>
-            <div class="field-group">
-              <label for="profEmailInput">Email (Decrypted in Memory)</label>
-              <input type="email" id="profEmailInput" class="form-input mono-input" />
-            </div>
           </div>
           <div id="cipherInspector" class="cipher-preview"></div>
         </div>
+
+        <!-- Portrait Photo Upload + Interactive Crop Framing Sliders -->
+        <div class="photo-uploader" style="margin-top:12px;">
+          <img id="adminPhotoPreview" class="photo-thumb" src="./avatar-artautas.png" alt="vCard Avatar Preview" />
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:700;color:var(--silver-bright);">vCard 3.0 &amp; Google Wallet Pass Avatar</div>
+            <div id="photoSizeStatus" style="font-size:11px;color:var(--silver-matte);margin-top:2px;">
+              Automatically formats 400×400 JPEG (.vcf) and 300×300 PNG (Google Wallet top bubble)
+            </div>
+          </div>
+          <label class="btn btn-secondary" style="height:32px;font-size:11.5px;cursor:pointer;">
+            <span>Upload Photo</span>
+            <input type="file" id="photoUploadInput" accept="image/*" style="display:none;" />
+          </label>
+        </div>
+
+        <div class="avatar-crop-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--silver-matte);">
+              Avatar Zoom &amp; Pan Framing
+            </span>
+            <button type="button" id="resetAvatarCropBtn" class="preset-pill" style="padding:2px 9px;">Reset Crop</button>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="avatarCropZoom">Zoom (<code>avatarCrop.zoom</code>)</label>
+              <span id="avatarCropZoomVal" class="slider-val-badge">1.00×</span>
+            </div>
+            <input type="range" id="avatarCropZoom" min="1.0" max="2.5" step="0.05" value="1.0" />
+          </div>
+          <div class="field-grid">
+            <div class="slider-row">
+              <div class="slider-label-line">
+                <label for="avatarCropOffsetX">Pan X</label>
+                <span id="avatarCropOffsetXVal" class="slider-val-badge">0%</span>
+              </div>
+              <input type="range" id="avatarCropOffsetX" min="-50" max="50" step="1" value="0" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label-line">
+                <label for="avatarCropOffsetY">Pan Y</label>
+                <span id="avatarCropOffsetYVal" class="slider-val-badge">0%</span>
+              </div>
+              <input type="range" id="avatarCropOffsetY" min="-50" max="50" step="1" value="0" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- 4. 🎨 Card Theme & Visual Design (Isolated per Profile) -->
+      <!-- SECTION 3: VISUAL DESIGN, THEME & TYPOGRAPHY STUDIO -->
       <div class="form-section">
         <div class="section-subtitle">
-          <span>4. 🎨 Card Theme &amp; Visual Design</span>
+          <span>3. Visual Design, Theme &amp; Typography Studio</span>
           <span id="activeThemeBadge" style="font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:99px;background:rgba(96,165,250,0.18);color:#93C5FD;">
             Per-Profile Theme
           </span>
+        </div>
+
+        <!-- Sticky Live Mini-Card Preview Canvas always visible inside Section 3 -->
+        <div class="mini-card-preview-stage sticky-design-preview">
+          <div class="mini-card-surface" id="miniCardSurface">
+            <div id="miniCardTitle" class="preview-front-title">ARTAUTAS ŠIMKUS, LL.M.</div>
+            <div id="miniCardTaglines" class="preview-tagline-stack"></div>
+          </div>
+        </div>
+
+        <!-- Copy Design From Profile Quick Action -->
+        <div class="copy-design-bar">
+          <label for="copyDesignFromSelect" style="font-size:11px;font-weight:700;color:var(--silver-matte);white-space:nowrap;">
+            Copy Design From:
+          </label>
+          <select id="copyDesignFromSelect" class="form-input" style="flex:1;min-width:160px;height:32px;padding:4px 9px;font-size:11.5px;"></select>
+          <button type="button" id="copyDesignFromBtn" class="btn btn-secondary" style="height:32px;padding:0 11px;font-size:11.5px;white-space:nowrap;">
+            Apply Design
+          </button>
         </div>
 
         <!-- Executive Preset Selector -->
@@ -1437,7 +1564,7 @@
           </div>
         </div>
 
-        <!-- Layout & Typography Controls (theme.cardStyle) -->
+        <!-- Borders, Font Pairings, and Surface Textures -->
         <div class="field-grid" style="margin-top:14px;">
           <div class="field-group">
             <label for="themeBorderStyle">Border &amp; Frame Style</label>
@@ -1478,33 +1605,79 @@
           </div>
         </div>
 
-        <!-- vCard & Google Wallet Avatar Photo Uploader -->
-        <div class="photo-uploader" style="margin-top:14px;">
-          <img id="adminPhotoPreview" class="photo-thumb" src="./avatar-artautas.png" alt="vCard Avatar Preview" />
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:700;color:var(--silver-bright);">vCard 3.0 &amp; Google Wallet Pass Avatar</div>
-            <div id="photoSizeStatus" style="font-size:11px;color:var(--silver-matte);margin-top:2px;">
-              Automatically formats 400×400 JPEG (.vcf) and 300×300 PNG (Google Wallet top bubble)
-            </div>
+        <!-- Unified Typography Scale & Auto-Fit Single-Line Engine -->
+        <div class="typo-controls-box" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--silver-matte);">
+              Typography Scale &amp; Auto-Fit Single-Line Engine
+            </span>
+            <button type="button" id="resetTypoBtn" class="preset-pill" style="padding:2px 8px;">Reset Default</button>
           </div>
-          <label class="btn btn-secondary" style="height:32px;font-size:11.5px;cursor:pointer;">
-            <span>Upload Photo</span>
-            <input type="file" id="photoUploadInput" accept="image/*" style="display:none;" />
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoNameScale">Main Name Scale (<code>nameScale</code>)</label>
+              <span id="typoNameScaleVal" class="slider-val-badge">100%</span>
+            </div>
+            <input type="range" id="typoNameScale" min="70" max="130" step="1" value="100" />
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoTaglineScale">Tagline Block Scale (<code>taglineScale</code>)</label>
+              <span id="typoTaglineScaleVal" class="slider-val-badge">90%</span>
+            </div>
+            <input type="range" id="typoTaglineScale" min="70" max="130" step="1" value="90" />
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoLetterSpacing">Tagline Letter Spacing (<code>letterSpacing</code>)</label>
+              <span id="typoLetterSpacingVal" class="slider-val-badge">0.11em</span>
+            </div>
+            <input type="range" id="typoLetterSpacing" min="0.04" max="0.22" step="0.005" value="0.11" />
+          </div>
+
+          <label class="checkbox-row" for="typoAutoFitLines">
+            <input type="checkbox" id="typoAutoFitLines" checked />
+            <span>Auto-Fit Single-Line Engine (<code>autoFitLines</code> — zero orphan line wraps)</span>
           </label>
         </div>
       </div>
     </section>
 
     <!-- ======================================================================
-         RIGHT COLUMN: LIVE 3D CARD PREVIEW + DUAL GOOGLE WALLET PASS GENERATOR
+         RIGHT COLUMN: NFC SHARE BAR + SWITCHABLE/PINNED 3D PREVIEW + WALLET STUDIO
          ====================================================================== -->
-    <section class="studio-panel" aria-label="Live Card Preview and Dual Google Wallet Pass Generator">
-      <!-- Live 3D Minimalist Business Card Preview -->
-      <div class="section-subtitle">
-        <span>Interactive 3D Card Preview (Tap Card to Flip)</span>
-        <span id="previewSideIndicator" style="color:var(--silver-matte);">FRONT · VORDERSEITE</span>
+    <section id="rightStudioPanel" class="studio-panel studio-scroll-pane" data-view-mode="split" aria-label="Live Card Preview and Dual Google Wallet Pass Generator">
+      <!-- Compact NFC Tag & Clean Share Link Bar -->
+      <div class="nfc-share-bar">
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6EE7B7;">
+            📡 Clean Share URL &amp; NFC Tag URI
+          </div>
+          <code id="nfcShareUrlCode" style="display:block;font-family:var(--font-mono);font-size:12px;color:var(--silver-bright);margin-top:2px;word-break:break-all;">
+            https://artelt.github.io/Card/?u=artautas
+          </code>
+        </div>
+        <button type="button" id="copyNfcShareUrlBtn" class="btn btn-primary" style="height:32px;padding:0 13px;font-size:11.5px;white-space:nowrap;">
+          Copy Clean URL
+        </button>
       </div>
-      <div class="live-card-preview-box">
+
+      <!-- Quick Top View Switcher -->
+      <div class="right-view-switcher" role="group" aria-label="Right Column Preview Mode">
+        <button type="button" id="rightViewCardBtn" class="right-view-btn" data-right-view="card">🎴 3D Card Preview</button>
+        <button type="button" id="rightViewWalletBtn" class="right-view-btn" data-right-view="wallet">📱 Google Wallet Pass</button>
+        <button type="button" id="rightViewSplitBtn" class="right-view-btn active" data-right-view="split">Split View</button>
+      </div>
+
+      <!-- Live 3D Minimalist Business Card Preview -->
+      <div id="rightCardPreviewBlock">
+        <div class="section-subtitle">
+          <span>Interactive 3D Card Preview (Tap Card to Flip)</span>
+          <span id="previewSideIndicator" style="color:var(--silver-matte);">FRONT · VORDERSEITE</span>
+        </div>
+        <div class="live-card-preview-box">
         <div id="adminPreviewCardScene" class="preview-card-scene" title="Click to flip between Front and Back">
           <div class="preview-card-3d" id="adminPreviewCard3d">
             <!-- FRONT -->
@@ -1541,7 +1714,9 @@
           </div>
         </div>
       </div>
+      </div>
 
+      <div id="rightWalletGeneratorBlock">
       <div class="panel-header" style="margin-top:6px;">
         <div class="panel-title">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1789,6 +1964,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
   </main>
 
@@ -1831,6 +2007,42 @@
         autoFitLines: true
       };
 
+      const DEFAULT_AVATAR_CROP = {
+        zoom: 1.0,
+        offsetX: 0,
+        offsetY: 0
+      };
+
+      function normalizeAvatarCrop(rawCrop) {
+        const src = rawCrop && typeof rawCrop === 'object' ? rawCrop : {};
+        const zoom = Math.min(2.5, Math.max(1.0, Number(src.zoom) || 1.0));
+        const offsetX = Math.min(50, Math.max(-50, Number(src.offsetX) || 0));
+        const offsetY = Math.min(50, Math.max(-50, Number(src.offsetY) || 0));
+        return {
+          zoom: Number(zoom.toFixed(2)),
+          offsetX: Math.round(offsetX),
+          offsetY: Math.round(offsetY)
+        };
+      }
+
+      function computeAvatarCropRect(imgW, imgH, targetSize, rawCrop) {
+        const crop = normalizeAvatarCrop(rawCrop);
+        const minDim = Math.min(imgW, imgH) || 1;
+        const coverScale = (targetSize / minDim) * crop.zoom;
+        const drawW = imgW * coverScale;
+        const drawH = imgH * coverScale;
+        const baseX = (targetSize - drawW) / 2;
+        const baseY = imgH > imgW ? -Math.max(0, (drawH - targetSize) * 0.2) : (targetSize - drawH) / 2;
+        const panRangeX = Math.max(targetSize * 0.22, (drawW - targetSize) / 2);
+        const panRangeY = Math.max(targetSize * 0.22, (drawH - targetSize) / 2);
+        return {
+          dx: baseX + (crop.offsetX / 50) * panRangeX,
+          dy: baseY + (crop.offsetY / 50) * panRangeY,
+          drawW,
+          drawH
+        };
+      }
+
       const sessionKeys = Object.assign({}, DEFAULT_PROFILE_KEYS);
 
       let db = null;
@@ -1841,6 +2053,7 @@
       let paperNoisePatternCanvas = null;
       let walletBgManuallyOverridden = false;
       const avatarImgCache = {};
+      const uncroppedSourceCache = {};
 
       function parseHexRgb(hex) {
         const clean = String(hex || '').replace('#', '').trim();
@@ -2444,6 +2657,45 @@
         return db.profiles[activeUserId];
       }
 
+      function populateCopyDesignDropdown() {
+        const sel = document.getElementById('copyDesignFromSelect');
+        if (!sel || !db || !db.profiles) return;
+        const prev = sel.value;
+        sel.innerHTML = '';
+        Object.values(db.profiles).forEach((p) => {
+          if (!p || p.id === activeUserId) return;
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.name || p.id;
+          sel.appendChild(opt);
+        });
+        if (sel.options.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No other profiles available';
+          sel.appendChild(opt);
+        } else if (prev && Array.from(sel.options).some((o) => o.value === prev)) {
+          sel.value = prev;
+        }
+      }
+
+      function applyDesignFromProfile(sourceId) {
+        const dest = getActiveProfile();
+        const src = db && db.profiles && db.profiles[sourceId];
+        if (!dest || !src || src.id === dest.id) return;
+
+        if (src.theme) {
+          dest.theme = JSON.parse(JSON.stringify(src.theme));
+        }
+        if (src.typography) {
+          dest.typography = Object.assign({}, DEFAULT_TYPOGRAPHY, JSON.parse(JSON.stringify(src.typography)));
+        }
+
+        persistToLocal();
+        loadProfileIntoForm();
+        showToast(`Copied theme & typography from "${src.name || src.id}"`);
+      }
+
       function renderUserTabs() {
         const container = document.getElementById('userTabsContainer');
         container.innerHTML = '';
@@ -2466,6 +2718,8 @@
         addBtn.textContent = '+ Add User Card';
         addBtn.addEventListener('click', createNewUserProfile);
         container.appendChild(addBtn);
+
+        populateCopyDesignDropdown();
       }
 
       function createNewUserProfile() {
@@ -2499,6 +2753,7 @@
           linkedinDisplay: `linkedin.com/in/${slug}`,
           photoUrl: '',
           photoBase64: '',
+          avatarCrop: Object.assign({}, DEFAULT_AVATAR_CROP),
           vcardNote: "Creative Retoucher - Let's connect!",
           typography: Object.assign({}, DEFAULT_TYPOGRAPHY),
           theme: Object.assign({}, THEME_PRESETS['deep-sapphire']),
@@ -2513,6 +2768,16 @@
         persistToLocal();
         loadProfileIntoForm();
         showToast(`Created profile "${slug}" with key "${defaultKey}"`);
+      }
+
+      function updateAvatarCropLabels(crop) {
+        const c = normalizeAvatarCrop(crop);
+        const zEl = document.getElementById('avatarCropZoomVal');
+        const xEl = document.getElementById('avatarCropOffsetXVal');
+        const yEl = document.getElementById('avatarCropOffsetYVal');
+        if (zEl) zEl.textContent = `${c.zoom.toFixed(2)}×`;
+        if (xEl) xEl.textContent = `${c.offsetX > 0 ? '+' : ''}${c.offsetX}%`;
+        if (yEl) yEl.textContent = `${c.offsetY > 0 ? '+' : ''}${c.offsetY}%`;
       }
 
       function updateTypographySliderLabels(typo) {
@@ -2574,15 +2839,25 @@
         document.getElementById('gwObjectSuffix').value = wCfg.objectSuffix || `${prof.id}_card`;
 
         const photoPreview = document.getElementById('adminPhotoPreview');
-        if (prof.photoBase64) {
+        if (prof.avatarPngBase64) {
+          photoPreview.src = prof.avatarPngBase64;
+        } else if (prof.photoBase64) {
           photoPreview.src = prof.photoBase64;
         } else if (prof.photoUrl) {
           photoPreview.src = prof.photoUrl;
-        } else if (prof.avatarPngBase64) {
-          photoPreview.src = prof.avatarPngBase64;
         } else {
           photoPreview.src = `./avatar-${prof.id || 'artautas'}.png`;
         }
+
+        const crop = normalizeAvatarCrop(prof.avatarCrop || DEFAULT_AVATAR_CROP);
+        prof.avatarCrop = crop;
+        const zInput = document.getElementById('avatarCropZoom');
+        const xInput = document.getElementById('avatarCropOffsetX');
+        const yInput = document.getElementById('avatarCropOffsetY');
+        if (zInput) zInput.value = crop.zoom;
+        if (xInput) xInput.value = crop.offsetX;
+        if (yInput) yInput.value = crop.offsetY;
+        updateAvatarCropLabels(crop);
 
         walletBgManuallyOverridden = false;
         const keyInput = document.getElementById('profSecretKeyInput');
@@ -2626,13 +2901,20 @@
       }
 
       function updateUnlockedPreviewLinks(userId, key) {
-        const relUrl = `index.html?u=${encodeURIComponent(userId || 'artautas')}`;
+        const slug = userId || 'artautas';
+        const relUrl = `index.html?u=${encodeURIComponent(slug)}`;
         const liveLink = document.getElementById('openLiveCardLink');
         if (liveLink) liveLink.href = relUrl;
         const vaultPreviewBtn = document.getElementById('openUnlockedPreviewBtn');
         if (vaultPreviewBtn) vaultPreviewBtn.href = relUrl;
         const urlCodeEl = document.getElementById('unlockedPreviewUrlCode');
         if (urlCodeEl) urlCodeEl.textContent = relUrl;
+
+        const hubInput = document.getElementById('gwHubBaseUrl');
+        const hubBase = (hubInput && hubInput.value.trim()) || 'https://artelt.github.io/Card/';
+        const cleanShareUrl = SmartWalletCrypto.buildCleanUrl(hubBase, slug);
+        const nfcUrlEl = document.getElementById('nfcShareUrlCode');
+        if (nfcUrlEl) nfcUrlEl.textContent = cleanShareUrl;
       }
 
       function refreshEncryptionFields() {
@@ -2708,6 +2990,13 @@
           autoFitLines: Boolean(document.getElementById('typoAutoFitLines').checked)
         };
         updateTypographySliderLabels(prof.typography);
+
+        prof.avatarCrop = normalizeAvatarCrop({
+          zoom: document.getElementById('avatarCropZoom')?.value,
+          offsetX: document.getElementById('avatarCropOffsetX')?.value,
+          offsetY: document.getElementById('avatarCropOffsetY')?.value
+        });
+        updateAvatarCropLabels(prof.avatarCrop);
 
         const curPreset = document.getElementById('themePresetSelect').value;
         const curPresetName = document.getElementById('themePresetSelect').options[document.getElementById('themePresetSelect').selectedIndex]?.text?.replace(/^[0-9]\.\s*/, '') || 'Custom Palette';
@@ -3716,6 +4005,24 @@
           }
         });
 
+        function generateVcardCroppedDataUrl(imgElement, prof) {
+          const targetSize = 400;
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = targetSize;
+          offCanvas.height = targetSize;
+          const oCtx = offCanvas.getContext('2d');
+          const walletBg = (prof && prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
+          oCtx.fillStyle = walletBg;
+          oCtx.fillRect(0, 0, targetSize, targetSize);
+          if (imgElement && (imgElement.naturalWidth || imgElement.width)) {
+            const w = imgElement.naturalWidth || imgElement.width;
+            const h = imgElement.naturalHeight || imgElement.height;
+            const rect = computeAvatarCropRect(w, h, targetSize, prof && prof.avatarCrop);
+            oCtx.drawImage(imgElement, rect.dx, rect.dy, rect.drawW, rect.drawH);
+          }
+          return offCanvas.toDataURL('image/jpeg', 0.84);
+        }
+
         function generateThemedAvatarDataUrl(imgElement, prof) {
           const avCanvas = document.createElement('canvas');
           avCanvas.width = 300;
@@ -3728,20 +4035,18 @@
           aCtx.fillStyle = walletBg;
           aCtx.fillRect(0, 0, 300, 300);
 
-          // 2. Circular Clipped Portrait or Monogram
+          // 2. Circular Clipped Portrait or Monogram (respecting profile.avatarCrop)
           if (imgElement && (imgElement.naturalWidth || imgElement.width)) {
             const w = imgElement.naturalWidth || imgElement.width;
             const h = imgElement.naturalHeight || imgElement.height;
-            const minDim = Math.min(w, h);
-            const sx = (w - minDim) / 2;
-            const sy = Math.max(0, (h - minDim) * 0.2);
+            const rect = computeAvatarCropRect(w, h, 284, prof && prof.avatarCrop);
 
             aCtx.save();
             aCtx.beginPath();
             aCtx.arc(150, 150, 142, 0, Math.PI * 2);
             aCtx.closePath();
             aCtx.clip();
-            aCtx.drawImage(imgElement, sx, sy, minDim, minDim, 8, 8, 284, 284);
+            aCtx.drawImage(imgElement, 8 + rect.dx, 8 + rect.dy, rect.drawW, rect.drawH);
             aCtx.restore();
           } else {
             const parts = String((prof && (prof.name || prof.id)) || 'SW').replace(/,.*$/, '').trim().split(/\s+/);
@@ -3772,6 +4077,60 @@
           return avCanvas.toDataURL('image/png');
         }
 
+        function getUncroppedAvatarSourceUrl(prof) {
+          if (!prof) return '';
+          return prof.avatarSourceBase64 || prof.photoBase64 || prof.photoUrl || '';
+        }
+
+        function applyAvatarCropLive() {
+          const prof = getActiveProfile();
+          if (!prof) return;
+          prof.avatarCrop = normalizeAvatarCrop({
+            zoom: document.getElementById('avatarCropZoom')?.value,
+            offsetX: document.getElementById('avatarCropOffsetX')?.value,
+            offsetY: document.getElementById('avatarCropOffsetY')?.value
+          });
+          updateAvatarCropLabels(prof.avatarCrop);
+
+          if (!prof.avatarSourceBase64 && prof.photoBase64) {
+            prof.avatarSourceBase64 = prof.photoBase64;
+          }
+
+          const srcUrl = getUncroppedAvatarSourceUrl(prof);
+          if (!srcUrl) {
+            const avatarDataUrl = generateThemedAvatarDataUrl(null, prof);
+            prof.avatarPngBase64 = avatarDataUrl;
+            const photoPreview = document.getElementById('adminPhotoPreview');
+            if (photoPreview) photoPreview.src = avatarDataUrl;
+            persistToLocal();
+            renderAllOutputs();
+            return;
+          }
+
+          const cached = uncroppedSourceCache[prof.id];
+          if (cached && cached.src === srcUrl && cached.img.complete && cached.img.naturalWidth > 0) {
+            prof.photoBase64 = generateVcardCroppedDataUrl(cached.img, prof);
+            prof.avatarPngBase64 = generateThemedAvatarDataUrl(cached.img, prof);
+            const photoPreview = document.getElementById('adminPhotoPreview');
+            if (photoPreview) photoPreview.src = prof.avatarPngBase64;
+            persistToLocal();
+            renderAllOutputs();
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            uncroppedSourceCache[prof.id] = { src: srcUrl, img };
+            prof.photoBase64 = generateVcardCroppedDataUrl(img, prof);
+            prof.avatarPngBase64 = generateThemedAvatarDataUrl(img, prof);
+            const photoPreview = document.getElementById('adminPhotoPreview');
+            if (photoPreview) photoPreview.src = prof.avatarPngBase64;
+            persistToLocal();
+            renderAllOutputs();
+          };
+          img.src = srcUrl;
+        }
+
         // Theme Border, Font Pairing, and Texture selects
         ['themeBorderStyle', 'themeFontPairing', 'themeTextureIntensity'].forEach((selId) => {
           const el = document.getElementById(selId);
@@ -3780,7 +4139,55 @@
           }
         });
 
-        // Photo Upload -> Auto-Resize & Base64 Conversion for .vcf & Google Wallet pass avatar
+        // Interactive Avatar Zoom & Pan Framing Sliders
+        ['avatarCropZoom', 'avatarCropOffsetX', 'avatarCropOffsetY'].forEach((sliderId) => {
+          const el = document.getElementById(sliderId);
+          if (el) {
+            el.addEventListener('input', applyAvatarCropLive);
+          }
+        });
+
+        const resetCropBtn = document.getElementById('resetAvatarCropBtn');
+        if (resetCropBtn) {
+          resetCropBtn.addEventListener('click', () => {
+            const zEl = document.getElementById('avatarCropZoom');
+            const xEl = document.getElementById('avatarCropOffsetX');
+            const yEl = document.getElementById('avatarCropOffsetY');
+            if (zEl) zEl.value = DEFAULT_AVATAR_CROP.zoom;
+            if (xEl) xEl.value = DEFAULT_AVATAR_CROP.offsetX;
+            if (yEl) yEl.value = DEFAULT_AVATAR_CROP.offsetY;
+            applyAvatarCropLive();
+            showToast('Reset avatar zoom & pan framing.');
+          });
+        }
+
+        // Copy Design From Profile quick action
+        const copyDesignBtn = document.getElementById('copyDesignFromBtn');
+        if (copyDesignBtn) {
+          copyDesignBtn.addEventListener('click', () => {
+            const sel = document.getElementById('copyDesignFromSelect');
+            if (sel && sel.value) {
+              applyDesignFromProfile(sel.value);
+            }
+          });
+        }
+
+        // Right-column top view switcher (3D Card Preview | Google Wallet Pass | Split View)
+        document.querySelectorAll('[data-right-view]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-right-view') || 'split';
+            const panel = document.getElementById('rightStudioPanel');
+            if (panel) panel.setAttribute('data-view-mode', mode);
+            document.querySelectorAll('[data-right-view]').forEach((b) => {
+              b.classList.toggle('active', b === btn);
+            });
+            fitCardTypography();
+            renderOption1Canvas();
+            renderOption2HeroCanvas();
+          });
+        });
+
+        // Photo Upload -> Store crisp base source + Auto-Resize & Crop for .vcf & Google Wallet pass avatar
         document.getElementById('photoUploadInput').addEventListener('change', (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
@@ -3788,23 +4195,31 @@
           reader.onload = (ev) => {
             const img = new Image();
             img.onload = () => {
-              const targetSize = 400;
-              const offCanvas = document.createElement('canvas');
-              offCanvas.width = targetSize;
-              offCanvas.height = targetSize;
-              const oCtx = offCanvas.getContext('2d');
-              const minDim = Math.min(img.width, img.height);
-              const sx = (img.width - minDim) / 2;
-              const sy = Math.max(0, (img.height - minDim) * 0.2); // subtle facial crop bias
-              oCtx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
-
-              const dataUrl = offCanvas.toDataURL('image/jpeg', 0.84);
-
               const prof = getActiveProfile();
+              if (!prof) return;
+              // Store compact uncropped source up to 600px so non-destructive zoom/pan stays lossless
+              const maxSide = 600;
+              const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+              const srcCanvas = document.createElement('canvas');
+              srcCanvas.width = Math.max(1, Math.round(img.width * scale));
+              srcCanvas.height = Math.max(1, Math.round(img.height * scale));
+              srcCanvas.getContext('2d').drawImage(img, 0, 0, srcCanvas.width, srcCanvas.height);
+              prof.avatarSourceBase64 = srcCanvas.toDataURL('image/jpeg', 0.88);
+              prof.avatarCrop = Object.assign({}, DEFAULT_AVATAR_CROP);
+              const zEl = document.getElementById('avatarCropZoom');
+              const xEl = document.getElementById('avatarCropOffsetX');
+              const yEl = document.getElementById('avatarCropOffsetY');
+              if (zEl) zEl.value = 1.0;
+              if (xEl) xEl.value = 0;
+              if (yEl) yEl.value = 0;
+              updateAvatarCropLabels(prof.avatarCrop);
+
+              uncroppedSourceCache[prof.id] = { src: prof.avatarSourceBase64, img };
+              const dataUrl = generateVcardCroppedDataUrl(img, prof);
               const avatarDataUrl = generateThemedAvatarDataUrl(img, prof);
               prof.photoBase64 = dataUrl;
               prof.avatarPngBase64 = avatarDataUrl;
-              document.getElementById('adminPhotoPreview').src = dataUrl;
+              document.getElementById('adminPhotoPreview').src = avatarDataUrl;
               document.getElementById('photoSizeStatus').textContent =
                 `Embedded 400×400 JPEG & 300×300 Wallet Avatar PNG inside profile`;
 
@@ -3831,19 +4246,25 @@
           showToast('Profile deleted.');
         });
 
-        document.getElementById('copyShareUrlBtn').addEventListener('click', async () => {
+        async function copyCurrentCleanShareUrl() {
           const prof = getActiveProfile();
           const hubBase =
             document.getElementById('gwHubBaseUrl').value.trim() ||
-            window.location.href.replace(/admin\.html.*$/, 'index.html');
+            'https://artelt.github.io/Card/';
           const url = SmartWalletCrypto.buildCleanUrl(hubBase, prof.id);
           try {
             await navigator.clipboard.writeText(url);
-            showToast('Clean Profile URL copied to clipboard!');
+            showToast('Clean Share URL copied to clipboard!');
           } catch (e) {
             showToast(url);
           }
-        });
+        }
+
+        document.getElementById('copyShareUrlBtn').addEventListener('click', copyCurrentCleanShareUrl);
+        const copyNfcBtn = document.getElementById('copyNfcShareUrlBtn');
+        if (copyNfcBtn) {
+          copyNfcBtn.addEventListener('click', copyCurrentCleanShareUrl);
+        }
 
         document.getElementById('exportJsonBtn').addEventListener('click', () => {
           persistToLocal();
@@ -3870,12 +4291,26 @@
           const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
 
           let avatarPngBase64 = '';
-          const photoImg = document.getElementById('adminPhotoPreview');
-          if ((prof.photoBase64 || prof.photoUrl) && photoImg && photoImg.complete && photoImg.naturalWidth > 0) {
+          const cachedSrc = uncroppedSourceCache[prof.id];
+          const srcUrl = getUncroppedAvatarSourceUrl(prof);
+          if (cachedSrc && cachedSrc.img && cachedSrc.img.complete && cachedSrc.img.naturalWidth > 0) {
             try {
-              avatarPngBase64 = generateThemedAvatarDataUrl(photoImg, prof);
+              avatarPngBase64 = generateThemedAvatarDataUrl(cachedSrc.img, prof);
             } catch (e) {}
-          } else if (!prof.photoBase64 && !prof.photoUrl) {
+          } else if (srcUrl && (prof.avatarSourceBase64 || prof.photoBase64)) {
+            try {
+              const tmpImg = await new Promise((resolve, reject) => {
+                const im = new Image();
+                im.onload = () => resolve(im);
+                im.onerror = reject;
+                im.src = srcUrl;
+              });
+              uncroppedSourceCache[prof.id] = { src: srcUrl, img: tmpImg };
+              avatarPngBase64 = generateThemedAvatarDataUrl(tmpImg, prof);
+            } catch (e) {
+              avatarPngBase64 = prof.avatarPngBase64 || '';
+            }
+          } else if (!srcUrl) {
             try {
               avatarPngBase64 = generateThemedAvatarDataUrl(null, prof);
             } catch (e) {}
