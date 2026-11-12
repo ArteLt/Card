@@ -1,0 +1,46 @@
+name: Google Wallet Over-the-Air Auto Sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'profiles.json'
+      - 'wallet-api.js'
+      - '.github/workflows/wallet-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-wallet-passes:
+    name: Sync All Passes to Google Wallet API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for Google Wallet Service Account Secret
+        id: check_secret
+        env:
+          WALLET_SECRET: ${{ secrets.GOOGLE_WALLET_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$WALLET_SECRET" ]; then
+            echo "has_secret=true" >> "$GITHUB_OUTPUT"
+            echo "Service account secret found. Writing service-account.json..."
+            echo "$WALLET_SECRET" > service-account.json
+            chmod 600 service-account.json
+          else
+            echo "has_secret=false" >> "$GITHUB_OUTPUT"
+            echo "::warning ::GOOGLE_WALLET_SERVICE_ACCOUNT_JSON secret not configured in repository. Skipping Google Wallet API sync."
+          fi
+
+      - name: Sync Passes Over-The-Air via Google Wallet API
+        if: steps.check_secret.outputs.has_secret == 'true'
+        run: |
+          node wallet-api.js sync --all

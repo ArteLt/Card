@@ -12,14 +12,18 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Artautas Šimkus, LL.M. · Digital Business Card</title>
 
-  <!-- Geometric Luxury Typography -->
+  <!-- Geometric & Executive Luxury Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
       --studio-charcoal: #121316;
+      --bg-start: #163A63;
+      --bg-end: #0B213B;
+      --accent-metal: #C8D2DC;
+      --accent-rgb: 200, 210, 220;
       --sapphire-top: #163A63;
       --sapphire-mid: #0F2B4C;
       --sapphire-deep: #0B213B;
@@ -27,8 +31,11 @@
       --silver-tagline: #B8C4D0;
       --silver-back-text: #C8D2DC;
       --card-radius: 6px;
-      --font-display: 'Montserrat', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --card-border: 1px solid rgba(200, 210, 220, 0.28);
+      --card-inset-shadow: inset 0 0 0 1px rgba(200, 210, 220, 0.18);
+      --texture-opacity: 0.08;
+      --font-display: 'Cinzel', 'Montserrat', serif;
+      --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     * {
@@ -148,10 +155,11 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       overflow: hidden;
-      /* Subtle angled paper-grain gradient from #163A63 (top-left) to #0F2B4C (center) to #0B213B (bottom-right) */
-      background: linear-gradient(135deg, var(--sapphire-top) 0%, var(--sapphire-mid) 50%, var(--sapphire-deep) 100%);
-      /* Subtle realistic paper-edge border */
-      border: 1px solid rgba(180, 200, 225, 0.18);
+      /* Dynamic metallic gradient using per-profile colors */
+      background: linear-gradient(135deg, var(--bg-start, var(--sapphire-top)) 0%, var(--bg-end, var(--sapphire-deep)) 100%);
+      /* Dynamic per-profile border & frame */
+      border: var(--card-border, 1px solid rgba(180, 200, 225, 0.18));
+      box-shadow: var(--card-inset-shadow, none);
     }
 
     /* Top-left subtle paper sheen */
@@ -170,7 +178,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      opacity: 0.09;
+      opacity: var(--texture-opacity, 0.08);
       mix-blend-mode: overlay;
       pointer-events: none;
       z-index: 1;
@@ -1145,14 +1153,79 @@
         return profilesStore;
       }
 
+      function hexToRgb(hex) {
+        const clean = String(hex || '').replace('#', '').trim();
+        if (clean.length === 3) {
+          const r = parseInt(clean[0] + clean[0], 16);
+          const g = parseInt(clean[1] + clean[1], 16);
+          const b = parseInt(clean[2] + clean[2], 16);
+          return `${r}, ${g}, ${b}`;
+        }
+        if (clean.length === 6) {
+          const r = parseInt(clean.substring(0, 2), 16);
+          const g = parseInt(clean.substring(2, 4), 16);
+          const b = parseInt(clean.substring(4, 6), 16);
+          return `${r}, ${g}, ${b}`;
+        }
+        return '200, 210, 220';
+      }
+
       function applyThemeColors(theme) {
         if (!theme) return;
         const root = document.documentElement;
-        if (theme.bgPrimary) root.style.setProperty('--sapphire-top', theme.bgPrimary);
-        if (theme.bgCenter) root.style.setProperty('--sapphire-mid', theme.bgCenter);
-        if (theme.bgSecondary) root.style.setProperty('--sapphire-deep', theme.bgSecondary);
-        if (theme.accentPrimary) root.style.setProperty('--silver-title', theme.accentPrimary);
-        if (theme.accentSecondary) root.style.setProperty('--silver-tagline', theme.accentSecondary);
+
+        const bgStart = theme.bgGradientStart || theme.bgPrimary || '#163A63';
+        const bgEnd = theme.bgGradientEnd || theme.bgSecondary || '#0B213B';
+        const accent = theme.accentColor || theme.accentPrimary || '#C8D2DC';
+        const accentRgb = hexToRgb(accent);
+
+        root.style.setProperty('--bg-start', bgStart);
+        root.style.setProperty('--bg-end', bgEnd);
+        root.style.setProperty('--accent-metal', accent);
+        root.style.setProperty('--accent-rgb', accentRgb);
+        root.style.setProperty('--sapphire-top', bgStart);
+        root.style.setProperty('--sapphire-deep', bgEnd);
+        root.style.setProperty('--silver-title', accent);
+        root.style.setProperty('--silver-tagline', theme.accentSecondary || accent);
+
+        // Font Pairing
+        const pairing = theme.fontPairing || 'cinzel-inter';
+        if (pairing === 'inter-modern') {
+          root.style.setProperty('--font-display', "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif");
+          root.style.setProperty('--font-sans', "'Inter', -apple-system, sans-serif");
+        } else if (pairing === 'cormorant-inter') {
+          root.style.setProperty('--font-display', "'Cormorant Garamond', 'Times New Roman', serif");
+          root.style.setProperty('--font-sans', "'Inter', 'Plus Jakarta Sans', sans-serif");
+        } else {
+          // cinzel-inter (Classic Executive)
+          root.style.setProperty('--font-display', "'Cinzel', 'Montserrat', serif");
+          root.style.setProperty('--font-sans', "'Inter', 'Plus Jakarta Sans', sans-serif");
+        }
+
+        // Border Style
+        const borderStyle = theme.borderStyle || 'single-silver-frame';
+        if (borderStyle === 'double-executive-frame') {
+          root.style.setProperty('--card-border', `1.5px solid rgba(${accentRgb}, 0.45)`);
+          root.style.setProperty('--card-inset-shadow', `inset 0 0 0 3px rgba(0, 0, 0, 0.4), inset 0 0 0 4.5px rgba(${accentRgb}, 0.32)`);
+        } else if (borderStyle === 'minimal-borderless') {
+          root.style.setProperty('--card-border', 'none');
+          root.style.setProperty('--card-inset-shadow', 'none');
+        } else {
+          // single-silver-frame
+          root.style.setProperty('--card-border', `1px solid rgba(${accentRgb}, 0.28)`);
+          root.style.setProperty('--card-inset-shadow', `inset 0 0 0 1px rgba(${accentRgb}, 0.18)`);
+        }
+
+        // Texture Intensity
+        const texture = theme.textureIntensity || 'subtle-grain';
+        if (texture === 'brushed-metal') {
+          root.style.setProperty('--texture-opacity', '0.18');
+        } else if (texture === 'smooth-matte') {
+          root.style.setProperty('--texture-opacity', '0.01');
+        } else {
+          // subtle-grain
+          root.style.setProperty('--texture-opacity', '0.08');
+        }
       }
 
       function getCurrentShareUrl() {

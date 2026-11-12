@@ -12,7 +12,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -1168,54 +1168,103 @@
         </div>
       </div>
 
-      <!-- 4. Theme Colors & Profile Photo (Auto-Resized Base64 for .vcf only) -->
+      <!-- 4. 🎨 Card Theme & Visual Design (Isolated per Profile) -->
       <div class="form-section">
         <div class="section-subtitle">
-          <span>4. Surface Colors &amp; vCard Contact Photo</span>
+          <span>4. 🎨 Card Theme &amp; Visual Design</span>
+          <span id="activeThemeBadge" style="font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:99px;background:rgba(96,165,250,0.18);color:#93C5FD;">
+            Per-Profile Theme
+          </span>
         </div>
+
+        <!-- Executive Preset Selector -->
+        <div class="field-group" style="margin-bottom:12px;">
+          <label for="themePresetSelect">Executive Preset Palette (Applied to Selected Profile)</label>
+          <select id="themePresetSelect" class="form-input">
+            <option value="deep-sapphire">1. Deep Sapphire &amp; Matte Silver (Default)</option>
+            <option value="obsidian-titanium">2. Obsidian &amp; Brushed Titanium (Charcoal Black)</option>
+            <option value="champagne-espresso">3. Champagne &amp; Warm Espresso (Rich Dark Luxury)</option>
+            <option value="emerald-platinum">4. Emerald &amp; Platinum (British Racing Green)</option>
+            <option value="burgundy-rose">5. Midnight Burgundy &amp; Rose Silver (Editorial Plum)</option>
+            <option value="custom">6. Custom Palette (Manual Colors Below)</option>
+          </select>
+        </div>
+
+        <div class="preset-pills" style="margin-bottom:14px;">
+          <button type="button" class="preset-pill" data-theme-preset="deep-sapphire">Deep Sapphire</button>
+          <button type="button" class="preset-pill" data-theme-preset="obsidian-titanium">Obsidian Titanium</button>
+          <button type="button" class="preset-pill" data-theme-preset="champagne-espresso">Champagne Espresso</button>
+          <button type="button" class="preset-pill" data-theme-preset="emerald-platinum">Emerald Platinum</button>
+          <button type="button" class="preset-pill" data-theme-preset="burgundy-rose">Midnight Burgundy</button>
+        </div>
+
+        <!-- 4 Individual Color Pickers -->
         <div class="color-row">
           <div class="color-picker-wrap">
-            <span>Sapphire Top</span>
+            <span>Gradient Start</span>
             <div class="color-picker-inner">
-              <input type="color" id="colBgPrimary" value="#163A63" />
-              <input type="text" id="colBgPrimaryText" class="color-hex-text" value="#163A63" />
+              <input type="color" id="colBgStart" value="#163A63" />
+              <input type="text" id="colBgStartText" class="color-hex-text" value="#163A63" />
             </div>
           </div>
           <div class="color-picker-wrap">
-            <span>Sapphire Deep</span>
+            <span>Gradient End</span>
             <div class="color-picker-inner">
-              <input type="color" id="colBgSecondary" value="#0B213B" />
-              <input type="text" id="colBgSecondaryText" class="color-hex-text" value="#0B213B" />
+              <input type="color" id="colBgEnd" value="#0B213B" />
+              <input type="text" id="colBgEndText" class="color-hex-text" value="#0B213B" />
             </div>
           </div>
           <div class="color-picker-wrap">
-            <span>Silver Title</span>
+            <span>Accent Metal</span>
             <div class="color-picker-inner">
-              <input type="color" id="colAccentPrimary" value="#D6DEE7" />
-              <input type="text" id="colAccentPrimaryText" class="color-hex-text" value="#D6DEE7" />
+              <input type="color" id="colAccentColor" value="#C8D2DC" />
+              <input type="text" id="colAccentColorText" class="color-hex-text" value="#C8D2DC" />
             </div>
           </div>
           <div class="color-picker-wrap">
-            <span>Silver Sub</span>
+            <span>Wallet Bg Hex</span>
             <div class="color-picker-inner">
-              <input type="color" id="colAccentSecondary" value="#B8C4D0" />
-              <input type="text" id="colAccentSecondaryText" class="color-hex-text" value="#B8C4D0" />
+              <input type="color" id="colWalletBgHex" value="#0F2B4C" />
+              <input type="text" id="colWalletBgHexText" class="color-hex-text" value="#0F2B4C" />
             </div>
           </div>
         </div>
 
-        <div class="preset-pills">
-          <button type="button" class="preset-pill" data-preset="sapphire">Deep Sapphire &amp; Matte Silver (Default)</button>
-          <button type="button" class="preset-pill" data-preset="rose">Midnight &amp; Rose Silver</button>
-          <button type="button" class="preset-pill" data-preset="obsidian">Obsidian &amp; Titanium</button>
+        <!-- Layout & Typography Controls (theme.cardStyle) -->
+        <div class="field-grid" style="margin-top:14px;">
+          <div class="field-group">
+            <label for="themeBorderStyle">Border &amp; Frame Style</label>
+            <select id="themeBorderStyle" class="form-input">
+              <option value="single-silver-frame">Single Metallic Frame (Default)</option>
+              <option value="double-executive-frame">Double Executive Frame (Certificates)</option>
+              <option value="minimal-borderless">Minimal Borderless (Seamless Edge)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="themeFontPairing">Typography &amp; Font Pairing</label>
+            <select id="themeFontPairing" class="form-input">
+              <option value="cinzel-inter">Cinzel &amp; Inter (Classic Executive)</option>
+              <option value="inter-modern">Inter &amp; Modern Sans (Clean Tech)</option>
+              <option value="cormorant-inter">Cormorant &amp; Inter (Editorial Luxury Serif)</option>
+            </select>
+          </div>
+          <div class="field-group field-full">
+            <label for="themeTextureIntensity">Card Texture &amp; Finish</label>
+            <select id="themeTextureIntensity" class="form-input">
+              <option value="subtle-grain">Subtle Paper Grain (Default)</option>
+              <option value="brushed-metal">Brushed Metallic Sheen</option>
+              <option value="smooth-matte">Smooth Silk Matte (Flat)</option>
+            </select>
+          </div>
         </div>
 
-        <div class="photo-uploader" style="margin-top:12px;">
-          <img id="adminPhotoPreview" class="photo-thumb" src="./artautas.jpg" alt="vCard Avatar Preview" />
+        <!-- vCard & Google Wallet Avatar Photo Uploader -->
+        <div class="photo-uploader" style="margin-top:14px;">
+          <img id="adminPhotoPreview" class="photo-thumb" src="./avatar-artautas.png" alt="vCard Avatar Preview" />
           <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:700;color:var(--silver-bright);">vCard 3.0 Contact Photo (.vcf Only)</div>
+            <div style="font-size:12px;font-weight:700;color:var(--silver-bright);">vCard 3.0 &amp; Google Wallet Pass Avatar</div>
             <div id="photoSizeStatus" style="font-size:11px;color:var(--silver-matte);margin-top:2px;">
-              Embedded inside downloaded .vcf contact file (not shown on business card face)
+              Automatically formats 400×400 JPEG (.vcf) and 300×300 PNG (Google Wallet top bubble)
             </div>
           </div>
           <label class="btn btn-secondary" style="height:32px;font-size:11.5px;cursor:pointer;">
@@ -1574,30 +1623,103 @@
       let opt2QrTarget = 'saveUrl';
       let paperNoisePatternCanvas = null;
 
+      function hexToRgb(hex) {
+        const clean = String(hex || '').replace('#', '').trim();
+        if (clean.length === 3) {
+          const r = parseInt(clean[0] + clean[0], 16);
+          const g = parseInt(clean[1] + clean[1], 16);
+          const b = parseInt(clean[2] + clean[2], 16);
+          return `${r}, ${g}, ${b}`;
+        }
+        if (clean.length === 6) {
+          const r = parseInt(clean.substring(0, 2), 16);
+          const g = parseInt(clean.substring(2, 4), 16);
+          const b = parseInt(clean.substring(4, 6), 16);
+          return `${r}, ${g}, ${b}`;
+        }
+        return '200, 210, 220';
+      }
+
       const THEME_PRESETS = {
-        sapphire: {
+        'deep-sapphire': {
+          preset: 'deep-sapphire',
           name: 'Deep Sapphire & Matte Silver',
+          bgGradientStart: '#163A63',
+          bgGradientEnd: '#0B213B',
+          accentColor: '#C8D2DC',
+          walletBgHex: '#0F2B4C',
+          borderStyle: 'single-silver-frame',
+          fontPairing: 'cinzel-inter',
+          textureIntensity: 'subtle-grain',
           bgPrimary: '#163A63',
           bgCenter: '#0F2B4C',
           bgSecondary: '#0B213B',
           accentPrimary: '#D6DEE7',
           accentSecondary: '#B8C4D0'
         },
-        rose: {
-          name: 'Midnight Sapphire & Rose Silver',
-          bgPrimary: '#1A365D',
-          bgCenter: '#112645',
-          bgSecondary: '#0A1930',
-          accentPrimary: '#E8E0E6',
-          accentSecondary: '#C4B6C0'
+        'obsidian-titanium': {
+          preset: 'obsidian-titanium',
+          name: 'Obsidian & Brushed Titanium',
+          bgGradientStart: '#1C1F24',
+          bgGradientEnd: '#0D0F12',
+          accentColor: '#D0D5DD',
+          walletBgHex: '#121417',
+          borderStyle: 'single-silver-frame',
+          fontPairing: 'inter-modern',
+          textureIntensity: 'brushed-metal',
+          bgPrimary: '#1C1F24',
+          bgCenter: '#121417',
+          bgSecondary: '#0D0F12',
+          accentPrimary: '#E4E7EC',
+          accentSecondary: '#D0D5DD'
         },
-        obsidian: {
-          name: 'Obsidian Sapphire & Titanium',
-          bgPrimary: '#14334A',
-          bgCenter: '#0D2436',
-          bgSecondary: '#081824',
-          accentPrimary: '#DCE6ED',
-          accentSecondary: '#A9BAC6'
+        'champagne-espresso': {
+          preset: 'champagne-espresso',
+          name: 'Champagne & Warm Espresso',
+          bgGradientStart: '#2C221E',
+          bgGradientEnd: '#17110F',
+          accentColor: '#E5C99B',
+          walletBgHex: '#241B18',
+          borderStyle: 'double-executive-frame',
+          fontPairing: 'cormorant-inter',
+          textureIntensity: 'subtle-grain',
+          bgPrimary: '#2C221E',
+          bgCenter: '#241B18',
+          bgSecondary: '#17110F',
+          accentPrimary: '#F6E5CC',
+          accentSecondary: '#E5C99B'
+        },
+        'emerald-platinum': {
+          preset: 'emerald-platinum',
+          name: 'Emerald & Platinum',
+          bgGradientStart: '#12352B',
+          bgGradientEnd: '#091E18',
+          accentColor: '#D4E0DC',
+          walletBgHex: '#0E2A22',
+          borderStyle: 'single-silver-frame',
+          fontPairing: 'cinzel-inter',
+          textureIntensity: 'subtle-grain',
+          bgPrimary: '#12352B',
+          bgCenter: '#0E2A22',
+          bgSecondary: '#091E18',
+          accentPrimary: '#E8F0ED',
+          accentSecondary: '#D4E0DC'
+        },
+        'burgundy-rose': {
+          preset: 'burgundy-rose',
+          name: 'Midnight Burgundy & Rose Silver',
+          bgGradientStart: '#3B1525',
+          bgGradientEnd: '#1F0A13',
+          accentColor: '#E6C7D0',
+          walletBgHex: '#2D101C',
+          borderStyle: 'double-executive-frame',
+          fontPairing: 'cormorant-inter',
+          textureIntensity: 'subtle-grain',
+          bgPrimary: '#3B1525',
+          bgCenter: '#2D101C',
+          bgSecondary: '#1F0A13',
+          accentPrimary: '#F3DCE2',
+          accentSecondary: '#E6C7D0'
         }
       };
 
@@ -1934,11 +2056,24 @@
         document.getElementById('typoAutoFitLines').checked = typo.autoFitLines !== false;
         updateTypographySliderLabels(typo);
 
-        const theme = prof.theme || THEME_PRESETS.sapphire;
-        setColorInputs('BgPrimary', theme.bgPrimary || '#163A63');
-        setColorInputs('BgSecondary', theme.bgSecondary || '#0B213B');
-        setColorInputs('AccentPrimary', theme.accentPrimary || '#D6DEE7');
-        setColorInputs('AccentSecondary', theme.accentSecondary || '#B8C4D0');
+        const theme = prof.theme || THEME_PRESETS['deep-sapphire'];
+        const presetKey = theme.preset || 'deep-sapphire';
+        const presetSelect = document.getElementById('themePresetSelect');
+        if (presetSelect) presetSelect.value = THEME_PRESETS[presetKey] ? presetKey : 'custom';
+        const activeThemeBadge = document.getElementById('activeThemeBadge');
+        if (activeThemeBadge) activeThemeBadge.textContent = theme.name || 'Per-Profile Theme';
+
+        setColorInputPair('colBgStart', theme.bgGradientStart || theme.bgPrimary || '#163A63');
+        setColorInputPair('colBgEnd', theme.bgGradientEnd || theme.bgSecondary || '#0B213B');
+        setColorInputPair('colAccentColor', theme.accentColor || theme.accentPrimary || '#C8D2DC');
+        setColorInputPair('colWalletBgHex', theme.walletBgHex || theme.bgCenter || '#0F2B4C');
+
+        const borderSelect = document.getElementById('themeBorderStyle');
+        if (borderSelect) borderSelect.value = theme.borderStyle || 'single-silver-frame';
+        const fontSelect = document.getElementById('themeFontPairing');
+        if (fontSelect) fontSelect.value = theme.fontPairing || 'cinzel-inter';
+        const textureSelect = document.getElementById('themeTextureIntensity');
+        if (textureSelect) textureSelect.value = theme.textureIntensity || 'subtle-grain';
 
         const wCfg = prof.walletConfig || {};
         document.getElementById('gwIssuerId').value = wCfg.issuerId || '3388000000023225565';
@@ -1958,11 +2093,36 @@
         renderAllOutputs();
       }
 
-      function setColorInputs(suffix, hexVal) {
-        const cInput = document.getElementById('col' + suffix);
-        const tInput = document.getElementById('col' + suffix + 'Text');
+      function setColorInputPair(id, hexVal) {
+        const cInput = document.getElementById(id);
+        const tInput = document.getElementById(id + 'Text');
         if (cInput) cInput.value = hexVal;
-        if (tInput) tInput.value = hexVal;
+        if (tInput) tInput.value = String(hexVal).toUpperCase();
+      }
+
+      function applyPresetToForm(presetKey) {
+        const p = THEME_PRESETS[presetKey];
+        if (!p) return;
+        const sel = document.getElementById('themePresetSelect');
+        if (sel) sel.value = presetKey;
+        setColorInputPair('colBgStart', p.bgGradientStart);
+        setColorInputPair('colBgEnd', p.bgGradientEnd);
+        setColorInputPair('colAccentColor', p.accentColor);
+        setColorInputPair('colWalletBgHex', p.walletBgHex);
+        if (p.borderStyle) {
+          const bSel = document.getElementById('themeBorderStyle');
+          if (bSel) bSel.value = p.borderStyle;
+        }
+        if (p.fontPairing) {
+          const fSel = document.getElementById('themeFontPairing');
+          if (fSel) fSel.value = p.fontPairing;
+        }
+        if (p.textureIntensity) {
+          const tSel = document.getElementById('themeTextureIntensity');
+          if (tSel) tSel.value = p.textureIntensity;
+        }
+        syncFormToProfile();
+        showToast(`Applied "${p.name}" palette to profile`);
       }
 
       function updateUnlockedPreviewLinks(userId, key) {
@@ -2040,14 +2200,35 @@
         };
         updateTypographySliderLabels(prof.typography);
 
+        const curPreset = document.getElementById('themePresetSelect').value;
+        const curPresetName = document.getElementById('themePresetSelect').options[document.getElementById('themePresetSelect').selectedIndex]?.text?.replace(/^[0-9]\.\s*/, '') || 'Custom Palette';
+        const bgStart = document.getElementById('colBgStartText').value.trim() || '#163A63';
+        const bgEnd = document.getElementById('colBgEndText').value.trim() || '#0B213B';
+        const accent = document.getElementById('colAccentColorText').value.trim() || '#C8D2DC';
+        const walletHex = document.getElementById('colWalletBgHexText').value.trim() || '#0F2B4C';
+        const borderStyle = document.getElementById('themeBorderStyle').value || 'single-silver-frame';
+        const fontPairing = document.getElementById('themeFontPairing').value || 'cinzel-inter';
+        const textureIntensity = document.getElementById('themeTextureIntensity').value || 'subtle-grain';
+
         prof.theme = {
-          name: (prof.theme && prof.theme.name) || 'Deep Sapphire & Matte Silver',
-          bgPrimary: document.getElementById('colBgPrimaryText').value.trim() || '#163A63',
-          bgCenter: '#0F2B4C',
-          bgSecondary: document.getElementById('colBgSecondaryText').value.trim() || '#0B213B',
-          accentPrimary: document.getElementById('colAccentPrimaryText').value.trim() || '#D6DEE7',
-          accentSecondary: document.getElementById('colAccentSecondaryText').value.trim() || '#B8C4D0'
+          preset: curPreset,
+          name: curPresetName,
+          bgGradientStart: bgStart,
+          bgGradientEnd: bgEnd,
+          accentColor: accent,
+          walletBgHex: walletHex,
+          borderStyle: borderStyle,
+          fontPairing: fontPairing,
+          textureIntensity: textureIntensity,
+          bgPrimary: bgStart,
+          bgCenter: walletHex,
+          bgSecondary: bgEnd,
+          accentPrimary: accent,
+          accentSecondary: '#B8C4D0'
         };
+
+        const activeThemeBadge = document.getElementById('activeThemeBadge');
+        if (activeThemeBadge) activeThemeBadge.textContent = curPresetName;
 
         prof.walletConfig = {
           issuerId: document.getElementById('gwIssuerId').value.trim() || '3388000000023225565',
@@ -2084,20 +2265,55 @@
       function renderLiveCardPreview() {
         const prof = getActiveProfile();
         if (!prof) return;
-        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const theme = prof.theme || THEME_PRESETS['deep-sapphire'];
         const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+
+        const bgStart = theme.bgGradientStart || theme.bgPrimary || '#163A63';
+        const bgEnd = theme.bgGradientEnd || theme.bgSecondary || '#0B213B';
+        const accent = theme.accentColor || theme.accentPrimary || '#C8D2DC';
+        const accentRgb = hexToRgb(accent);
+        const cardGrad = `linear-gradient(135deg, ${bgStart} 0%, ${bgEnd} 100%)`;
 
         const frontFace = document.getElementById('adminPreviewFrontFace');
         const backFace = document.getElementById('adminPreviewBackFace');
         const miniSurface = document.getElementById('miniCardSurface');
-        const cardGrad = `linear-gradient(135deg, ${theme.bgPrimary || '#163A63'} 0%, ${theme.bgCenter || '#0F2B4C'} 50%, ${theme.bgSecondary || '#0B213B'} 100%)`;
-        frontFace.style.background = cardGrad;
-        backFace.style.background = cardGrad;
-        miniSurface.style.background = cardGrad;
+
+        [frontFace, backFace, miniSurface].forEach((el) => {
+          if (!el) return;
+          el.style.background = cardGrad;
+          if (theme.borderStyle === 'double-executive-frame') {
+            el.style.border = `1.5px solid rgba(${accentRgb}, 0.45)`;
+            el.style.boxShadow = `inset 0 0 0 3px rgba(0, 0, 0, 0.4), inset 0 0 0 4.5px rgba(${accentRgb}, 0.32)`;
+          } else if (theme.borderStyle === 'minimal-borderless') {
+            el.style.border = 'none';
+            el.style.boxShadow = 'none';
+          } else {
+            // single-silver-frame
+            el.style.border = `1px solid rgba(${accentRgb}, 0.28)`;
+            el.style.boxShadow = `inset 0 0 0 1px rgba(${accentRgb}, 0.18)`;
+          }
+        });
+
+        // Font Pairing
+        const displayFont = theme.fontPairing === 'cormorant-inter'
+          ? "'Cormorant Garamond', 'Times New Roman', serif"
+          : (theme.fontPairing === 'inter-modern'
+              ? "'Inter', 'Plus Jakarta Sans', sans-serif"
+              : "'Cinzel', 'Montserrat', serif");
+        const sansFont = "'Inter', 'Plus Jakarta Sans', sans-serif";
 
         const nameUpper = String(prof.name || '').toUpperCase();
-        document.getElementById('adminPreviewTitle').textContent = nameUpper;
-        document.getElementById('miniCardTitle').textContent = nameUpper;
+        const titleEl = document.getElementById('adminPreviewTitle');
+        const miniTitleEl = document.getElementById('miniCardTitle');
+        [titleEl, miniTitleEl].forEach((t) => {
+          if (!t) return;
+          t.textContent = nameUpper;
+          t.style.fontFamily = displayFont;
+          t.style.background = `linear-gradient(180deg, #FFFFFF 0%, ${accent} 50%, rgba(${accentRgb}, 0.75) 100%)`;
+          t.style.webkitBackgroundClip = 'text';
+          t.style.backgroundClip = 'text';
+          t.style.webkitTextFillColor = 'transparent';
+        });
 
         const lines = autoBalanceTagline(prof.tagline);
         ['adminPreviewTaglines', 'miniCardTaglines'].forEach((containerId) => {
@@ -2106,7 +2322,8 @@
           lines.forEach((l) => {
             const d = document.createElement('div');
             d.className = 'preview-tagline-line';
-            d.style.color = theme.accentSecondary || '#B8C4D0';
+            d.style.fontFamily = displayFont;
+            d.style.color = accent;
             d.textContent = l;
             container.appendChild(d);
           });
@@ -2526,6 +2743,10 @@
         );
 
         // Update Google Wallet Pass Visual Mockup
+        const mockPassCard = document.getElementById('walletPassMockCard');
+        if (mockPassCard) {
+          mockPassCard.style.backgroundColor = (prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
+        }
         const mockAvatar = document.getElementById('mockPassAvatar');
         if (mockAvatar) {
           if (prof.avatarPngBase64) {
@@ -2678,32 +2899,56 @@
           loadProfileIntoForm();
         });
 
-        ['BgPrimary', 'BgSecondary', 'AccentPrimary', 'AccentSecondary'].forEach((suffix) => {
-          const cInput = document.getElementById('col' + suffix);
-          const tInput = document.getElementById('col' + suffix + 'Text');
-          cInput.addEventListener('input', () => {
-            tInput.value = cInput.value.toUpperCase();
-            syncFormToProfile();
-          });
-          tInput.addEventListener('input', () => {
-            if (/^#[0-9A-Fa-f]{6}$/.test(tInput.value.trim())) {
-              cInput.value = tInput.value.trim();
+        // Theme Preset Dropdown Change
+        const themePresetSelect = document.getElementById('themePresetSelect');
+        if (themePresetSelect) {
+          themePresetSelect.addEventListener('change', (e) => {
+            const pKey = e.target.value;
+            if (pKey === 'custom') {
               syncFormToProfile();
+            } else if (THEME_PRESETS[pKey]) {
+              applyPresetToForm(pKey);
+            }
+          });
+        }
+
+        // Quick Preset Buttons ([data-theme-preset])
+        document.querySelectorAll('[data-theme-preset]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const pKey = btn.getAttribute('data-theme-preset');
+            if (THEME_PRESETS[pKey]) {
+              applyPresetToForm(pKey);
             }
           });
         });
 
-        document.querySelectorAll('[data-preset]').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const p = THEME_PRESETS[btn.getAttribute('data-preset')];
-            if (!p) return;
-            setColorInputs('BgPrimary', p.bgPrimary);
-            setColorInputs('BgSecondary', p.bgSecondary);
-            setColorInputs('AccentPrimary', p.accentPrimary);
-            setColorInputs('AccentSecondary', p.accentSecondary);
-            syncFormToProfile();
-            showToast(`Applied "${p.name}" palette`);
-          });
+        // 4 Theme Color Pickers & Hex text fields
+        ['colBgStart', 'colBgEnd', 'colAccentColor', 'colWalletBgHex'].forEach((colId) => {
+          const cInput = document.getElementById(colId);
+          const tInput = document.getElementById(colId + 'Text');
+          if (cInput && tInput) {
+            cInput.addEventListener('input', () => {
+              tInput.value = cInput.value.toUpperCase();
+              if (themePresetSelect) themePresetSelect.value = 'custom';
+              syncFormToProfile();
+            });
+            tInput.addEventListener('input', () => {
+              const val = tInput.value.trim();
+              if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                cInput.value = val;
+                if (themePresetSelect) themePresetSelect.value = 'custom';
+                syncFormToProfile();
+              }
+            });
+          }
+        });
+
+        // Theme Border, Font Pairing, and Texture selects
+        ['themeBorderStyle', 'themeFontPairing', 'themeTextureIntensity'].forEach((selId) => {
+          const el = document.getElementById(selId);
+          if (el) {
+            el.addEventListener('change', syncFormToProfile);
+          }
         });
 
         // Photo Upload -> Auto-Resize & Base64 Conversion for .vcf & Google Wallet pass avatar

@@ -33,7 +33,15 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "autoFitLines": true
       },
       "theme": {
+        "preset": "deep-sapphire",
         "name": "Deep Sapphire & Matte Silver",
+        "bgGradientStart": "#163A63",
+        "bgGradientEnd": "#0B213B",
+        "accentColor": "#C8D2DC",
+        "walletBgHex": "#0F2B4C",
+        "borderStyle": "single-silver-frame",
+        "fontPairing": "cinzel-inter",
+        "textureIntensity": "subtle-grain",
         "bgPrimary": "#163A63",
         "bgCenter": "#0F2B4C",
         "bgSecondary": "#0B213B",
@@ -74,12 +82,20 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "autoFitLines": true
       },
       "theme": {
-        "name": "Deep Sapphire & Matte Silver",
-        "bgPrimary": "#163A63",
-        "bgCenter": "#0F2B4C",
-        "bgSecondary": "#0B213B",
-        "accentPrimary": "#D6DEE7",
-        "accentSecondary": "#B8C4D0"
+        "preset": "burgundy-rose",
+        "name": "Midnight Burgundy & Rose Silver",
+        "bgGradientStart": "#3B1525",
+        "bgGradientEnd": "#1F0A13",
+        "accentColor": "#E6C7D0",
+        "walletBgHex": "#2D101C",
+        "borderStyle": "double-executive-frame",
+        "fontPairing": "cormorant-inter",
+        "textureIntensity": "subtle-grain",
+        "bgPrimary": "#3B1525",
+        "bgCenter": "#2D101C",
+        "bgSecondary": "#1F0A13",
+        "accentPrimary": "#F3DCE2",
+        "accentSecondary": "#E6C7D0"
       },
       "walletConfig": {
         "issuerId": "3388000000023225565",
@@ -115,12 +131,20 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "autoFitLines": true
       },
       "theme": {
-        "name": "Deep Sapphire & Matte Silver",
-        "bgPrimary": "#163A63",
-        "bgCenter": "#0F2B4C",
-        "bgSecondary": "#0B213B",
-        "accentPrimary": "#D6DEE7",
-        "accentSecondary": "#B8C4D0"
+        "preset": "obsidian-titanium",
+        "name": "Obsidian & Brushed Titanium",
+        "bgGradientStart": "#1C1F24",
+        "bgGradientEnd": "#0D0F12",
+        "accentColor": "#D0D5DD",
+        "walletBgHex": "#121417",
+        "borderStyle": "single-silver-frame",
+        "fontPairing": "inter-modern",
+        "textureIntensity": "brushed-metal",
+        "bgPrimary": "#1C1F24",
+        "bgCenter": "#121417",
+        "bgSecondary": "#0D0F12",
+        "accentPrimary": "#E4E7EC",
+        "accentSecondary": "#D0D5DD"
       },
       "walletConfig": {
         "issuerId": "3388000000023225565",

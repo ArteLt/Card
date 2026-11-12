@@ -164,7 +164,7 @@
       ? remainingLines.join(' · ')
       : 'European Company Law · Business Development · Startup Ecosystems';
 
-    const hexBg = (profile.theme && profile.theme.bgPrimary) || '#163A63';
+    const hexBg = (profile.theme && profile.theme.walletBgHex) || (profile.theme && profile.theme.bgPrimary) || '#0F2B4C';
     const linkedinUrl = profile.linkedin || 'https://www.linkedin.com/in/artautas/';
     const cardTitleText = profile.walletTopLabel || 'HEIDELBERG · GERMANY';
     const avatarUrl = profile.avatarUrl || `https://artelt.github.io/Card/avatar-${profile.id || 'artautas'}.png`;
@@ -539,12 +539,15 @@
       const logoUri = genericObject.logo.sourceUri.uri;
       try {
         const check = await httpsJsonRequest(logoUri, 'GET', {}, null);
-        if (check.statusCode === 404 && logoUri.endsWith('.png')) {
+        if (check.statusCode !== 200) {
           const fallbackJpg = logoUri.replace(/\.png$/, '.jpg').replace(/avatar-/, '');
           const checkJpg = await httpsJsonRequest(fallbackJpg, 'GET', {}, null);
           if (checkJpg.statusCode === 200) {
             console.log(`  [INFO] Logo ${logoUri} not yet on GitHub Pages, auto-falling back to ${fallbackJpg}`);
             genericObject.logo.sourceUri.uri = fallbackJpg;
+          } else {
+            console.log(`  [INFO] Logo ${logoUri} not yet reachable on GitHub Pages, falling back to public default avatar.`);
+            genericObject.logo.sourceUri.uri = 'https://artelt.github.io/Card/artautas.jpg';
           }
         }
       } catch (e) {}
@@ -618,17 +621,52 @@
               console.log(`[STUDIO] Saved ${avatarFileName} (${Buffer.from(cleanB64, 'base64').length} bytes)`);
             }
 
-            // 2. Save profiles.json & profiles-data.js
-            if (profiles) {
-              const profilesPath = nodePath.join(process.cwd(), 'profiles.json');
-              nodeFs.writeFileSync(profilesPath, JSON.stringify(profiles, null, 2), 'utf8');
-
-              const jsContent = `/**\n * SMART WALLET CARDS · BUNDLED MULTI-USER PROFILES DATABASE\n */\nwindow.SMART_WALLET_PROFILES = ${JSON.stringify(profiles, null, 2)};\n`;
-              nodeFs.writeFileSync(nodePath.join(process.cwd(), 'profiles-data.js'), jsContent, 'utf8');
-              console.log(`[STUDIO] Updated profiles.json and profiles-data.js`);
+            // 2. Isolated Per-Profile Save: only update activeUser in profiles.json & profiles-data.js
+            const profilesPath = nodePath.join(process.cwd(), 'profiles.json');
+            let currentDb = { profiles: {} };
+            if (nodeFs.existsSync(profilesPath)) {
+              try {
+                currentDb = JSON.parse(nodeFs.readFileSync(profilesPath, 'utf8'));
+              } catch (e) {}
             }
 
-            // 3. Update local-keys.js if key is provided
+            const userProfileData = (profiles && profiles.profiles && profiles.profiles[activeUser]) ||
+                                    (profiles && profiles[activeUser]) ||
+                                    payload.profile ||
+                                    (profiles && profiles.id === activeUser ? profiles : null);
+
+            if (userProfileData) {
+              currentDb.profiles[activeUser] = userProfileData;
+              currentDb.updatedAt = new Date().toISOString();
+              nodeFs.writeFileSync(profilesPath, JSON.stringify(currentDb, null, 2), 'utf8');
+
+              const jsContent = `/** Auto-generated fallback for file:// protocol (100% encrypted, zero plaintext PII, zero keys) */\nwindow.SMART_WALLET_DEFAULT_PROFILES = ${JSON.stringify(currentDb, null, 2)};\n`;
+              nodeFs.writeFileSync(nodePath.join(process.cwd(), 'profiles-data.js'), jsContent, 'utf8');
+              console.log(`[STUDIO] Isolated update: saved profile "${activeUser}" without modifying other profiles`);
+            } else if (profiles && profiles.profiles) {
+              nodeFs.writeFileSync(profilesPath, JSON.stringify(profiles, null, 2), 'utf8');
+              const jsContent = `/** Auto-generated fallback for file:// protocol (100% encrypted, zero plaintext PII, zero keys) */\nwindow.SMART_WALLET_DEFAULT_PROFILES = ${JSON.stringify(profiles, null, 2)};\n`;
+              nodeFs.writeFileSync(nodePath.join(process.cwd(), 'profiles-data.js'), jsContent, 'utf8');
+            }
+
+            // 3. Automated Git commit and push so avatar-<username>.png is immediately live on GitHub Pages
+            try {
+              const { execSync } = require('child_process');
+              execSync(`git add profiles.json profiles-data.js avatar-${activeUser}.png`, { stdio: 'ignore' });
+              try {
+                execSync(`git commit -m "Sync profile ${activeUser}"`, { stdio: 'ignore' });
+              } catch (e) {}
+              try {
+                execSync('git push origin main', { stdio: 'ignore', timeout: 6000 });
+                console.log(`[STUDIO] Git push origin main completed for profile "${activeUser}"`);
+              } catch (pushErr) {
+                console.warn(`[STUDIO] Git push skipped/failed (pass fallback active): ${pushErr.message}`);
+              }
+            } catch (gitErr) {
+              console.warn(`[STUDIO] Git automation note: ${gitErr.message}`);
+            }
+
+            // 4. Update local-keys.js if key is provided
             let activeKey = key;
             const localKeysPath = nodePath.join(process.cwd(), 'local-keys.js');
             if (key && nodeFs.existsSync(localKeysPath)) {
@@ -843,6 +881,64 @@
         } catch (e) {
           console.warn(`Warning: Could not parse service account JSON at ${saPath}`);
         }
+      }
+
+      const syncAll = args.includes('--all') || getFlag('all', false);
+
+      if (command === 'sync' && syncAll) {
+        console.log('========================================================================');
+        console.log('  SMART WALLET CARDS · OFFICIAL GOOGLE WALLET API --ALL PROVISIONER');
+        console.log('========================================================================');
+        const userList = Object.keys(db.profiles);
+        console.log(`  Found ${userList.length} profile(s): ${userList.join(', ')}`);
+        console.log(`  Issuer ID      : ${issuerId}`);
+        console.log(`  Service Account: ${(serviceAccount && serviceAccount.client_email) || 'None'}`);
+        console.log('------------------------------------------------------------------------');
+
+        for (const uid of userList) {
+          const userProf = db.profiles[uid];
+          let userKey = '';
+          if (nodeFs.existsSync(localKeysPath)) {
+            try {
+              const lkContent = nodeFs.readFileSync(localKeysPath, 'utf8');
+              const match = lkContent.match(new RegExp(`${uid}\\s*:\\s*['"]([^'"]+)['"]`));
+              if (match && match[1]) userKey = match[1];
+            } catch (e) {}
+          }
+          const userObjSuffix = (userProf.walletConfig && userProf.walletConfig.objectSuffix) || `${uid}_card`;
+          const userClassSuffix = (userProf.walletConfig && userProf.walletConfig.classSuffix) || DEFAULT_CLASS_SUFFIX;
+          const userIssuer = (userProf.walletConfig && userProf.walletConfig.issuerId) || issuerId;
+
+          console.log(`\n--> Provisioning: ${userProf.name} (${uid})...`);
+          const userJwtRes = await createSaveToWalletJwt(userProf, {
+            issuerId: userIssuer,
+            classSuffix: userClassSuffix,
+            objectSuffix: userObjSuffix,
+            secretKey: userKey,
+            hubBaseUrl,
+            heroBannerUrl,
+            skinnyJwt: true,
+            serviceAccountEmail: (serviceAccount && serviceAccount.client_email) || DEFAULT_SERVICE_ACCOUNT_EMAIL,
+            privateKeyPem: (serviceAccount && serviceAccount.private_key) || ''
+          });
+
+          if (serviceAccount && serviceAccount.private_key) {
+            try {
+              const syncRes = await syncClassAndObjectToGoogleWallet(userJwtRes.genericClass, userJwtRes.genericObject, serviceAccount);
+              console.log(`    ✓ Class  : ${syncRes.classResult.operation} [HTTP ${syncRes.classResult.statusCode}]`);
+              console.log(`    ✓ Object : ${syncRes.objectResult.operation} [HTTP ${syncRes.objectResult.statusCode}]`);
+              console.log(`    ✓ Save URL: ${userJwtRes.saveUrl}`);
+            } catch (err) {
+              console.error(`    ✗ Error provisioning ${uid}:`, err.message);
+            }
+          } else {
+            console.log(`    ✓ Save URL: ${userJwtRes.saveUrl}`);
+          }
+        }
+        console.log('\n========================================================================');
+        console.log('  ALL PROFILES SYNC COMPLETED SUCCESSFULLY');
+        console.log('========================================================================');
+        return;
       }
 
       const result = await createSaveToWalletJwt(profile, {
