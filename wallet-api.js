@@ -269,12 +269,18 @@
     const opts = Object.assign(
       {
         serviceAccountEmail: DEFAULT_SERVICE_ACCOUNT_EMAIL,
-        origins: ['https://artelt.github.io', 'http://localhost:8080'],
-        includeClassInJwt: false,
-        skinnyJwt: true
+        origins: [],
+        includeClassInJwt: true,
+        skinnyJwt: false
       },
       options || {}
     );
+
+    const compactClass = {
+      id: genericClass.id,
+      issuerName: genericClass.issuerName,
+      reviewStatus: 'UNDER_REVIEW'
+    };
 
     const objectEntry = opts.skinnyJwt
       ? { id: genericObject.id }
@@ -292,7 +298,7 @@
     };
 
     if (opts.includeClassInJwt && genericClass && !opts.skinnyJwt) {
-      payload.payload.genericClasses = [genericClass];
+      payload.payload.genericClasses = [compactClass];
     }
 
     return payload;
@@ -328,8 +334,8 @@
         privateKeyPem: '',
         hubBaseUrl: DEFAULT_HUB_BASE_URL,
         heroBannerUrl: DEFAULT_HERO_BANNER_URL,
-        includeClassInJwt: false,
-        skinnyJwt: true
+        includeClassInJwt: true,
+        skinnyJwt: false
       },
       options || {}
     );
@@ -648,7 +654,8 @@
         secretKey,
         hubBaseUrl,
         heroBannerUrl,
-        skinnyJwt: true,
+        includeClassInJwt: true,
+        skinnyJwt: false,
         serviceAccountEmail:
           (serviceAccount && serviceAccount.client_email) || DEFAULT_SERVICE_ACCOUNT_EMAIL,
         privateKeyPem: (serviceAccount && serviceAccount.private_key) || ''
