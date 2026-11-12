@@ -1,0 +1,3 @@
+# Never commit secret keys or GCP service account credentials to GitHub
+local-keys.js
+service-account.json

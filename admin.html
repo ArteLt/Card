@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <!-- Bot-Proof Privacy & NoIndex Directives -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="bingbot" content="noindex, nofollow" />
+  <meta name="theme-color" content="#121316" />
+  <title>Visual Admin Studio &amp; Dual Google Wallet Pass Generator · Smart Wallet Cards</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --studio-charcoal: #121316;
+      --sapphire-primary: #163A63;
+      --sapphire-mid: #0F2B4C;
+      --sapphire-secondary: #0B213B;
+      --silver-bright: #D6DEE7;
+      --silver-matte: #B8C4D0;
+      --silver-back: #C8D2DC;
+      --panel-bg: #181A1F;
+      --panel-border: rgba(180, 200, 225, 0.16);
+      --input-bg: #101216;
+      --emerald: #34D399;
+      --amber: #FBBF24;
+      --danger: #F87171;
+      --font-display: 'Montserrat', sans-serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--studio-charcoal);
+      color: var(--silver-bright);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 48px;
+    }
+
+    /* Top Studio Navbar */
+    .studio-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(18, 19, 22, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #163A63 0%, #0F2B4C 50%, #0B213B 100%);
+      border: 1px solid rgba(180, 200, 225, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--silver-bright);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--silver-bright);
+    }
+
+    .brand-text p {
+      font-size: 11.5px;
+      color: var(--silver-matte);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #EBF0F5 0%, #D6DEE7 55%, #B8C4D0 100%);
+      color: #0B213B;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .btn-secondary {
+      background: rgba(22, 58, 99, 0.38);
+      border-color: rgba(180, 200, 225, 0.22);
+      color: var(--silver-bright);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(22, 58, 99, 0.62);
+      border-color: rgba(180, 200, 225, 0.38);
+    }
+
+    .btn-danger {
+      background: rgba(127, 29, 29, 0.35);
+      border-color: rgba(248, 113, 113, 0.35);
+      color: #FCA5A5;
+    }
+
+    /* Main 2-Column Studio Grid */
+    .studio-grid {
+      max-width: 1380px;
+      margin: 22px auto 0;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 500px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .studio-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(180, 200, 225, 0.12);
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--silver-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* User Selector Pills */
+    .user-tabs-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .user-tab {
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: #101216;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      color: var(--silver-matte);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .user-tab.active {
+      background: linear-gradient(135deg, #EBF0F5 0%, #B8C4D0 100%);
+      color: #0B213B;
+      border-color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    .user-tab-add {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px dashed rgba(52, 211, 153, 0.45);
+      color: #6EE7B7;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Form Controls */
+    .form-section {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(180, 200, 225, 0.09);
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .section-subtitle {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--silver-matte);
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--silver-matte);
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      background: var(--input-bg);
+      color: var(--silver-bright);
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.18s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--silver-bright);
+    }
+
+    .form-textarea {
+      min-height: 62px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .mono-input {
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Typography Sliders Box */
+    .typo-controls-box {
+      background: #121419;
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      border-radius: 10px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slider-label-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--silver-matte);
+    }
+
+    .slider-val-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--silver-bright);
+      background: rgba(22, 58, 99, 0.45);
+      padding: 1px 7px;
+      border-radius: 99px;
+      border: 1px solid rgba(180, 200, 225, 0.2);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #D6DEE7;
+      cursor: pointer;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--silver-bright);
+      cursor: pointer;
+      padding-top: 2px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #34D399;
+      cursor: pointer;
+    }
+
+    /* Live Mini-Card Preview right inside the Typography Sliders section */
+    .mini-card-preview-stage {
+      background: #121316;
+      border: 1px solid rgba(180, 200, 225, 0.15);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 4px;
+    }
+
+    .mini-card-surface {
+      width: 100%;
+      aspect-ratio: 1.586 / 1;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--sapphire-primary) 0%, var(--sapphire-mid) 50%, var(--sapphire-secondary) 100%);
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.75);
+    }
+
+    /* Encryption Vault Box */
+    .vault-box {
+      background: #121419;
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 6px;
+    }
+
+    .cipher-preview {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      background: #0B0C0E;
+      border: 1px solid rgba(180, 200, 225, 0.1);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--silver-matte);
+      word-break: break-all;
+      line-height: 1.45;
+    }
+
+    /* Color Swatches & Presets */
+    .color-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .color-picker-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #101216;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(180, 200, 225, 0.14);
+    }
+
+    .color-picker-wrap span {
+      font-size: 10px;
+      color: var(--silver-matte);
+      font-weight: 600;
+    }
+
+    .color-picker-inner {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .color-picker-inner input[type="color"] {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .color-hex-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--silver-bright);
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+
+    .preset-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .preset-pill {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(22, 58, 99, 0.35);
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      color: var(--silver-matte);
+      cursor: pointer;
+    }
+
+    .preset-pill:hover {
+      color: var(--silver-bright);
+      border-color: rgba(180, 200, 225, 0.35);
+    }
+
+    /* Photo Uploader */
+    .photo-uploader {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #101216;
+      border: 1px dashed rgba(180, 200, 225, 0.25);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .photo-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--silver-matte);
+      background: #0B213B;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       LIVE 3D BUSINESS CARD PREVIEW (MATCHES MINIMALIST LUXURY PRINT SPEC)
+       ========================================================================== */
+    .live-card-preview-box {
+      background: #121316;
+      border: 1px solid rgba(180, 200, 225, 0.14);
+      border-radius: 12px;
+      padding: 22px 20px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-card-scene {
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1.586 / 1;
+      perspective: 1300px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .preview-card-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 6px;
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.85);
+    }
+
+    .preview-card-scene.is-flipped .preview-card-3d {
+      transform: rotateY(180deg);
+    }
+
+    .preview-card-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--sapphire-primary) 0%, var(--sapphire-mid) 50%, var(--sapphire-secondary) 100%);
+      border: 1px solid rgba(180, 200, 225, 0.18);
+    }
+
+    .preview-card-front {
+      transform: rotateY(0deg) translateZ(1px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+    }
+
+    .preview-front-title {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #D6DEE7;
+      background: linear-gradient(180deg, #EBF0F5 0%, #D6DEE7 48%, #B0BCC9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 11px;
+      line-height: 1.25;
+      white-space: nowrap !important;
+    }
+
+    .preview-tagline-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .preview-tagline-line {
+      display: inline-block;
+      font-family: var(--font-display);
+      color: #B8C4D0;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.11em;
+      line-height: 1.65;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap !important;
+    }
+
+    .preview-card-back {
+      transform: rotateY(180deg) translateZ(1px);
+      padding: 18px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ==========================================================================
+       DUAL GOOGLE WALLET PASS GENERATOR PANEL (OPTION 1 & OPTION 2 TOGGLE)
+       ========================================================================== */
+    .wallet-mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #101216;
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      margin-bottom: 20px;
+    }
+
+    .mode-tab-btn {
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--silver-matte);
+      font-family: var(--font-sans);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mode-tab-btn.active {
+      background: linear-gradient(135deg, #163A63 0%, #0B213B 100%);
+      border-color: rgba(180, 200, 225, 0.34);
+      color: var(--silver-bright);
+    }
+
+    .mode-tab-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-tab-sub {
+      font-size: 10.5px;
+      opacity: 0.78;
+    }
+
+    .wallet-option-pane {
+      display: none;
+    }
+
+    .wallet-option-pane.active {
+      display: block;
+    }
+
+    /* Option 1 Layout: 1080x1920 Canvas Preview + QR & Instructions */
+    .opt1-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 760px) {
+      .opt1-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-phone-frame {
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+      padding: 8px;
+      border-radius: 14px;
+      background: #101216;
+      border: 1px solid rgba(180, 200, 225, 0.22);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.7);
+    }
+
+    #walletPassCanvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1080 / 1920;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .qr-preview-card {
+      background: #121316;
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .qr-box-md {
+      width: 112px;
+      height: 112px;
+      padding: 8px;
+      background: #F4F7FA;
+      border: 1px solid rgba(180, 200, 225, 0.35);
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--silver-matte);
+      line-height: 1.45;
+    }
+
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(180, 200, 225, 0.14);
+      color: var(--silver-bright);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Option 2 Layout: Hero Banner 1032x336, JWT Link, Scannable QR, PATCH Command */
+    .hero-canvas-wrap {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(180, 200, 225, 0.22);
+      background: #0F2B4C;
+      margin-bottom: 10px;
+    }
+
+    #heroBannerCanvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1032 / 336;
+      display: block;
+    }
+
+    .jwt-qr-showcase {
+      display: grid;
+      grid-template-columns: 164px 1fr;
+      gap: 18px;
+      background: #121316;
+      border: 1px solid rgba(180, 200, 225, 0.2);
+      border-radius: 10px;
+      padding: 16px;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    @media (max-width: 680px) {
+      .jwt-qr-showcase {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+
+    .jwt-qr-frame {
+      width: 152px;
+      height: 152px;
+      padding: 8px;
+      background: #FFFFFF;
+      border-radius: 8px;
+    }
+
+    .code-block {
+      background: #0D0E11;
+      border: 1px solid rgba(180, 200, 225, 0.14);
+      border-radius: 8px;
+      padding: 11px 13px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #D6DEE7;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.5;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #163A63;
+      border: 1px solid rgba(180, 200, 225, 0.35);
+      color: var(--silver-bright);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      transform: translateY(15px);
+      pointer-events: none;
+      transition: all 0.22s ease;
+      z-index: 300;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <!-- Studio Header Bar -->
+  <header class="studio-navbar">
+    <div class="brand-title">
+      <div class="brand-badge">SW</div>
+      <div class="brand-text">
+        <h1>Smart Wallet Admin Studio</h1>
+        <p>Deep Sapphire &amp; Matte Silver · Multi-User Hub &amp; Dual Wallet Generator</p>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="index.html?u=artautas" id="openLiveCardLink" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        <span>Open Unlocked Preview</span>
+      </a>
+      <label class="btn btn-secondary" style="cursor:pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <span>Import profiles.json</span>
+        <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none;" />
+      </label>
+      <button type="button" id="exportJsonBtn" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span>Save &amp; Export profiles.json</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="studio-grid">
+    <!-- ======================================================================
+         LEFT COLUMN: MULTI-USER PROFILE MANAGER & TYPOGRAPHY ENGINE
+         ====================================================================== -->
+    <section class="studio-panel" aria-label="Multi-User Profile Manager">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Profile Manager</span>
+        </div>
+        <button type="button" id="deleteUserBtn" class="btn btn-danger" style="height:28px;font-size:11px;padding:0 10px;">
+          Delete User
+        </button>
+      </div>
+
+      <!-- User Switcher Pills -->
+      <div id="userTabsContainer" class="user-tabs-bar"></div>
+
+      <!-- 1. Identity & Taglines -->
+      <div class="form-section">
+        <div class="section-subtitle">
+          <span>1. Card Identity &amp; Content</span>
+          <span id="activeSlugBadge" style="font-family:var(--font-mono);color:#6EE7B7;">?u=artautas</span>
+        </div>
+        <div class="field-grid">
+          <div class="field-group">
+            <label for="profIdInput">Profile ID / URL Slug</label>
+            <input type="text" id="profIdInput" class="form-input mono-input" placeholder="e.g. artautas" />
+          </div>
+          <div class="field-group">
+            <label for="profFirstInput">First Name (for WhatsApp Greeting)</label>
+            <input type="text" id="profFirstInput" class="form-input" placeholder="e.g. Artautas" />
+          </div>
+          <div class="field-group field-full">
+            <label for="profNameInput">Card Front Title (Full Name &amp; Credentials)</label>
+            <input type="text" id="profNameInput" class="form-input" placeholder="Artautas Šimkus, LL.M." />
+          </div>
+          <div class="field-group field-full">
+            <label for="profVcardNameInput">vCard 3.0 Structured Name (Last;First;Middle;Prefix;Suffix)</label>
+            <input type="text" id="profVcardNameInput" class="form-input mono-input" placeholder="Šimkus;Artautas;;;LL.M." />
+          </div>
+          <div class="field-group field-full">
+            <label for="profTaglineInput">Tagline (Pipe `|` or Newline separated — each row stays on 1 line)</label>
+            <textarea id="profTaglineInput" class="form-textarea"></textarea>
+          </div>
+          <div class="field-group">
+            <label for="profSloganInput">Back Slogan Header</label>
+            <input type="text" id="profSloganInput" class="form-input" placeholder="LET'S CONNECT." />
+          </div>
+          <div class="field-group">
+            <label for="profLocationInput">Location</label>
+            <input type="text" id="profLocationInput" class="form-input" placeholder="Heidelberg, Germany" />
+          </div>
+          <div class="field-group field-full">
+            <label for="profLinkedinInput">LinkedIn Profile URL</label>
+            <input type="url" id="profLinkedinInput" class="form-input" placeholder="https://www.linkedin.com/in/artautas/" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Per-Profile Typography Controls + Real-Time Mini-Card Preview -->
+      <div class="form-section">
+        <div class="section-subtitle">
+          <span>2. Typography Controls &amp; Auto-Fit Single-Line Engine</span>
+          <button type="button" id="resetTypoBtn" class="preset-pill" style="padding:2px 8px;">Reset Default</button>
+        </div>
+        <div class="typo-controls-box">
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoNameScale">Main Name Scale (<code>nameScale</code>)</label>
+              <span id="typoNameScaleVal" class="slider-val-badge">100%</span>
+            </div>
+            <input type="range" id="typoNameScale" min="70" max="130" step="1" value="100" />
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoTaglineScale">Tagline Block Scale (<code>taglineScale</code>)</label>
+              <span id="typoTaglineScaleVal" class="slider-val-badge">90%</span>
+            </div>
+            <input type="range" id="typoTaglineScale" min="70" max="130" step="1" value="90" />
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-label-line">
+              <label for="typoLetterSpacing">Tagline Letter Spacing (<code>letterSpacing</code>)</label>
+              <span id="typoLetterSpacingVal" class="slider-val-badge">0.11em</span>
+            </div>
+            <input type="range" id="typoLetterSpacing" min="0.04" max="0.22" step="0.005" value="0.11" />
+          </div>
+
+          <label class="checkbox-row" for="typoAutoFitLines">
+            <input type="checkbox" id="typoAutoFitLines" checked />
+            <span>Auto-Fit Single-Line Engine (<code>autoFitLines</code> — zero orphan line wraps)</span>
+          </label>
+
+          <!-- Live Mini-Card Preview right inside the Typography Sliders panel -->
+          <div class="mini-card-preview-stage">
+            <div class="mini-card-surface" id="miniCardSurface">
+              <div id="miniCardTitle" class="preview-front-title">ARTAUTAS ŠIMKUS, LL.M.</div>
+              <div id="miniCardTaglines" class="preview-tagline-stack"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Bot-Proof AES/XOR Encryption Vault -->
+      <div class="form-section">
+        <div class="section-subtitle">
+          <span>3. Bot-Proof Encryption Vault (Zero Plaintext PII)</span>
+          <span id="vaultLockState" style="color:var(--emerald);">🔓 Auto-Unlocked</span>
+        </div>
+        <div class="vault-box">
+          <div class="field-grid">
+            <div class="field-group field-full">
+              <label for="profSecretKeyInput">Per-User Secret Encryption Key (`k` in `?u=...&amp;k=KEY`)</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input
+                  type="text"
+                  id="profSecretKeyInput"
+                  class="form-input mono-input"
+                  style="flex:1;min-width:160px;"
+                  placeholder="16-char secret key..."
+                />
+                <button type="button" id="generateRandomKeyBtn" class="btn btn-secondary" style="white-space:nowrap;">
+                  🎲 Generate 16-Char Secure Key
+                </button>
+                <button type="button" id="copyShareUrlBtn" class="btn btn-secondary" style="white-space:nowrap;">
+                  Copy Share URL
+                </button>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(22,58,99,0.28);border:1px solid rgba(180,200,225,0.2);">
+                <div style="font-size:11.5px;color:var(--silver-matte);">
+                  Local Preview URL: <code id="unlockedPreviewUrlCode" style="color:#6EE7B7;font-family:var(--font-mono);">index.html?u=artautas</code>
+                </div>
+                <a
+                  href="index.html?u=artautas"
+                  id="openUnlockedPreviewBtn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-primary"
+                  style="height:30px;padding:0 12px;font-size:11.5px;white-space:nowrap;"
+                >
+                  <span>Open Unlocked Preview ↗</span>
+                </a>
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="profPhoneInput">Phone (Decrypted in Memory)</label>
+              <input type="text" id="profPhoneInput" class="form-input mono-input" />
+            </div>
+            <div class="field-group">
+              <label for="profEmailInput">Email (Decrypted in Memory)</label>
+              <input type="email" id="profEmailInput" class="form-input mono-input" />
+            </div>
+          </div>
+          <div id="cipherInspector" class="cipher-preview"></div>
+        </div>
+      </div>
+
+      <!-- 4. Theme Colors & Profile Photo (Auto-Resized Base64 for .vcf only) -->
+      <div class="form-section">
+        <div class="section-subtitle">
+          <span>4. Surface Colors &amp; vCard Contact Photo</span>
+        </div>
+        <div class="color-row">
+          <div class="color-picker-wrap">
+            <span>Sapphire Top</span>
+            <div class="color-picker-inner">
+              <input type="color" id="colBgPrimary" value="#163A63" />
+              <input type="text" id="colBgPrimaryText" class="color-hex-text" value="#163A63" />
+            </div>
+          </div>
+          <div class="color-picker-wrap">
+            <span>Sapphire Deep</span>
+            <div class="color-picker-inner">
+              <input type="color" id="colBgSecondary" value="#0B213B" />
+              <input type="text" id="colBgSecondaryText" class="color-hex-text" value="#0B213B" />
+            </div>
+          </div>
+          <div class="color-picker-wrap">
+            <span>Silver Title</span>
+            <div class="color-picker-inner">
+              <input type="color" id="colAccentPrimary" value="#D6DEE7" />
+              <input type="text" id="colAccentPrimaryText" class="color-hex-text" value="#D6DEE7" />
+            </div>
+          </div>
+          <div class="color-picker-wrap">
+            <span>Silver Sub</span>
+            <div class="color-picker-inner">
+              <input type="color" id="colAccentSecondary" value="#B8C4D0" />
+              <input type="text" id="colAccentSecondaryText" class="color-hex-text" value="#B8C4D0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="preset-pills">
+          <button type="button" class="preset-pill" data-preset="sapphire">Deep Sapphire &amp; Matte Silver (Default)</button>
+          <button type="button" class="preset-pill" data-preset="rose">Midnight &amp; Rose Silver</button>
+          <button type="button" class="preset-pill" data-preset="obsidian">Obsidian &amp; Titanium</button>
+        </div>
+
+        <div class="photo-uploader" style="margin-top:12px;">
+          <img id="adminPhotoPreview" class="photo-thumb" src="./artautas.jpg" alt="vCard Avatar Preview" />
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:700;color:var(--silver-bright);">vCard 3.0 Contact Photo (.vcf Only)</div>
+            <div id="photoSizeStatus" style="font-size:11px;color:var(--silver-matte);margin-top:2px;">
+              Embedded inside downloaded .vcf contact file (not shown on business card face)
+            </div>
+          </div>
+          <label class="btn btn-secondary" style="height:32px;font-size:11.5px;cursor:pointer;">
+            <span>Upload Photo</span>
+            <input type="file" id="photoUploadInput" accept="image/*" style="display:none;" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         RIGHT COLUMN: LIVE 3D CARD PREVIEW + DUAL GOOGLE WALLET PASS GENERATOR
+         ====================================================================== -->
+    <section class="studio-panel" aria-label="Live Card Preview and Dual Google Wallet Pass Generator">
+      <!-- Live 3D Minimalist Business Card Preview -->
+      <div class="section-subtitle">
+        <span>Interactive 3D Card Preview (Tap Card to Flip)</span>
+        <span id="previewSideIndicator" style="color:var(--silver-matte);">FRONT · VORDERSEITE</span>
+      </div>
+      <div class="live-card-preview-box">
+        <div id="adminPreviewCardScene" class="preview-card-scene" title="Click to flip between Front and Back">
+          <div class="preview-card-3d" id="adminPreviewCard3d">
+            <!-- FRONT -->
+            <div class="preview-card-face preview-card-front" id="adminPreviewFrontFace">
+              <div id="adminPreviewTitle" class="preview-front-title">ARTAUTAS ŠIMKUS, LL.M.</div>
+              <div id="adminPreviewTaglines" class="preview-tagline-stack"></div>
+            </div>
+            <!-- BACK -->
+            <div class="preview-card-face preview-card-back" id="adminPreviewBackFace">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+                <div id="adminPreviewSlogan" style="font-family:var(--font-display);font-size:0.88rem;font-weight:500;letter-spacing:0.12em;color:#D6DEE7;">
+                  LET'S CONNECT.
+                </div>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8D2DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A4 4 0 0 1 8.5 9.5"/>
+                  <path d="M11.5 17A7.5 7.5 0 0 1 11.5 7"/>
+                  <path d="M14.5 19.5a11 11 0 0 1 0-15"/>
+                  <circle cx="5.5" cy="12" r="1.1" fill="#C8D2DC"/>
+                </svg>
+              </div>
+              <div style="display:grid;grid-template-columns:86px 1fr;gap:16px;align-items:center;margin-top:auto;">
+                <div id="adminPreviewBackQr" style="width:84px;height:84px;"></div>
+                <div style="display:flex;flex-direction:column;gap:4px;text-align:left;font-size:0.74rem;color:#C8D2DC;">
+                  <div id="adminPreviewPhone"></div>
+                  <div id="adminPreviewEmail"></div>
+                  <div id="adminPreviewLocation"></div>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:2px;background:#C8D2DC;color:#0F2B4C;font-size:9px;font-weight:800;">in</span>
+                    <span id="adminPreviewLinkedin"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-header" style="margin-top:6px;">
+        <div class="panel-title">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="3"/>
+            <path d="M2 10h20"/>
+          </svg>
+          <span>Dual Google Wallet Pass Generator</span>
+        </div>
+        <span style="font-size:11px;color:var(--silver-matte);font-weight:600;">Pixel 11 Pro XL High-DPI Ready</span>
+      </div>
+
+      <!-- Visual Toggle Between Option 1 & Option 2 -->
+      <div class="wallet-mode-toggle" role="tablist">
+        <button
+          type="button"
+          id="tabBtnOption1"
+          class="mode-tab-btn active"
+          role="tab"
+          aria-selected="true"
+        >
+          <span class="mode-tab-title">
+            <span>Option 1: Quick Pixel Wallet Pass</span>
+            <span style="font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(52,211,153,0.2);color:#6EE7B7;">Zero Cloud</span>
+          </span>
+          <span class="mode-tab-sub">Minimalist 1080×1920 Canvas PNG + "+ Add to Wallet"</span>
+        </button>
+
+        <button
+          type="button"
+          id="tabBtnOption2"
+          class="mode-tab-btn"
+          role="tab"
+          aria-selected="false"
+        >
+          <span class="mode-tab-title">
+            <span>Option 2: Official Google Wallet API</span>
+            <span style="font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(96,165,250,0.2);color:#93C5FD;">JWT + PATCH</span>
+          </span>
+          <span class="mode-tab-sub">GenericObject (#163A63) + 1032×336 Hero + Live Screen QR</span>
+        </button>
+      </div>
+
+      <!-- ====================================================================
+           OPTION 1: QUICK PIXEL WALLET PASS (ZERO CLOUD SETUP · 1080x1920 PNG)
+           ==================================================================== -->
+      <div id="paneOption1" class="wallet-option-pane active" role="tabpanel">
+        <div class="opt1-grid">
+          <!-- High-DPI 1080x1920 Canvas Preview -->
+          <div class="canvas-phone-frame">
+            <canvas id="walletPassCanvas" width="1080" height="1920"></canvas>
+          </div>
+
+          <!-- Download CTA + Preview QR Code + Pixel Wallet Instructions -->
+          <div>
+            <h3 style="font-family:var(--font-display);font-size:14.5px;font-weight:600;letter-spacing:0.06em;margin-bottom:6px;">
+              1080 × 1920 px Vertical Google Wallet Pass
+            </h3>
+            <p style="font-size:12.5px;color:var(--silver-matte);line-height:1.5;margin-bottom:14px;">
+              Synchronized with your Deep Sapphire (`#163A63` → `#0F2B4C` → `#0B213B`) &amp; Matte Silver design: brushed paper grain, thin silver frame, single-line auto-fitted Tagline, <code>LET'S CONNECT.</code> + NFC wave, high-contrast QR code on a clean white/silver pad, and matte silver contact details at the bottom.
+            </p>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button type="button" id="downloadPassPngBtn" class="btn btn-primary" style="height:42px;padding:0 18px;font-size:13px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Download High-Res Wallet Pass PNG (1080×1920)</span>
+              </button>
+            </div>
+
+            <!-- Live Scannable Preview QR Card -->
+            <div class="qr-preview-card">
+              <div id="opt1PreviewQrBox" class="qr-box-md"></div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--silver-bright);margin-bottom:4px;">
+                  Encrypted Share URL QR Preview
+                </div>
+                <div id="opt1ShareUrlDisplay" style="font-family:var(--font-mono);font-size:10.5px;color:#6EE7B7;word-break:break-all;margin-bottom:6px;"></div>
+                <div style="font-size:11.5px;color:var(--silver-matte);">
+                  Scan with your Google Pixel 11 Pro XL or iPhone camera to open the live card.
+                </div>
+              </div>
+            </div>
+
+            <!-- Step-by-Step Google Wallet Import Guide -->
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(180,200,225,0.1);">
+              <div class="section-subtitle" style="margin-bottom:8px;">
+                <span>How to Add Immediately on Google Pixel 11 Pro XL</span>
+              </div>
+              <ul class="steps-list">
+                <li>
+                  <span class="step-num">1</span>
+                  <span>Click <strong>Download High-Res Wallet Pass PNG</strong> above and save the <code>1080×1920</code> image to your Pixel phone.</span>
+                </li>
+                <li>
+                  <span class="step-num">2</span>
+                  <span>Open the <strong>Google Wallet</strong> app and tap <strong>+ Add to Wallet</strong> at the bottom right.</span>
+                </li>
+                <li>
+                  <span class="step-num">3</span>
+                  <span>Select <strong>Everything else</strong> and choose the downloaded PNG.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           OPTION 2: OFFICIAL GOOGLE WALLET API PASS (GenericObject JWT + PATCH)
+           ==================================================================== -->
+      <div id="paneOption2" class="wallet-option-pane" role="tabpanel">
+        <!-- 1. Hero Banner Generator (1032 x 336 px) -->
+        <div class="form-section">
+          <div class="section-subtitle">
+            <span>1. Official Google Wallet Hero Banner Generator (1032 × 336 px)</span>
+            <button type="button" id="downloadHeroPngBtn" class="btn btn-secondary" style="height:28px;font-size:11px;padding:0 10px;">
+              Download Hero Banner PNG (1032×336)
+            </button>
+          </div>
+          <div class="hero-canvas-wrap">
+            <canvas id="heroBannerCanvas" width="1032" height="336"></canvas>
+          </div>
+        </div>
+
+        <!-- 2. Google Wallet API Configuration -->
+        <div class="form-section">
+          <div class="section-subtitle">
+            <span>2. Google Cloud Issuer &amp; GenericObject Configuration</span>
+            <span id="jwtSignModeBadge" style="font-family:var(--font-mono);color:#93C5FD;">RS256 Ready</span>
+          </div>
+          <div class="field-grid">
+            <div class="field-group">
+              <label for="gwIssuerId">Google Wallet Issuer ID</label>
+              <input type="text" id="gwIssuerId" class="form-input mono-input" value="3388000000022948101" />
+            </div>
+            <div class="field-group">
+              <label for="gwClassSuffix">GenericClass Suffix</label>
+              <input type="text" id="gwClassSuffix" class="form-input mono-input" value="executive_sapphire_card" />
+            </div>
+            <div class="field-group">
+              <label for="gwObjectSuffix">GenericObject Suffix</label>
+              <input type="text" id="gwObjectSuffix" class="form-input mono-input" value="artautas_simkus_llm" />
+            </div>
+            <div class="field-group">
+              <label for="gwHubBaseUrl">Public Hub URL (for Pass QR Barcode)</label>
+              <input type="url" id="gwHubBaseUrl" class="form-input mono-input" value="https://artelt.github.io/Card/index.html" />
+            </div>
+            <div class="field-group field-full">
+              <label for="gwServiceAccountFile">Optional: Load GCP <code>service-account.json</code> (Signs Live RS256 JWT in Browser Memory)</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="file" id="gwServiceAccountFile" accept=".json,application/json" class="form-input" style="padding:5px 10px;" />
+                <button type="button" id="regenerateJwtBtn" class="btn btn-primary" style="white-space:nowrap;">
+                  Sign &amp; Refresh JWT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Scannable On-Screen QR Code & Signed Save-to-Google-Wallet Link -->
+        <div class="form-section">
+          <div class="section-subtitle">
+            <span>3. Scannable On-Screen Pass QR &amp; Signed Save Link</span>
+          </div>
+          <div class="jwt-qr-showcase">
+            <div id="opt2ScreenQrBox" class="jwt-qr-frame" title="Scan with Phone Camera"></div>
+            <div style="min-width:0;width:100%;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                <span style="font-size:13px;font-weight:700;color:var(--silver-bright);">
+                  Scan Screen with Phone to Add Pass
+                </span>
+                <div style="display:flex;gap:6px;">
+                  <button type="button" id="qrModeSaveJwtBtn" class="preset-pill" style="border-color:#93C5FD;color:#93C5FD;">
+                    QR: Save-to-Wallet JWT
+                  </button>
+                  <button type="button" id="qrModeHubUrlBtn" class="preset-pill">
+                    QR: Encrypted Hub URL
+                  </button>
+                </div>
+              </div>
+              <p style="font-size:11.5px;color:var(--silver-matte);line-height:1.45;margin-bottom:10px;">
+                Point your phone camera at this QR code to open the signed <code>https://pay.google.com/gp/v/save/&lt;JWT&gt;</code> link directly in Google Wallet.
+              </p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <a id="saveToGoogleWalletAnchor" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                  <span>Add to Google Wallet (pay.google.com)</span>
+                </a>
+                <button type="button" id="copySaveJwtUrlBtn" class="btn btn-secondary">
+                  Copy Signed Save Link
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-top:10px;">
+            <label>Signed Save-to-Wallet URL (<code>https://pay.google.com/gp/v/save/&lt;JWT&gt;</code>)</label>
+            <div id="jwtUrlCodeBlock" class="code-block"></div>
+          </div>
+        </div>
+
+        <!-- 4. Auto-Update PATCH Command & GenericObject Payload -->
+        <div class="form-section">
+          <div class="section-subtitle">
+            <span>4. Auto-Update PATCH Command &amp; GenericObject Payload</span>
+            <button type="button" id="copyPatchCmdBtn" class="btn btn-secondary" style="height:26px;font-size:11px;padding:0 10px;">
+              Copy PATCH Command
+            </button>
+          </div>
+          <div id="patchCmdCodeBlock" class="code-block" style="margin-bottom:10px;color:#6EE7B7;"></div>
+          <div class="field-group">
+            <label>Generated <code>GenericObject</code> &amp; <code>GenericClass</code> JSON Payload</label>
+            <div id="genericObjectCodeBlock" class="code-block"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="studioToast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Shared Zero-Dependency Modules -->
+  <script src="crypto-vault.js"></script>
+  <script src="qr-engine.js"></script>
+  <script src="profiles-data.js"></script>
+  <script src="local-keys.js"></script>
+  <script src="wallet-api.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'smart_wallet_profiles_v2_3';
+      const KEYS_STORAGE_KEY = 'smart_wallet_admin_keys_v2_3';
+      const DEFAULT_PROFILE_KEYS = Object.assign({}, window.SMART_WALLET_LOCAL_KEYS || {});
+
+      /**
+       * Generates a cryptographically strong 16-character random key using crypto.getRandomValues
+       * with alphanumeric characters (A-Z, a-z, 0-9).
+       */
+      function generateSecureKey16(length) {
+        const len = length || 16;
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const randomValues = new Uint32Array(len);
+        crypto.getRandomValues(randomValues);
+        let key = '';
+        for (let i = 0; i < len; i++) {
+          key += charset[randomValues[i] % charset.length];
+        }
+        return key;
+      }
+
+      const DEFAULT_TYPOGRAPHY = {
+        nameScale: 100,
+        taglineScale: 90,
+        letterSpacing: 0.11,
+        autoFitLines: true
+      };
+
+      const sessionKeys = Object.assign({}, DEFAULT_PROFILE_KEYS);
+
+      let db = null;
+      let activeUserId = 'artautas';
+      let loadedServiceAccount = null;
+      let lastJwtResult = null;
+      let opt2QrTarget = 'saveUrl';
+      let paperNoisePatternCanvas = null;
+
+      const THEME_PRESETS = {
+        sapphire: {
+          name: 'Deep Sapphire & Matte Silver',
+          bgPrimary: '#163A63',
+          bgCenter: '#0F2B4C',
+          bgSecondary: '#0B213B',
+          accentPrimary: '#D6DEE7',
+          accentSecondary: '#B8C4D0'
+        },
+        rose: {
+          name: 'Midnight Sapphire & Rose Silver',
+          bgPrimary: '#1A365D',
+          bgCenter: '#112645',
+          bgSecondary: '#0A1930',
+          accentPrimary: '#E8E0E6',
+          accentSecondary: '#C4B6C0'
+        },
+        obsidian: {
+          name: 'Obsidian Sapphire & Titanium',
+          bgPrimary: '#14334A',
+          bgCenter: '#0D2436',
+          bgSecondary: '#081824',
+          accentPrimary: '#DCE6ED',
+          accentSecondary: '#A9BAC6'
+        }
+      };
+
+      function showToast(msg) {
+        const el = document.getElementById('studioToast');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => el.classList.remove('show'), 2600);
+      }
+
+      /**
+       * Balances a pipe-separated or newline-separated tagline into logical rows
+       * where each row stays on a single line (`white-space: nowrap`).
+       */
+      function autoBalanceTagline(rawTagline) {
+        const raw = String(rawTagline || '').trim();
+        if (raw.includes('\n')) {
+          const explicitLines = raw
+            .split(/\r?\n/)
+            .map((s) => s.trim().toUpperCase().replace(/\s*\|\s*/g, ' · '))
+            .filter(Boolean);
+          if (explicitLines.length > 0) return explicitLines;
+        }
+
+        const segments = raw
+          .split(/\||·/)
+          .map((s) => s.trim().toUpperCase())
+          .filter(Boolean);
+        if (segments.length === 5) {
+          return [
+            segments[0] + ' · ' + segments[1],
+            segments[2] + ' · ' + segments[3],
+            segments[4]
+          ];
+        }
+        if (segments.length === 4) {
+          return [segments[0] + ' · ' + segments[1], segments[2], segments[3]];
+        }
+        if (segments.length <= 3) {
+          return segments.length ? segments : ['LAWYER (LL.M.) · LEGAL TRANSLATOR'];
+        }
+        return [
+          segments.slice(0, 2).join(' · '),
+          segments.slice(2, 4).join(' · '),
+          segments.slice(4).join(' · ')
+        ];
+      }
+
+      /**
+       * Auto-Fit Single-Line Typography Engine (`fitCardTypography`)
+       * Checks each tagline line and the main name against `cardWidth - 36px`
+       * and scales down font-size smoothly until the longest line fits on 1 line with zero wrapping.
+       */
+      function fitCardTypographyForElements(cardFaceEl, titleEl, taglineContainerEl, typographyConfig) {
+        if (!cardFaceEl || !titleEl || !taglineContainerEl) return;
+
+        const cardWidth = cardFaceEl.clientWidth || 376;
+        const maxAllowedWidth = Math.max(120, cardWidth - 36);
+
+        const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, typographyConfig || {});
+        const nameScale = Number(typo.nameScale) / 100;
+        const taglineScale = Number(typo.taglineScale) / 100;
+        const letterSpacingEm = Number(typo.letterSpacing);
+        const autoFit = typo.autoFitLines !== false;
+
+        // 1. Fit Main Name on 1 Line
+        let namePx = Math.max(11, cardWidth * 0.05 * nameScale);
+        titleEl.style.whiteSpace = 'nowrap';
+        titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+
+        if (autoFit) {
+          const actualNameWidth = titleEl.scrollWidth || titleEl.getBoundingClientRect().width;
+          if (actualNameWidth > maxAllowedWidth && actualNameWidth > 0) {
+            namePx = namePx * (maxAllowedWidth / actualNameWidth) * 0.985;
+            titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+          }
+          while (titleEl.scrollWidth > maxAllowedWidth && namePx > 9) {
+            namePx -= 0.25;
+            titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+          }
+        }
+
+        // 2. Fit Tagline Block so Longest Line Fits on 1 Line (`cardWidth - 36px`)
+        const lineEls = Array.from(taglineContainerEl.querySelectorAll('.preview-tagline-line'));
+        if (!lineEls.length) return;
+
+        let taglinePx = Math.max(6.5, cardWidth * 0.029 * taglineScale);
+        lineEls.forEach((el) => {
+          el.style.whiteSpace = 'nowrap';
+          el.style.letterSpacing = letterSpacingEm.toFixed(3) + 'em';
+          el.style.fontSize = taglinePx.toFixed(2) + 'px';
+        });
+
+        if (autoFit) {
+          const getMaxLineWidth = () =>
+            lineEls.reduce((maxW, el) => Math.max(maxW, el.scrollWidth, el.getBoundingClientRect().width), 0);
+
+          const widest = getMaxLineWidth();
+          if (widest > maxAllowedWidth && widest > 0) {
+            taglinePx = taglinePx * (maxAllowedWidth / widest) * 0.985;
+            lineEls.forEach((el) => {
+              el.style.fontSize = taglinePx.toFixed(2) + 'px';
+            });
+          }
+
+          while (getMaxLineWidth() > maxAllowedWidth && taglinePx > 5.5) {
+            taglinePx -= 0.15;
+            lineEls.forEach((el) => {
+              el.style.fontSize = taglinePx.toFixed(2) + 'px';
+            });
+          }
+        }
+      }
+
+      function fitCardTypography() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+        fitCardTypographyForElements(
+          document.getElementById('adminPreviewFrontFace'),
+          document.getElementById('adminPreviewTitle'),
+          document.getElementById('adminPreviewTaglines'),
+          prof.typography
+        );
+        fitCardTypographyForElements(
+          document.getElementById('miniCardSurface'),
+          document.getElementById('miniCardTitle'),
+          document.getElementById('miniCardTaglines'),
+          prof.typography
+        );
+      }
+
+      function formatPhoneReadable(phoneStr) {
+        const clean = String(phoneStr || '').trim();
+        return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+      }
+
+      /**
+       * Creates a reusable procedural brushed paper-grain tile canvas for Option 1 & Option 2 passes.
+       */
+      function getPaperGrainTile() {
+        if (paperNoisePatternCanvas) return paperNoisePatternCanvas;
+        const c = document.createElement('canvas');
+        c.width = 160;
+        c.height = 160;
+        const gctx = c.getContext('2d');
+        const imgData = gctx.createImageData(160, 160);
+        const data = imgData.data;
+        let seed = 1337;
+        for (let i = 0; i < data.length; i += 4) {
+          seed = (seed * 16807) % 2147483647;
+          const v = 180 + (seed % 75);
+          data[i] = v;
+          data[i + 1] = v;
+          data[i + 2] = v;
+          data[i + 3] = 9;
+        }
+        gctx.putImageData(imgData, 0, 0);
+        paperNoisePatternCanvas = c;
+        return c;
+      }
+
+      /**
+       * Draws tracked uppercase text on a 2D Canvas context and returns its measured width.
+       */
+      function measureTrackedCanvasText(ctx, text, trackingPx) {
+        const chars = Array.from(String(text || ''));
+        if (!chars.length) return 0;
+        let total = 0;
+        for (let i = 0; i < chars.length; i++) {
+          total += ctx.measureText(chars[i]).width;
+          if (i < chars.length - 1) total += trackingPx;
+        }
+        return total;
+      }
+
+      function drawTrackedCanvasTextCentered(ctx, text, centerX, y, trackingPx) {
+        const chars = Array.from(String(text || ''));
+        if (!chars.length) return;
+        const totalWidth = measureTrackedCanvasText(ctx, text, trackingPx);
+        let curX = centerX - totalWidth / 2;
+        ctx.save();
+        ctx.textAlign = 'left';
+        for (let i = 0; i < chars.length; i++) {
+          ctx.fillText(chars[i], curX, y);
+          curX += ctx.measureText(chars[i]).width + trackingPx;
+        }
+        ctx.restore();
+      }
+
+      async function loadDatabase() {
+        try {
+          const cached = localStorage.getItem(STORAGE_KEY);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && parsed.profiles) db = parsed;
+          }
+        } catch (e) {}
+
+        if (!db) {
+          try {
+            const res = await fetch('./profiles.json', { cache: 'no-store' });
+            if (res.ok) db = await res.json();
+          } catch (e) {}
+        }
+
+        if (!db && window.SMART_WALLET_DEFAULT_PROFILES) {
+          db = JSON.parse(JSON.stringify(window.SMART_WALLET_DEFAULT_PROFILES));
+        }
+
+        const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+        try {
+          const cachedKeys = JSON.parse(localStorage.getItem(KEYS_STORAGE_KEY) || '{}');
+          Object.assign(sessionKeys, cachedKeys, DEFAULT_PROFILE_KEYS);
+        } catch (e) {}
+        if (creds.user && db.profiles[creds.user]) {
+          activeUserId = creds.user;
+        }
+        if (creds.key) {
+          sessionKeys[activeUserId] = creds.key;
+        }
+      }
+
+      function persistToLocal() {
+        if (!db) return;
+        db.updatedAt = new Date().toISOString();
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+          localStorage.setItem(KEYS_STORAGE_KEY, JSON.stringify(sessionKeys));
+        } catch (e) {}
+      }
+
+      function getActiveProfile() {
+        return db.profiles[activeUserId];
+      }
+
+      function renderUserTabs() {
+        const container = document.getElementById('userTabsContainer');
+        container.innerHTML = '';
+
+        Object.values(db.profiles).forEach((prof) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'user-tab' + (prof.id === activeUserId ? ' active' : '');
+          btn.textContent = prof.name || prof.id;
+          btn.addEventListener('click', () => {
+            activeUserId = prof.id;
+            loadProfileIntoForm();
+          });
+          container.appendChild(btn);
+        });
+
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'user-tab-add';
+        addBtn.textContent = '+ Add User Card';
+        addBtn.addEventListener('click', createNewUserProfile);
+        container.appendChild(addBtn);
+      }
+
+      function createNewUserProfile() {
+        const rawSlug = prompt('Enter a short URL ID / slug for the new user (e.g. paulina, lukas):', 'member' + (Object.keys(db.profiles).length + 1));
+        if (!rawSlug) return;
+        const slug = rawSlug.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        if (!slug) return;
+
+        const defaultKey = generateSecureKey16(16);
+        sessionKeys[slug] = defaultKey;
+
+        db.profiles[slug] = {
+          id: slug,
+          name: slug.charAt(0).toUpperCase() + slug.slice(1),
+          vcardName: `;${slug.charAt(0).toUpperCase() + slug.slice(1)};;;`,
+          firstName: slug.charAt(0).toUpperCase() + slug.slice(1),
+          tagline: 'Executive Strategy | Business Development | Advisory',
+          taglineLines: [
+            'EXECUTIVE STRATEGY',
+            'BUSINESS DEVELOPMENT',
+            'ADVISORY'
+          ],
+          slogan: "LET'S CONNECT.",
+          encryptedPhone: SmartWalletCrypto.encryptField('+491700000000', defaultKey),
+          encryptedEmail: SmartWalletCrypto.encryptField(`${slug}@example.com`, defaultKey),
+          location: 'Heidelberg, Germany',
+          linkedin: 'https://www.linkedin.com/',
+          linkedinDisplay: `linkedin.com/in/${slug}`,
+          photoUrl: '',
+          photoBase64: '',
+          vcardNote: "Executive Strategy | Business Development - Let's connect!",
+          typography: Object.assign({}, DEFAULT_TYPOGRAPHY),
+          theme: Object.assign({}, THEME_PRESETS.sapphire),
+          walletConfig: {
+            issuerId: '3388000000022948101',
+            classSuffix: 'executive_sapphire_card',
+            objectSuffix: `${slug}_card`
+          }
+        };
+
+        activeUserId = slug;
+        persistToLocal();
+        loadProfileIntoForm();
+        showToast(`Created profile "${slug}" with key "${defaultKey}"`);
+      }
+
+      function updateTypographySliderLabels(typo) {
+        document.getElementById('typoNameScaleVal').textContent = `${typo.nameScale}%`;
+        document.getElementById('typoTaglineScaleVal').textContent = `${typo.taglineScale}%`;
+        document.getElementById('typoLetterSpacingVal').textContent = `${Number(typo.letterSpacing).toFixed(2)}em`;
+      }
+
+      function loadProfileIntoForm() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+
+        renderUserTabs();
+
+        document.getElementById('activeSlugBadge').textContent = `?u=${prof.id}`;
+        document.getElementById('profIdInput').value = prof.id || '';
+        document.getElementById('profFirstInput').value = prof.firstName || '';
+        document.getElementById('profNameInput').value = prof.name || '';
+        document.getElementById('profVcardNameInput').value = prof.vcardName || '';
+        document.getElementById('profTaglineInput').value = prof.tagline || '';
+        document.getElementById('profSloganInput').value = prof.slogan || "LET'S CONNECT.";
+        document.getElementById('profLocationInput').value = prof.location || '';
+        document.getElementById('profLinkedinInput').value = prof.linkedin || '';
+
+        const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
+        prof.typography = typo;
+        document.getElementById('typoNameScale').value = typo.nameScale;
+        document.getElementById('typoTaglineScale').value = typo.taglineScale;
+        document.getElementById('typoLetterSpacing').value = typo.letterSpacing;
+        document.getElementById('typoAutoFitLines').checked = typo.autoFitLines !== false;
+        updateTypographySliderLabels(typo);
+
+        const theme = prof.theme || THEME_PRESETS.sapphire;
+        setColorInputs('BgPrimary', theme.bgPrimary || '#163A63');
+        setColorInputs('BgSecondary', theme.bgSecondary || '#0B213B');
+        setColorInputs('AccentPrimary', theme.accentPrimary || '#D6DEE7');
+        setColorInputs('AccentSecondary', theme.accentSecondary || '#B8C4D0');
+
+        const wCfg = prof.walletConfig || {};
+        document.getElementById('gwIssuerId').value = wCfg.issuerId || '3388000000022948101';
+        document.getElementById('gwClassSuffix').value = wCfg.classSuffix || 'executive_sapphire_card';
+        document.getElementById('gwObjectSuffix').value = wCfg.objectSuffix || `${prof.id}_card`;
+
+        const photoPreview = document.getElementById('adminPhotoPreview');
+        if (prof.photoBase64) {
+          photoPreview.src = prof.photoBase64;
+        } else if (prof.photoUrl) {
+          photoPreview.src = prof.photoUrl;
+        }
+
+        const keyInput = document.getElementById('profSecretKeyInput');
+        keyInput.value = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+        refreshEncryptionFields();
+        renderAllOutputs();
+      }
+
+      function setColorInputs(suffix, hexVal) {
+        const cInput = document.getElementById('col' + suffix);
+        const tInput = document.getElementById('col' + suffix + 'Text');
+        if (cInput) cInput.value = hexVal;
+        if (tInput) tInput.value = hexVal;
+      }
+
+      function updateUnlockedPreviewLinks(userId, key) {
+        const relUrl = key
+          ? `index.html?u=${encodeURIComponent(userId)}&k=${encodeURIComponent(key)}`
+          : `index.html?u=${encodeURIComponent(userId)}`;
+        const liveLink = document.getElementById('openLiveCardLink');
+        if (liveLink) liveLink.href = relUrl;
+        const vaultPreviewBtn = document.getElementById('openUnlockedPreviewBtn');
+        if (vaultPreviewBtn) vaultPreviewBtn.href = relUrl;
+        const urlCodeEl = document.getElementById('unlockedPreviewUrlCode');
+        if (urlCodeEl) urlCodeEl.textContent = relUrl;
+      }
+
+      function refreshEncryptionFields() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+
+        const key = document.getElementById('profSecretKeyInput').value.trim() || DEFAULT_PROFILE_KEYS[prof.id] || '';
+        sessionKeys[prof.id] = key;
+
+        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        const unlocked = phoneDec.unlocked && emailDec.unlocked;
+
+        const lockStateEl = document.getElementById('vaultLockState');
+        const phoneInput = document.getElementById('profPhoneInput');
+        const emailInput = document.getElementById('profEmailInput');
+
+        if (unlocked) {
+          lockStateEl.textContent = '🔓 Unlocked · Auto-Encrypting';
+          lockStateEl.style.color = 'var(--emerald)';
+          phoneInput.value = phoneDec.value;
+          emailInput.value = emailDec.value;
+        } else if (key && phoneInput.value.trim() && emailInput.value.trim()) {
+          // Re-encrypt existing decrypted form fields under the new key
+          prof.encryptedPhone = SmartWalletCrypto.encryptField(phoneInput.value.trim(), key);
+          prof.encryptedEmail = SmartWalletCrypto.encryptField(emailInput.value.trim(), key);
+          persistToLocal();
+          lockStateEl.textContent = '🔓 Re-Encrypted with New Key';
+          lockStateEl.style.color = 'var(--emerald)';
+        } else {
+          lockStateEl.textContent = '⚠️ Enter Key or Type New PII to Re-Encrypt';
+          lockStateEl.style.color = 'var(--amber)';
+        }
+
+        document.getElementById('cipherInspector').innerHTML =
+          `<div><strong>encryptedPhone:</strong> ${prof.encryptedPhone}</div>` +
+          `<div style="margin-top:3px;"><strong>encryptedEmail:</strong> ${prof.encryptedEmail}</div>`;
+
+        updateUnlockedPreviewLinks(prof.id, key);
+      }
+
+      function syncFormToProfile() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+
+        prof.firstName = document.getElementById('profFirstInput').value.trim();
+        prof.name = document.getElementById('profNameInput').value.trim();
+        prof.vcardName = document.getElementById('profVcardNameInput').value.trim();
+        prof.tagline = document.getElementById('profTaglineInput').value.trim();
+        prof.taglineLines = autoBalanceTagline(prof.tagline);
+        prof.slogan = document.getElementById('profSloganInput').value.trim() || "LET'S CONNECT.";
+        prof.location = document.getElementById('profLocationInput').value.trim();
+        prof.linkedin = document.getElementById('profLinkedinInput').value.trim();
+        prof.linkedinDisplay = prof.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+        prof.vcardNote = `${prof.tagline} - Let's connect!`;
+
+        prof.typography = {
+          nameScale: Number(document.getElementById('typoNameScale').value || 100),
+          taglineScale: Number(document.getElementById('typoTaglineScale').value || 90),
+          letterSpacing: Number(document.getElementById('typoLetterSpacing').value || 0.11),
+          autoFitLines: Boolean(document.getElementById('typoAutoFitLines').checked)
+        };
+        updateTypographySliderLabels(prof.typography);
+
+        prof.theme = {
+          name: (prof.theme && prof.theme.name) || 'Deep Sapphire & Matte Silver',
+          bgPrimary: document.getElementById('colBgPrimaryText').value.trim() || '#163A63',
+          bgCenter: '#0F2B4C',
+          bgSecondary: document.getElementById('colBgSecondaryText').value.trim() || '#0B213B',
+          accentPrimary: document.getElementById('colAccentPrimaryText').value.trim() || '#D6DEE7',
+          accentSecondary: document.getElementById('colAccentSecondaryText').value.trim() || '#B8C4D0'
+        };
+
+        prof.walletConfig = {
+          issuerId: document.getElementById('gwIssuerId').value.trim() || '3388000000022948101',
+          classSuffix: document.getElementById('gwClassSuffix').value.trim() || 'executive_sapphire_card',
+          objectSuffix: document.getElementById('gwObjectSuffix').value.trim() || `${prof.id}_card`
+        };
+
+        const key = document.getElementById('profSecretKeyInput').value.trim() || sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+        sessionKeys[prof.id] = key;
+        const plainPhone = document.getElementById('profPhoneInput').value.trim();
+        const plainEmail = document.getElementById('profEmailInput').value.trim();
+
+        if (key && plainPhone) {
+          prof.encryptedPhone = SmartWalletCrypto.encryptField(plainPhone, key);
+        }
+        if (key && plainEmail) {
+          prof.encryptedEmail = SmartWalletCrypto.encryptField(plainEmail, key);
+        }
+
+        updateUnlockedPreviewLinks(prof.id, key);
+
+        document.getElementById('cipherInspector').innerHTML =
+          `<div><strong>encryptedPhone:</strong> ${prof.encryptedPhone}</div>` +
+          `<div style="margin-top:3px;"><strong>encryptedEmail:</strong> ${prof.encryptedEmail}</div>`;
+
+        persistToLocal();
+        renderUserTabs();
+        renderAllOutputs();
+      }
+
+      /**
+       * Renders both the Live Mini-Card Preview (in Typography panel) and the Interactive 3D Card Preview
+       */
+      function renderLiveCardPreview() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+
+        const frontFace = document.getElementById('adminPreviewFrontFace');
+        const backFace = document.getElementById('adminPreviewBackFace');
+        const miniSurface = document.getElementById('miniCardSurface');
+        const cardGrad = `linear-gradient(135deg, ${theme.bgPrimary || '#163A63'} 0%, ${theme.bgCenter || '#0F2B4C'} 50%, ${theme.bgSecondary || '#0B213B'} 100%)`;
+        frontFace.style.background = cardGrad;
+        backFace.style.background = cardGrad;
+        miniSurface.style.background = cardGrad;
+
+        const nameUpper = String(prof.name || '').toUpperCase();
+        document.getElementById('adminPreviewTitle').textContent = nameUpper;
+        document.getElementById('miniCardTitle').textContent = nameUpper;
+
+        const lines = autoBalanceTagline(prof.tagline);
+        ['adminPreviewTaglines', 'miniCardTaglines'].forEach((containerId) => {
+          const container = document.getElementById(containerId);
+          container.innerHTML = '';
+          lines.forEach((l) => {
+            const d = document.createElement('div');
+            d.className = 'preview-tagline-line';
+            d.style.color = theme.accentSecondary || '#B8C4D0';
+            d.textContent = l;
+            container.appendChild(d);
+          });
+        });
+
+        fitCardTypography();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => fitCardTypography());
+        }
+
+        let slogan = String(prof.slogan || "LET'S CONNECT.").toUpperCase().trim();
+        if (!slogan.endsWith('.')) slogan += '.';
+        document.getElementById('adminPreviewSlogan').textContent = slogan;
+
+        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        document.getElementById('adminPreviewPhone').textContent = formatPhoneReadable(
+          phoneDec.unlocked ? phoneDec.value : phoneDec.ciphertextPreview
+        );
+        document.getElementById('adminPreviewEmail').textContent = emailDec.unlocked
+          ? emailDec.value
+          : emailDec.ciphertextPreview;
+        document.getElementById('adminPreviewLocation').textContent = prof.location || 'Heidelberg, Germany';
+        document.getElementById('adminPreviewLinkedin').textContent =
+          prof.linkedinDisplay ||
+          String(prof.linkedin || 'linkedin.com/in/artautas')
+            .replace(/^https?:\/\/(www\.)?/, '')
+            .replace(/\/$/, '');
+
+        const hubBaseUrl =
+          document.getElementById('gwHubBaseUrl').value.trim() ||
+          window.location.href.replace(/admin\.html.*$/, 'index.html');
+        const shareUrl = SmartWalletCrypto.buildShareUrl(hubBaseUrl, prof.id, key, false);
+        document.getElementById('adminPreviewBackQr').innerHTML = SmartWalletQR.toSvgString(shareUrl, {
+          ecLevel: 'M',
+          margin: 0,
+          darkColor: '#D6DEE7',
+          lightColor: 'transparent',
+          rounded: false
+        });
+      }
+
+      /**
+       * Renders Option 1: Synchronized 1080 x 1920 px Google Wallet Vertical Pass on HTML5 Canvas
+       * Matches the exact minimalist Deep Sapphire & Matte Silver design:
+       *  - Deep Sapphire gradient (#163A63 -> #0F2B4C -> #0B213B) + subtle brushed paper grain + thin silver frame
+       *  - Top Section: Centered Name (#EBF0F5 -> #B0BCC9) + 3-line single-line auto-fitted Tagline (#B8C4D0)
+       *  - Center Section: LET'S CONNECT. + NFC wave icon above a large high-contrast QR code on a clean white/silver pad
+       *  - Bottom Section: Clean matte silver contact details (+49 177 6090991 · email · Heidelberg, Germany · linkedin)
+       */
+      function renderOption1Canvas() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+        const canvas = document.getElementById('walletPassCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = 1080;
+        const H = 1920;
+
+        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
+        const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+        const hubBaseUrl =
+          document.getElementById('gwHubBaseUrl').value.trim() ||
+          window.location.href.replace(/admin\.html.*$/, 'index.html');
+        const shareUrl = SmartWalletCrypto.buildShareUrl(hubBaseUrl, prof.id, key, false);
+
+        // 1. Rich Deep Sapphire Gradient (#163A63 -> #0F2B4C -> #0B213B)
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, theme.bgPrimary || '#163A63');
+        bgGrad.addColorStop(0.5, theme.bgCenter || '#0F2B4C');
+        bgGrad.addColorStop(1, theme.bgSecondary || '#0B213B');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Top-left subtle light catch
+        const lightCatch = ctx.createRadialGradient(W * 0.16, H * 0.1, 20, W * 0.16, H * 0.1, 780);
+        lightCatch.addColorStop(0, 'rgba(235, 240, 245, 0.08)');
+        lightCatch.addColorStop(1, 'rgba(235, 240, 245, 0)');
+        ctx.fillStyle = lightCatch;
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle Brushed Paper Grain Texture
+        const grainPattern = ctx.createPattern(getPaperGrainTile(), 'repeat');
+        if (grainPattern) {
+          ctx.save();
+          ctx.fillStyle = grainPattern;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+
+        // Thin Silver Frame (rgba(180, 200, 225, 0.22))
+        ctx.save();
+        ctx.strokeStyle = 'rgba(180, 200, 225, 0.22)';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(42, 42, W - 84, H - 84);
+        ctx.restore();
+
+        // 2. Top Section of Pass: Centered Name (#EBF0F5 -> #B0BCC9) + Auto-Fitted 3-Line Tagline
+        const maxContentWidth = W - 150;
+        const nameScale = Number(typo.nameScale) / 100;
+        const taglineScale = Number(typo.taglineScale) / 100;
+        const letterSpacingEm = Number(typo.letterSpacing);
+        const autoFit = typo.autoFitLines !== false;
+
+        const nameText = String(prof.name || 'ARTAUTAS ŠIMKUS, LL.M.').toUpperCase();
+        let nameFontPx = Math.round(52 * nameScale);
+        let nameTrackingPx = nameFontPx * 0.08;
+        ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
+
+        if (autoFit) {
+          while (measureTrackedCanvasText(ctx, nameText, nameTrackingPx) > maxContentWidth && nameFontPx > 24) {
+            nameFontPx -= 1;
+            nameTrackingPx = nameFontPx * 0.08;
+            ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
+          }
+        }
+
+        const titleY = 275;
+        ctx.save();
+        const titleGrad = ctx.createLinearGradient(0, titleY - nameFontPx, 0, titleY + 10);
+        titleGrad.addColorStop(0, '#EBF0F5');
+        titleGrad.addColorStop(0.5, theme.accentPrimary || '#D6DEE7');
+        titleGrad.addColorStop(1, '#B0BCC9');
+        ctx.fillStyle = titleGrad;
+        drawTrackedCanvasTextCentered(ctx, nameText, W / 2, titleY, nameTrackingPx);
+        ctx.restore();
+
+        // 3-Line Tagline cleanly fitted directly below Name (zero orphan wraps)
+        const lines = autoBalanceTagline(prof.tagline);
+        let tagFontPx = Math.round(28 * taglineScale);
+        let tagTrackingPx = tagFontPx * letterSpacingEm;
+        ctx.font = `500 ${tagFontPx}px Montserrat, sans-serif`;
+
+        if (autoFit && lines.length > 0) {
+          const getWidestTagline = () =>
+            lines.reduce((m, l) => Math.max(m, measureTrackedCanvasText(ctx, l, tagTrackingPx)), 0);
+          while (getWidestTagline() > maxContentWidth && tagFontPx > 14) {
+            tagFontPx -= 0.5;
+            tagTrackingPx = tagFontPx * letterSpacingEm;
+            ctx.font = `500 ${tagFontPx}px Montserrat, sans-serif`;
+          }
+        }
+
+        ctx.save();
+        ctx.fillStyle = theme.accentSecondary || '#B8C4D0';
+        let lineY = titleY + 66;
+        const lineHeightPx = Math.round(tagFontPx * 1.72);
+        lines.forEach((lineStr) => {
+          drawTrackedCanvasTextCentered(ctx, lineStr, W / 2, lineY, tagTrackingPx);
+          lineY += lineHeightPx;
+        });
+        ctx.restore();
+
+        // 3. Center Section of Pass: LET'S CONNECT. + Contactless NFC Wave Icon + QR Code on Clean White/Silver Pad
+        let slogan = String(prof.slogan || "LET'S CONNECT.").toUpperCase().trim();
+        if (!slogan.endsWith('.')) slogan += '.';
+        const sloganY = 665;
+        ctx.save();
+        ctx.font = '500 36px Montserrat, sans-serif';
+        ctx.fillStyle = theme.accentPrimary || '#D6DEE7';
+        drawTrackedCanvasTextCentered(ctx, slogan, W / 2, sloganY, 36 * 0.12);
+
+        // Contactless NFC Wave Icon centered below LET'S CONNECT.
+        ctx.strokeStyle = '#C8D2DC';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        [18, 32, 46].forEach((radius) => {
+          ctx.beginPath();
+          ctx.arc(W / 2 - 14, sloganY + 56, radius, -Math.PI * 0.35, Math.PI * 0.35);
+          ctx.stroke();
+        });
+        ctx.fillStyle = '#C8D2DC';
+        ctx.beginPath();
+        ctx.arc(W / 2 - 22, sloganY + 56, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // High-Contrast Scannable QR Code on Clean White/Silver Pad
+        const qrPadSize = 620;
+        const qrPadX = (W - qrPadSize) / 2;
+        const qrPadY = 790;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+        ctx.shadowBlur = 36;
+        ctx.shadowOffsetY = 14;
+        SmartWalletQR.drawOnCanvas(ctx, shareUrl, qrPadX, qrPadY, qrPadSize, {
+          ecLevel: 'M',
+          margin: 2,
+          darkColor: '#0B213B',
+          lightColor: '#F4F7FA',
+          borderRadius: 16
+        });
+        ctx.restore();
+
+        // Subtle silver border around QR pad
+        ctx.save();
+        ctx.strokeStyle = 'rgba(180, 200, 225, 0.45)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(qrPadX, qrPadY, qrPadSize, qrPadSize, 16);
+        } else {
+          ctx.rect(qrPadX, qrPadY, qrPadSize, qrPadSize);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // 4. Bottom Section of Pass: Clean Matte Silver Contact Details (#C8D2DC)
+        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        const phoneStr = formatPhoneReadable(phoneDec.unlocked ? phoneDec.value : '');
+        const emailStr = emailDec.unlocked ? emailDec.value : '';
+        const locationStr = prof.location || 'Heidelberg, Germany';
+        const linkedinDisp =
+          prof.linkedinDisplay ||
+          String(prof.linkedin || 'linkedin.com/in/artautas')
+            .replace(/^https?:\/\/(www\.)?/, '')
+            .replace(/\/$/, '');
+
+        // Thin horizontal silver hairline above contact block
+        ctx.fillStyle = 'rgba(180, 200, 225, 0.18)';
+        ctx.fillRect(180, 1500, W - 360, 1.5);
+
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.font = '400 29px Plus Jakarta Sans, sans-serif';
+        ctx.fillStyle = '#C8D2DC';
+
+        let infoY = 1572;
+        if (phoneStr) {
+          ctx.fillText(phoneStr, W / 2, infoY);
+          infoY += 52;
+        }
+        if (emailStr) {
+          ctx.fillText(emailStr, W / 2, infoY);
+          infoY += 52;
+        }
+        ctx.fillText(locationStr, W / 2, infoY);
+        infoY += 52;
+        ctx.fillText('in  ' + linkedinDisp, W / 2, infoY);
+        ctx.restore();
+
+        // Update Option 1 Preview QR & URL text
+        document.getElementById('opt1ShareUrlDisplay').textContent = shareUrl;
+        document.getElementById('opt1PreviewQrBox').innerHTML = SmartWalletQR.toSvgString(shareUrl, {
+          ecLevel: 'M',
+          margin: 1,
+          darkColor: '#0B213B',
+          lightColor: '#F4F7FA',
+          rounded: false
+        });
+      }
+
+      /**
+       * Renders Option 2: Synchronized Google Wallet Hero Banner (1032 x 336 px) on HTML5 Canvas
+       * Rich Deep Sapphire gradient (#163A63 -> #0F2B4C -> #0B213B) + brushed paper grain + thin silver frame,
+       * centered ARTAUTAS ŠIMKUS, LL.M. + single-line auto-fitted 3-line tagline.
+       */
+      function renderOption2HeroCanvas() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+        const canvas = document.getElementById('heroBannerCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = 1032;
+        const H = 336;
+        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
+
+        // 1. Deep Sapphire Gradient
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, theme.bgPrimary || '#163A63');
+        grad.addColorStop(0.5, theme.bgCenter || '#0F2B4C');
+        grad.addColorStop(1, theme.bgSecondary || '#0B213B');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Brushed Paper Grain
+        const grainPattern = ctx.createPattern(getPaperGrainTile(), 'repeat');
+        if (grainPattern) {
+          ctx.save();
+          ctx.fillStyle = grainPattern;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+
+        // Thin Silver Frame (rgba(180, 200, 225, 0.22))
+        ctx.strokeStyle = 'rgba(180, 200, 225, 0.22)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(18, 18, W - 36, H - 36);
+
+        const maxHeroTextWidth = W - 110;
+        const nameScale = Number(typo.nameScale) / 100;
+        const taglineScale = Number(typo.taglineScale) / 100;
+        const letterSpacingEm = Number(typo.letterSpacing);
+        const autoFit = typo.autoFitLines !== false;
+
+        // 2. Centered Name (#EBF0F5 -> #B0BCC9)
+        const nameText = String(prof.name || 'ARTAUTAS ŠIMKUS, LL.M.').toUpperCase();
+        let nameFontPx = Math.round(38 * nameScale);
+        let nameTrackingPx = nameFontPx * 0.08;
+        ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
+
+        if (autoFit) {
+          while (measureTrackedCanvasText(ctx, nameText, nameTrackingPx) > maxHeroTextWidth && nameFontPx > 18) {
+            nameFontPx -= 0.5;
+            nameTrackingPx = nameFontPx * 0.08;
+            ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
+          }
+        }
+
+        const titleY = 122;
+        ctx.save();
+        const titleGrad = ctx.createLinearGradient(0, titleY - nameFontPx, 0, titleY + 8);
+        titleGrad.addColorStop(0, '#EBF0F5');
+        titleGrad.addColorStop(0.5, theme.accentPrimary || '#D6DEE7');
+        titleGrad.addColorStop(1, '#B0BCC9');
+        ctx.fillStyle = titleGrad;
+        drawTrackedCanvasTextCentered(ctx, nameText, W / 2, titleY, nameTrackingPx);
+        ctx.restore();
+
+        // 3. Auto-Fitted 3-Line Tagline Directly Below Name
+        const lines = autoBalanceTagline(prof.tagline);
+        let tagFontPx = Math.round(19 * taglineScale);
+        let tagTrackingPx = tagFontPx * letterSpacingEm;
+        ctx.font = `500 ${tagFontPx}px Montserrat, sans-serif`;
+
+        if (autoFit && lines.length > 0) {
+          const getWidest = () =>
+            lines.reduce((m, l) => Math.max(m, measureTrackedCanvasText(ctx, l, tagTrackingPx)), 0);
+          while (getWidest() > maxHeroTextWidth && tagFontPx > 11) {
+            tagFontPx -= 0.4;
+            tagTrackingPx = tagFontPx * letterSpacingEm;
+            ctx.font = `500 ${tagFontPx}px Montserrat, sans-serif`;
+          }
+        }
+
+        ctx.save();
+        ctx.fillStyle = theme.accentSecondary || '#B8C4D0';
+        let y = titleY + 52;
+        const stepY = Math.round(tagFontPx * 1.75);
+        lines.slice(0, 3).forEach((l) => {
+          drawTrackedCanvasTextCentered(ctx, l, W / 2, y, tagTrackingPx);
+          y += stepY;
+        });
+        ctx.restore();
+      }
+
+      /**
+       * Generates Option 2 Official Google Wallet API Pass JWT, GenericObject JSON, Scannable QR, and PATCH Command
+       */
+      async function refreshOption2WalletApi() {
+        const prof = getActiveProfile();
+        if (!prof) return;
+
+        const issuerId = document.getElementById('gwIssuerId').value.trim() || '3388000000022948101';
+        const classSuffix = document.getElementById('gwClassSuffix').value.trim() || 'executive_sapphire_card';
+        const objectSuffix = document.getElementById('gwObjectSuffix').value.trim() || `${prof.id}_card`;
+        const hubBaseUrl =
+          document.getElementById('gwHubBaseUrl').value.trim() ||
+          'https://artelt.github.io/Card/index.html';
+        const secretKey = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+
+        const result = await SmartWalletPassAPI.createSaveToWalletJwt(prof, {
+          issuerId,
+          classSuffix,
+          objectSuffix,
+          secretKey,
+          hubBaseUrl,
+          serviceAccountEmail:
+            (loadedServiceAccount && loadedServiceAccount.client_email) ||
+            'wallet-pass-issuer@smart-wallet-cards.iam.gserviceaccount.com',
+          privateKeyPem: (loadedServiceAccount && loadedServiceAccount.private_key) || ''
+        });
+
+        lastJwtResult = result;
+
+        const badge = document.getElementById('jwtSignModeBadge');
+        if (result.signedMode === 'service-account-rs256') {
+          badge.textContent = '✓ Signed with GCP Service Account (RS256)';
+          badge.style.color = 'var(--emerald)';
+        } else {
+          badge.textContent = 'Preview JWT (Upload service-account.json for Production RS256)';
+          badge.style.color = '#93C5FD';
+        }
+
+        document.getElementById('saveToGoogleWalletAnchor').href = result.saveUrl;
+        document.getElementById('jwtUrlCodeBlock').textContent = result.saveUrl;
+        document.getElementById('patchCmdCodeBlock').textContent =
+          `# 1. Node.js Auto-Update Helper:\n${result.patchCommand.nodeCommand}\n\n` +
+          `# 2. Direct Google Wallet REST API PATCH:\n${result.patchCommand.curlCommand}`;
+
+        document.getElementById('genericObjectCodeBlock').textContent = JSON.stringify(
+          {
+            genericClass: result.genericClass,
+            genericObject: result.genericObject
+          },
+          null,
+          2
+        );
+
+        renderOption2Qr();
+      }
+
+      function renderOption2Qr() {
+        if (!lastJwtResult) return;
+        const qrPayload =
+          opt2QrTarget === 'saveUrl'
+            ? lastJwtResult.saveUrl
+            : lastJwtResult.genericObject.barcode.value;
+
+        const ec = qrPayload.length > 350 ? 'L' : 'M';
+        document.getElementById('opt2ScreenQrBox').innerHTML = SmartWalletQR.toSvgString(qrPayload, {
+          ecLevel: ec,
+          margin: 1,
+          darkColor: '#0B213B',
+          lightColor: '#FFFFFF',
+          rounded: false
+        });
+      }
+
+      function renderAllOutputs() {
+        renderLiveCardPreview();
+        renderOption1Canvas();
+        renderOption2HeroCanvas();
+        refreshOption2WalletApi();
+      }
+
+      function setupStudioEvents() {
+        // ResizeObserver on both preview cards for responsive single-line auto-fitting
+        if (typeof ResizeObserver !== 'undefined') {
+          const ro = new ResizeObserver(() => fitCardTypography());
+          const f1 = document.getElementById('adminPreviewFrontFace');
+          const f2 = document.getElementById('miniCardSurface');
+          if (f1) ro.observe(f1);
+          if (f2) ro.observe(f2);
+        } else {
+          window.addEventListener('resize', fitCardTypography);
+        }
+
+        // Flip live preview card
+        const previewScene = document.getElementById('adminPreviewCardScene');
+        const previewIndicator = document.getElementById('previewSideIndicator');
+        previewScene.addEventListener('click', () => {
+          const flipped = previewScene.classList.toggle('is-flipped');
+          previewIndicator.textContent = flipped ? 'BACK · RÜCKSEITE' : 'FRONT · VORDERSEITE';
+        });
+
+        // Text, Config & Typography Slider inputs live sync
+        [
+          'profFirstInput',
+          'profNameInput',
+          'profVcardNameInput',
+          'profTaglineInput',
+          'profSloganInput',
+          'profLocationInput',
+          'profLinkedinInput',
+          'profPhoneInput',
+          'profEmailInput',
+          'typoNameScale',
+          'typoTaglineScale',
+          'typoLetterSpacing',
+          'typoAutoFitLines',
+          'gwIssuerId',
+          'gwClassSuffix',
+          'gwObjectSuffix',
+          'gwHubBaseUrl'
+        ].forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener('input', syncFormToProfile);
+          el.addEventListener('change', syncFormToProfile);
+        });
+
+        // Reset Typography Button
+        document.getElementById('resetTypoBtn').addEventListener('click', () => {
+          document.getElementById('typoNameScale').value = DEFAULT_TYPOGRAPHY.nameScale;
+          document.getElementById('typoTaglineScale').value = DEFAULT_TYPOGRAPHY.taglineScale;
+          document.getElementById('typoLetterSpacing').value = DEFAULT_TYPOGRAPHY.letterSpacing;
+          document.getElementById('typoAutoFitLines').checked = DEFAULT_TYPOGRAPHY.autoFitLines;
+          syncFormToProfile();
+          showToast('Reset typography controls to default.');
+        });
+
+        document.getElementById('profSecretKeyInput').addEventListener('input', () => {
+          refreshEncryptionFields();
+          renderAllOutputs();
+        });
+
+        // 🎲 Generate 16-Char Secure Key button (crypto.getRandomValues with A-Z, a-z, 0-9)
+        document.getElementById('generateRandomKeyBtn').addEventListener('click', () => {
+          const prof = getActiveProfile();
+          if (!prof) return;
+          const newKey = generateSecureKey16(16);
+          document.getElementById('profSecretKeyInput').value = newKey;
+          sessionKeys[prof.id] = newKey;
+          syncFormToProfile();
+          refreshEncryptionFields();
+          renderAllOutputs();
+          showToast(`Generated 16-char key (${newKey}) & re-encrypted profile!`);
+        });
+
+        document.getElementById('profIdInput').addEventListener('change', (e) => {
+          const newId = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+          if (!newId || newId === activeUserId) {
+            e.target.value = activeUserId;
+            return;
+          }
+          const prof = db.profiles[activeUserId];
+          delete db.profiles[activeUserId];
+          prof.id = newId;
+          db.profiles[newId] = prof;
+          sessionKeys[newId] = sessionKeys[activeUserId] || generateSecureKey16(16);
+          activeUserId = newId;
+          persistToLocal();
+          loadProfileIntoForm();
+        });
+
+        ['BgPrimary', 'BgSecondary', 'AccentPrimary', 'AccentSecondary'].forEach((suffix) => {
+          const cInput = document.getElementById('col' + suffix);
+          const tInput = document.getElementById('col' + suffix + 'Text');
+          cInput.addEventListener('input', () => {
+            tInput.value = cInput.value.toUpperCase();
+            syncFormToProfile();
+          });
+          tInput.addEventListener('input', () => {
+            if (/^#[0-9A-Fa-f]{6}$/.test(tInput.value.trim())) {
+              cInput.value = tInput.value.trim();
+              syncFormToProfile();
+            }
+          });
+        });
+
+        document.querySelectorAll('[data-preset]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const p = THEME_PRESETS[btn.getAttribute('data-preset')];
+            if (!p) return;
+            setColorInputs('BgPrimary', p.bgPrimary);
+            setColorInputs('BgSecondary', p.bgSecondary);
+            setColorInputs('AccentPrimary', p.accentPrimary);
+            setColorInputs('AccentSecondary', p.accentSecondary);
+            syncFormToProfile();
+            showToast(`Applied "${p.name}" palette`);
+          });
+        });
+
+        // Photo Upload -> Auto-Resize & Base64 Conversion for .vcf
+        document.getElementById('photoUploadInput').addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              const targetSize = 400;
+              const offCanvas = document.createElement('canvas');
+              offCanvas.width = targetSize;
+              offCanvas.height = targetSize;
+              const oCtx = offCanvas.getContext('2d');
+              const minDim = Math.min(img.width, img.height);
+              const sx = (img.width - minDim) / 2;
+              const sy = (img.height - minDim) / 2;
+              oCtx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
+
+              const dataUrl = offCanvas.toDataURL('image/jpeg', 0.84);
+              const prof = getActiveProfile();
+              prof.photoBase64 = dataUrl;
+              document.getElementById('adminPhotoPreview').src = dataUrl;
+              document.getElementById('photoSizeStatus').textContent =
+                `Embedded 400×400 JPEG (${Math.round((dataUrl.length * 3) / 4 / 1024)} KB) inside .vcf contact card`;
+
+              persistToLocal();
+              showToast('vCard photo auto-resized & converted to Base64!');
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+
+        document.getElementById('deleteUserBtn').addEventListener('click', () => {
+          const keys = Object.keys(db.profiles);
+          if (keys.length <= 1) {
+            showToast('Cannot delete the only remaining profile.');
+            return;
+          }
+          if (!confirm(`Delete profile "${activeUserId}"?`)) return;
+          delete db.profiles[activeUserId];
+          activeUserId = Object.keys(db.profiles)[0];
+          persistToLocal();
+          loadProfileIntoForm();
+          showToast('Profile deleted.');
+        });
+
+        document.getElementById('copyShareUrlBtn').addEventListener('click', async () => {
+          const prof = getActiveProfile();
+          const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+          const hubBase = window.location.href.replace(/admin\.html.*$/, 'index.html');
+          const url = SmartWalletCrypto.buildShareUrl(hubBase, prof.id, key, false);
+          try {
+            await navigator.clipboard.writeText(url);
+            showToast('Encrypted Share URL copied to clipboard!');
+          } catch (e) {
+            showToast(url);
+          }
+        });
+
+        document.getElementById('exportJsonBtn').addEventListener('click', () => {
+          persistToLocal();
+          const jsonStr = JSON.stringify(db, null, 2);
+          const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'profiles.json';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+          showToast('Saved & downloaded encrypted profiles.json');
+        });
+
+        document.getElementById('importJsonInput').addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const parsed = JSON.parse(ev.target.result);
+              if (parsed && parsed.profiles) {
+                db = parsed;
+                activeUserId = db.defaultProfile || Object.keys(db.profiles)[0];
+                persistToLocal();
+                loadProfileIntoForm();
+                showToast('Imported profiles.json successfully!');
+              }
+            } catch (err) {
+              showToast('Invalid profiles.json file.');
+            }
+          };
+          reader.readAsText(file);
+        });
+
+        // Visual Toggle Between Option 1 & Option 2
+        const tab1 = document.getElementById('tabBtnOption1');
+        const tab2 = document.getElementById('tabBtnOption2');
+        const pane1 = document.getElementById('paneOption1');
+        const pane2 = document.getElementById('paneOption2');
+
+        tab1.addEventListener('click', () => {
+          tab1.classList.add('active');
+          tab2.classList.remove('active');
+          tab1.setAttribute('aria-selected', 'true');
+          tab2.setAttribute('aria-selected', 'false');
+          pane1.classList.add('active');
+          pane2.classList.remove('active');
+          renderOption1Canvas();
+        });
+
+        tab2.addEventListener('click', () => {
+          tab2.classList.add('active');
+          tab1.classList.remove('active');
+          tab2.setAttribute('aria-selected', 'true');
+          tab1.setAttribute('aria-selected', 'false');
+          pane2.classList.add('active');
+          pane1.classList.remove('active');
+          renderOption2HeroCanvas();
+          refreshOption2WalletApi();
+        });
+
+        document.getElementById('downloadPassPngBtn').addEventListener('click', () => {
+          renderOption1Canvas();
+          const canvas = document.getElementById('walletPassCanvas');
+          const url = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Google_Wallet_Pass_1080x1920_${activeUserId}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast('Downloaded 1080×1920 Google Wallet Pass PNG!');
+        });
+
+        document.getElementById('downloadHeroPngBtn').addEventListener('click', () => {
+          renderOption2HeroCanvas();
+          const canvas = document.getElementById('heroBannerCanvas');
+          const url = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `hero-banner-1032x336-${activeUserId}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast('Downloaded 1032×336 Hero Banner PNG!');
+        });
+
+        document.getElementById('gwServiceAccountFile').addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const sa = JSON.parse(ev.target.result);
+              if (sa.private_key && sa.client_email) {
+                loadedServiceAccount = sa;
+                refreshOption2WalletApi();
+                showToast(`Loaded GCP Service Account: ${sa.client_email}`);
+              } else {
+                showToast('JSON missing client_email or private_key.');
+              }
+            } catch (err) {
+              showToast('Could not parse service-account.json');
+            }
+          };
+          reader.readAsText(file);
+        });
+
+        document.getElementById('regenerateJwtBtn').addEventListener('click', () => {
+          refreshOption2WalletApi();
+          showToast('Regenerated & signed Save-to-Google-Wallet JWT!');
+        });
+
+        const qrSaveBtn = document.getElementById('qrModeSaveJwtBtn');
+        const qrHubBtn = document.getElementById('qrModeHubUrlBtn');
+
+        qrSaveBtn.addEventListener('click', () => {
+          opt2QrTarget = 'saveUrl';
+          qrSaveBtn.style.borderColor = '#93C5FD';
+          qrSaveBtn.style.color = '#93C5FD';
+          qrHubBtn.style.borderColor = 'rgba(180,200,225,0.18)';
+          qrHubBtn.style.color = 'var(--silver-matte)';
+          renderOption2Qr();
+        });
+
+        qrHubBtn.addEventListener('click', () => {
+          opt2QrTarget = 'hubUrl';
+          qrHubBtn.style.borderColor = '#6EE7B7';
+          qrHubBtn.style.color = '#6EE7B7';
+          qrSaveBtn.style.borderColor = 'rgba(180,200,225,0.18)';
+          qrSaveBtn.style.color = 'var(--silver-matte)';
+          renderOption2Qr();
+        });
+
+        document.getElementById('copySaveJwtUrlBtn').addEventListener('click', async () => {
+          if (!lastJwtResult) return;
+          try {
+            await navigator.clipboard.writeText(lastJwtResult.saveUrl);
+            showToast('Signed pay.google.com Save Link copied!');
+          } catch (e) {}
+        });
+
+        document.getElementById('copyPatchCmdBtn').addEventListener('click', async () => {
+          if (!lastJwtResult) return;
+          try {
+            await navigator.clipboard.writeText(lastJwtResult.patchCommand.nodeCommand);
+            showToast('PATCH CLI command copied!');
+          } catch (e) {}
+        });
+      }
+
+      async function initStudio() {
+        await loadDatabase();
+        setupStudioEvents();
+        loadProfileIntoForm();
+      }
+
+      initStudio();
+    })();
+  </script>
+</body>
+</html>

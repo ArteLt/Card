@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <!-- Bot-Proof Privacy & NoIndex Directives -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="bingbot" content="noindex, nofollow" />
+  <meta name="theme-color" content="#121316" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Artautas Šimkus, LL.M. · Digital Business Card</title>
+
+  <!-- Geometric Luxury Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --studio-charcoal: #121316;
+      --sapphire-top: #163A63;
+      --sapphire-mid: #0F2B4C;
+      --sapphire-deep: #0B213B;
+      --silver-title: #D6DEE7;
+      --silver-tagline: #B8C4D0;
+      --silver-back-text: #C8D2DC;
+      --card-radius: 6px;
+      --font-display: 'Montserrat', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+      min-height: 100dvh;
+      /* Deep matte studio charcoal (#121316, no grid lines) */
+      background-color: var(--studio-charcoal);
+      color: var(--silver-title);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Pixel 11 Pro XL (412x915 CSS viewport) centered container */
+    .hub-shell {
+      width: 100%;
+      max-width: 412px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: 26px 18px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Admin utility bar — hidden unless ?admin=1 is in the URL */
+    .admin-only-bar {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .admin-only-bar.visible {
+      display: flex;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 30px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: rgba(22, 58, 99, 0.45);
+      border: 1px solid rgba(180, 200, 225, 0.2);
+      color: var(--silver-tagline);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(22, 58, 99, 0.75);
+      color: var(--silver-title);
+      border-color: rgba(180, 200, 225, 0.35);
+    }
+
+    /* ==========================================================================
+       1. INTERACTIVE 3D FLIPPABLE BUSINESS CARD (1.586 : 1 ISO ID-1 Ratio)
+          Minimal Luxury Print Aesthetic ("DEEP SAPPHIRE & MATTE SILVER")
+       ========================================================================== */
+    .card-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .card-scene {
+      width: 100%;
+      aspect-ratio: 1.586 / 1;
+      perspective: 1300px;
+      -webkit-perspective: 1300px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      position: relative;
+    }
+
+    .card-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: var(--card-radius);
+      box-shadow:
+        0 26px 52px -12px rgba(0, 0, 0, 0.82),
+        0 12px 24px -8px rgba(0, 0, 0, 0.65);
+    }
+
+    .card-scene.is-flipped .card-3d {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      /* 6px sharp-luxury corners */
+      border-radius: var(--card-radius);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+      /* Subtle angled paper-grain gradient from #163A63 (top-left) to #0F2B4C (center) to #0B213B (bottom-right) */
+      background: linear-gradient(135deg, var(--sapphire-top) 0%, var(--sapphire-mid) 50%, var(--sapphire-deep) 100%);
+      /* Subtle realistic paper-edge border */
+      border: 1px solid rgba(180, 200, 225, 0.18);
+    }
+
+    /* Top-left subtle paper sheen */
+    .card-face::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 14% 12%, rgba(235, 240, 245, 0.08) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Fine Matte Paper / Brushed Texture Overlay */
+    .card-texture {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.09;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ---------------- FRONT FACE (VORDERSEITE) ---------------- */
+    .card-front {
+      transform: rotateY(0deg) translateZ(1px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+    }
+
+    .front-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Main Line: ARTAUTAS ŠIMKUS, LL.M. (Single-line auto-fitted) */
+    .front-title {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #D6DEE7;
+      background: linear-gradient(180deg, #EBF0F5 0%, #D6DEE7 48%, #B0BCC9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 11px;
+      line-height: 1.25;
+      white-space: nowrap !important;
+    }
+
+    /* Directly underneath: Centered, no pill backgrounds, crisp matte silver #B8C4D0 */
+    .front-tagline-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .tagline-line {
+      display: inline-block;
+      font-family: var(--font-display);
+      color: #B8C4D0;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.11em;
+      line-height: 1.65;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap !important;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ---------------- BACK FACE (RÜCKSEITE) ---------------- */
+    .card-back {
+      transform: rotateY(180deg) translateZ(1px);
+      padding: 18px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Top centered header: LET'S CONNECT. + NFC icon below */
+    .back-header {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 5px;
+      padding-top: 2px;
+    }
+
+    .back-slogan {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #D6DEE7;
+    }
+
+    .back-nfc-icon {
+      width: 19px;
+      height: 19px;
+      color: #C8D2DC;
+      opacity: 0.9;
+    }
+
+    /* Bottom section (2-column layout: QR bottom-left, Details bottom-right) */
+    .back-body {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .back-qr-column {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* Crisp silver/white QR code on clean transparent/sapphire background */
+    .back-qr-frame {
+      width: 86px;
+      height: 86px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-details-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .back-detail-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #C8D2DC;
+      text-decoration: none;
+      font-family: var(--font-sans);
+      font-size: 0.74rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.42;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      transition: color 0.15s ease;
+    }
+
+    .back-detail-row:hover {
+      color: #FFFFFF;
+    }
+
+    .back-linkedin-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px;
+      height: 13px;
+      border-radius: 2px;
+      background: #C8D2DC;
+      color: #0F2B4C;
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* Subtle "Tap card to flip" pill indicator */
+    .flip-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(22, 58, 99, 0.28);
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      color: var(--silver-tagline);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .flip-pill-btn:hover {
+      background: rgba(22, 58, 99, 0.48);
+      color: var(--silver-title);
+      border-color: rgba(180, 200, 225, 0.3);
+    }
+
+    .flip-pill-side {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silver-tagline);
+      opacity: 0.8;
+      padding-left: 6px;
+      border-left: 1px solid rgba(180, 200, 225, 0.2);
+    }
+
+    /* ==========================================================================
+       3. MOBILE HUB ACTION BUTTONS (DARK-SAPPHIRE GLASSMORPHISM STACK)
+       ========================================================================== */
+    .actions-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      width: 100%;
+    }
+
+    .hub-btn {
+      position: relative;
+      width: 100%;
+      min-height: 56px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent;
+      text-align: left;
+    }
+
+    .hub-btn:active {
+      transform: scale(0.985);
+    }
+
+    /* 1. Primary Silver/White CTA ("Save to Contacts") */
+    .hub-btn-primary {
+      background: linear-gradient(135deg, #EBF0F5 0%, #D6DEE7 55%, #B8C4D0 100%);
+      color: #0B213B;
+      border-color: rgba(255, 255, 255, 0.65);
+      box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.65);
+    }
+
+    .hub-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px -6px rgba(0, 0, 0, 0.75);
+    }
+
+    /* 2. Secondary Dark-Sapphire Glassmorphism CTA */
+    .hub-btn-glass {
+      background: linear-gradient(135deg, rgba(22, 58, 99, 0.52) 0%, rgba(11, 33, 59, 0.72) 100%);
+      color: var(--silver-title);
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.55);
+    }
+
+    .hub-btn-glass:hover {
+      border-color: rgba(180, 200, 225, 0.34);
+      background: linear-gradient(135deg, rgba(22, 58, 99, 0.68) 0%, rgba(15, 43, 76, 0.85) 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .btn-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .hub-btn-primary .btn-icon-box {
+      background: linear-gradient(135deg, #163A63 0%, #0B213B 100%);
+      color: #EBF0F5;
+      box-shadow: 0 3px 8px rgba(11, 33, 59, 0.3);
+    }
+
+    .hub-btn-glass .btn-icon-box {
+      background: rgba(214, 222, 231, 0.08);
+      border: 1px solid rgba(180, 200, 225, 0.16);
+      color: var(--silver-title);
+    }
+
+    .vcard-btn-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .btn-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .btn-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+
+    .btn-subtitle {
+      font-size: 11.5px;
+      font-weight: 500;
+      opacity: 0.78;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-chevron {
+      width: 18px;
+      height: 18px;
+      opacity: 0.72;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    /* 3. Two-Way Contact Exchange Drawer (WhatsApp) */
+    .whatsapp-card-wrapper {
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(22, 58, 99, 0.52) 0%, rgba(11, 33, 59, 0.72) 100%);
+      border: 1px solid rgba(180, 200, 225, 0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .whatsapp-card-wrapper.open {
+      border-color: rgba(180, 200, 225, 0.34);
+    }
+
+    .whatsapp-trigger {
+      width: 100%;
+      min-height: 56px;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      color: var(--silver-title);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .whatsapp-card-wrapper.open .btn-chevron {
+      transform: rotate(180deg);
+    }
+
+    .whatsapp-drawer-body {
+      display: none;
+      padding: 6px 16px 16px;
+      border-top: 1px solid rgba(180, 200, 225, 0.12);
+    }
+
+    .whatsapp-card-wrapper.open .whatsapp-drawer-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .drawer-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer-field label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--silver-tagline);
+    }
+
+    .drawer-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(180, 200, 225, 0.2);
+      background: rgba(11, 24, 42, 0.72);
+      color: var(--silver-title);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.18s ease;
+    }
+
+    .drawer-input::placeholder {
+      color: rgba(184, 196, 208, 0.45);
+    }
+
+    .drawer-input:focus {
+      border-color: var(--silver-title);
+    }
+
+    .whatsapp-send-btn {
+      margin-top: 4px;
+      height: 42px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #EBF0F5 0%, #B8C4D0 100%);
+      color: #0B213B;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .whatsapp-send-btn:hover {
+      filter: brightness(1.04);
+      transform: translateY(-1px);
+    }
+
+    /* Quick Contact Utility Row */
+    .quick-pills-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .quick-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(22, 58, 99, 0.28);
+      border: 1px solid rgba(180, 200, 225, 0.15);
+      color: var(--silver-tagline);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quick-pill:hover {
+      background: rgba(22, 58, 99, 0.5);
+      color: var(--silver-title);
+      border-color: rgba(180, 200, 225, 0.28);
+    }
+
+    /* Fullscreen QR Code Modal */
+    .qr-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 16, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .qr-modal-backdrop.open {
+      display: flex;
+    }
+
+    .qr-modal-card {
+      width: 100%;
+      max-width: 340px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #163A63 0%, #0F2B4C 50%, #0B213B 100%);
+      border: 1px solid rgba(180, 200, 225, 0.25);
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+      text-align: center;
+    }
+
+    .qr-modal-box {
+      width: 210px;
+      height: 210px;
+      padding: 8px;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(15, 43, 76, 0.96);
+      border: 1px solid rgba(180, 200, 225, 0.3);
+      color: var(--silver-title);
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <main class="hub-shell">
+    <!-- Admin Navigation Bar (Hidden unless ?admin=1 is in the URL) -->
+    <header id="adminTopBar" class="admin-only-bar">
+      <button type="button" id="openQrModalBtn" class="icon-btn" title="Enlarge Scannable QR Code">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18h3"/>
+        </svg>
+        <span>QR</span>
+      </button>
+      <a href="admin.html" id="studioNavLink" class="icon-btn" title="Open Multi-User Visual Admin Studio &amp; Google Wallet Pass Generator">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="3"/>
+          <path d="M2 10h20"/>
+        </svg>
+        <span>Wallet Studio</span>
+      </a>
+    </header>
+
+    <!-- ========================================================================
+         1. INTERACTIVE 3D FLIPPABLE BUSINESS CARD (DEEP SAPPHIRE & MATTE SILVER)
+         ======================================================================== -->
+    <section class="card-stage" aria-label="Interactive 3D Business Card">
+      <div id="cardScene" class="card-scene" role="button" tabindex="0" aria-label="3D Business Card — Tap or press Enter to flip">
+        <div class="card-3d" id="card3d">
+          <!-- FRONT (VORDERSEITE): Minimalist Luxury Centered Layout -->
+          <div class="card-face card-front" id="cardFrontFace">
+            <!-- Subtle SVG Paper-Grain / Brushed Texture -->
+            <svg class="card-texture" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+              <defs>
+                <filter id="sapphirePaperGrain" x="0%" y="0%" width="100%" height="100%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" result="noise"/>
+                  <feColorMatrix type="saturate" values="0" in="noise" result="mono"/>
+                  <feComponentTransfer in="mono">
+                    <feFuncA type="linear" slope="0.4"/>
+                  </feComponentTransfer>
+                </filter>
+              </defs>
+              <rect width="100%" height="100%" filter="url(#sapphirePaperGrain)"/>
+            </svg>
+
+            <div class="front-content">
+              <h1 id="cardFrontName" class="front-title">ARTAUTAS ŠIMKUS, LL.M.</h1>
+              <div id="cardFrontTaglines" class="front-tagline-stack">
+                <div class="tagline-line">LAWYER (LL.M.) · LEGAL TRANSLATOR</div>
+                <div class="tagline-line">EUROPEAN COMPANY LAW · BUSINESS DEVELOPMENT</div>
+                <div class="tagline-line">STARTUP ECOSYSTEMS</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BACK (RÜCKSEITE): Minimalist Luxury Back Layout -->
+          <div class="card-face card-back">
+            <svg class="card-texture" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+              <rect width="100%" height="100%" filter="url(#sapphirePaperGrain)"/>
+            </svg>
+
+            <!-- Top Centered Header: LET'S CONNECT. + Contactless NFC Wave Icon -->
+            <div class="back-header">
+              <div id="cardBackSlogan" class="back-slogan">LET'S CONNECT.</div>
+              <svg class="back-nfc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Contactless NFC Wave">
+                <path d="M8.5 14.5A4 4 0 0 1 8.5 9.5"/>
+                <path d="M11.5 17A7.5 7.5 0 0 1 11.5 7"/>
+                <path d="M14.5 19.5a11 11 0 0 1 0-15"/>
+                <circle cx="5.5" cy="12" r="1.1" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <!-- Bottom Section: Left Silver QR on Sapphire | Right Left-Aligned Matte Silver Text -->
+            <div class="back-body">
+              <div class="back-qr-column">
+                <div id="cardBackQrBox" class="back-qr-frame" title="Scannable Profile QR Code"></div>
+              </div>
+
+              <div class="back-details-column">
+                <a id="cardBackPhoneRow" href="#" class="back-detail-row" data-no-flip="true">
+                  <span id="cardBackPhoneText">Protected</span>
+                </a>
+                <a id="cardBackEmailRow" href="#" class="back-detail-row" data-no-flip="true">
+                  <span id="cardBackEmailText">Protected</span>
+                </a>
+                <div class="back-detail-row">
+                  <span id="cardBackLocationText">Heidelberg, Germany</span>
+                </div>
+                <a id="cardBackLinkedinRow" href="https://www.linkedin.com/in/artautas/" target="_blank" rel="noopener noreferrer" class="back-detail-row" data-no-flip="true">
+                  <span class="back-linkedin-badge">in</span>
+                  <span id="cardBackLinkedinText">linkedin.com/in/artautas</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtle "Tap card to flip" pill indicator -->
+      <button type="button" id="flipPillBtn" class="flip-pill-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 2.1l4 4-4 4"/>
+          <path d="M3 12.2v-2a4 4 0 0 1 4-4h14"/>
+          <path d="M7 21.9l-4-4 4-4"/>
+          <path d="M21 11.8v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+        <span>Tap card to flip</span>
+        <span id="flipPillSideLabel" class="flip-pill-side">FRONT</span>
+      </button>
+    </section>
+
+    <!-- ========================================================================
+         3. MOBILE HUB ACTION BUTTONS (DARK-SAPPHIRE GLASSMORPHISM STACK)
+         ======================================================================== -->
+    <section class="actions-stack" aria-label="Contact &amp; Networking Actions">
+      <!-- 1. "Save to Contacts" (Primary Silver/White CTA with small embedded avatar) -->
+      <button type="button" id="saveVcardBtn" class="hub-btn hub-btn-primary">
+        <div class="btn-left">
+          <div class="btn-icon-box" id="vcardBtnIconBox">
+            <img id="vcardBtnAvatar" class="vcard-btn-avatar" src="./artautas.jpg" alt="" />
+          </div>
+          <div class="btn-copy">
+            <span class="btn-title">Save to Contacts</span>
+            <span class="btn-subtitle" id="vcardSubtitle">Download VCARD 3.0 (.vcf) with Photo &amp; Details</span>
+          </div>
+        </div>
+        <svg class="btn-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </button>
+
+      <!-- 2. "Open LinkedIn Profile" (Secondary CTA) -->
+      <a
+        id="linkedinCtaBtn"
+        href="https://www.linkedin.com/in/artautas/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hub-btn hub-btn-glass"
+      >
+        <div class="btn-left">
+          <div class="btn-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+            </svg>
+          </div>
+          <div class="btn-copy">
+            <span class="btn-title">Open LinkedIn Profile</span>
+            <span class="btn-subtitle" id="linkedinSubtitle">linkedin.com/in/artautas · Native App Deep-Link</span>
+          </div>
+        </div>
+        <svg class="btn-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M7 17L17 7"/>
+          <path d="M7 7h10v10"/>
+        </svg>
+      </a>
+
+      <!-- 3. "Let's Connect — Send Me Yours on WhatsApp" (Two-Way Contact Exchange Drawer) -->
+      <div id="whatsappDrawerWrapper" class="whatsapp-card-wrapper">
+        <button type="button" id="whatsappDrawerToggle" class="whatsapp-trigger" aria-expanded="false">
+          <div class="btn-left">
+            <div class="btn-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
+            <div class="btn-copy">
+              <span class="btn-title">Let's Connect — Send Me Yours on WhatsApp</span>
+              <span class="btn-subtitle">Two-way contact exchange in 10 seconds</span>
+            </div>
+          </div>
+          <svg class="btn-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <form id="whatsappExchangeForm" class="whatsapp-drawer-body">
+          <div class="drawer-field">
+            <label for="waVisitorName">Your Name (Optional)</label>
+            <input type="text" id="waVisitorName" class="drawer-input" placeholder="e.g. Dr. Elena Weber" />
+          </div>
+          <div class="drawer-field">
+            <label for="waVisitorCompany">Your LinkedIn / Company (Optional)</label>
+            <input type="text" id="waVisitorCompany" class="drawer-input" placeholder="e.g. Partner at Horizon Ventures" />
+          </div>
+          <div class="drawer-field">
+            <label for="waVisitorNote">Quick Note / Event where we met (Optional)</label>
+            <input type="text" id="waVisitorNote" class="drawer-input" placeholder="e.g. Heidelberg Startup Summit 2026" />
+          </div>
+          <button type="submit" class="whatsapp-send-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span>Send via WhatsApp</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Quick Direct Utility Row (Call, Email, Share Card) -->
+      <div class="quick-pills-row">
+        <a href="#" id="quickCallBtn" class="quick-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>Call</span>
+        </a>
+        <a href="#" id="quickEmailBtn" class="quick-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          <span>Email</span>
+        </a>
+        <button type="button" id="quickShareBtn" class="quick-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"/>
+            <circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          <span>Share Card</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fullscreen QR Modal -->
+  <div id="qrModalBackdrop" class="qr-modal-backdrop" role="dialog" aria-modal="true" aria-label="Scannable Profile QR Code">
+    <div class="qr-modal-card">
+      <div style="font-family:var(--font-display);font-weight:500;font-size:13px;letter-spacing:0.12em;color:var(--silver-title);">
+        LET'S CONNECT.
+      </div>
+      <div id="qrModalBox" class="qr-modal-box"></div>
+      <div id="qrModalProfileName" style="font-weight:600;font-size:14px;color:var(--silver-title);">
+        Artautas Šimkus, LL.M.
+      </div>
+      <button type="button" id="closeQrModalBtn" class="whatsapp-send-btn" style="width:100%;height:38px;margin-top:4px;">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast feedback -->
+  <div id="toastMsg" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Zero-Server Shared Scripts -->
+  <script src="crypto-vault.js"></script>
+  <script src="qr-engine.js"></script>
+  <script src="profiles-data.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'smart_wallet_profiles_v2_3';
+
+      let profilesStore = null;
+      let currentProfile = null;
+      let currentKey = '';
+      let decryptedState = {
+        unlocked: false,
+        phone: '',
+        email: ''
+      };
+
+      function showToast(msg) {
+        const el = document.getElementById('toastMsg');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => el.classList.remove('show'), 2600);
+      }
+
+      /**
+       * Balances a pipe-separated or newline-separated tagline into clean logical rows
+       * where each row stays on a single line (`white-space: nowrap`).
+       */
+      function formatTaglineLines(profile) {
+        const raw = String(profile.tagline || '').trim();
+        if (raw.includes('\n')) {
+          const explicitLines = raw
+            .split(/\r?\n/)
+            .map((s) => s.trim().toUpperCase().replace(/\s*\|\s*/g, ' · '))
+            .filter(Boolean);
+          if (explicitLines.length > 0) return explicitLines;
+        }
+
+        if (Array.isArray(profile.taglineLines) && profile.taglineLines.length > 0) {
+          return profile.taglineLines;
+        }
+
+        if (!raw) return ['LAWYER (LL.M.) · LEGAL TRANSLATOR'];
+        const segments = raw
+          .split(/\||·/)
+          .map((s) => s.trim().toUpperCase())
+          .filter(Boolean);
+
+        if (segments.length === 5) {
+          return [
+            segments[0] + ' · ' + segments[1],
+            segments[2] + ' · ' + segments[3],
+            segments[4]
+          ];
+        }
+        if (segments.length === 4) {
+          return [
+            segments[0] + ' · ' + segments[1],
+            segments[2],
+            segments[3]
+          ];
+        }
+        if (segments.length <= 3) {
+          return segments;
+        }
+        return [
+          segments.slice(0, 2).join(' · '),
+          segments.slice(2, 4).join(' · '),
+          segments.slice(4).join(' · ')
+        ];
+      }
+
+      /**
+       * Auto-Fit Single-Line Typography Engine (`fitCardTypography`)
+       * Measures each tagline line and the main name against `cardWidth - 36px`
+       * and scales font-size smoothly so no row ever wraps onto an orphan line.
+       */
+      function fitCardTypography() {
+        const cardFace = document.getElementById('cardFrontFace');
+        const titleEl = document.getElementById('cardFrontName');
+        const taglineContainer = document.getElementById('cardFrontTaglines');
+        if (!cardFace || !titleEl || !taglineContainer || !currentProfile) return;
+
+        const cardWidth = cardFace.clientWidth || 376;
+        const maxAllowedWidth = Math.max(120, cardWidth - 36);
+
+        const typo = currentProfile.typography || {};
+        const nameScale = Number(typo.nameScale != null ? typo.nameScale : 100) / 100;
+        const taglineScale = Number(typo.taglineScale != null ? typo.taglineScale : 90) / 100;
+        const letterSpacingEm = Number(typo.letterSpacing != null ? typo.letterSpacing : 0.11);
+        const autoFit = typo.autoFitLines !== false;
+
+        // 1. Base Name Font Size (proportional to cardWidth * nameScale)
+        let namePx = Math.max(11, cardWidth * 0.05 * nameScale);
+        titleEl.style.whiteSpace = 'nowrap';
+        titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+
+        if (autoFit) {
+          const actualNameWidth = titleEl.scrollWidth || titleEl.getBoundingClientRect().width;
+          if (actualNameWidth > maxAllowedWidth && actualNameWidth > 0) {
+            namePx = namePx * (maxAllowedWidth / actualNameWidth) * 0.985;
+            titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+          }
+          while (titleEl.scrollWidth > maxAllowedWidth && namePx > 9) {
+            namePx -= 0.25;
+            titleEl.style.fontSize = namePx.toFixed(2) + 'px';
+          }
+        }
+
+        // 2. Tagline Block Font Size & Letter Spacing
+        const lineEls = Array.from(taglineContainer.querySelectorAll('.tagline-line'));
+        if (!lineEls.length) return;
+
+        let taglinePx = Math.max(6.5, cardWidth * 0.029 * taglineScale);
+        lineEls.forEach((el) => {
+          el.style.whiteSpace = 'nowrap';
+          el.style.letterSpacing = letterSpacingEm.toFixed(3) + 'em';
+          el.style.fontSize = taglinePx.toFixed(2) + 'px';
+        });
+
+        if (autoFit) {
+          const getMaxLineWidth = () =>
+            lineEls.reduce((maxW, el) => Math.max(maxW, el.scrollWidth, el.getBoundingClientRect().width), 0);
+
+          const widest = getMaxLineWidth();
+          if (widest > maxAllowedWidth && widest > 0) {
+            taglinePx = taglinePx * (maxAllowedWidth / widest) * 0.985;
+            lineEls.forEach((el) => {
+              el.style.fontSize = taglinePx.toFixed(2) + 'px';
+            });
+          }
+
+          while (getMaxLineWidth() > maxAllowedWidth && taglinePx > 5.5) {
+            taglinePx -= 0.15;
+            lineEls.forEach((el) => {
+              el.style.fontSize = taglinePx.toFixed(2) + 'px';
+            });
+          }
+        }
+      }
+
+      function formatPhoneReadable(phoneStr) {
+        const clean = String(phoneStr || '').trim();
+        return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+      }
+
+      async function loadProfilesDatabase() {
+        try {
+          const cached = localStorage.getItem(STORAGE_KEY);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && parsed.profiles) {
+              profilesStore = parsed;
+            }
+          }
+        } catch (e) {}
+
+        if (!profilesStore) {
+          try {
+            const res = await fetch('./profiles.json', { cache: 'no-store' });
+            if (res.ok) {
+              profilesStore = await res.json();
+            }
+          } catch (e) {}
+        }
+
+        if (!profilesStore && window.SMART_WALLET_DEFAULT_PROFILES) {
+          profilesStore = window.SMART_WALLET_DEFAULT_PROFILES;
+        }
+
+        return profilesStore;
+      }
+
+      function applyThemeColors(theme) {
+        if (!theme) return;
+        const root = document.documentElement;
+        if (theme.bgPrimary) root.style.setProperty('--sapphire-top', theme.bgPrimary);
+        if (theme.bgCenter) root.style.setProperty('--sapphire-mid', theme.bgCenter);
+        if (theme.bgSecondary) root.style.setProperty('--sapphire-deep', theme.bgSecondary);
+        if (theme.accentPrimary) root.style.setProperty('--silver-title', theme.accentPrimary);
+        if (theme.accentSecondary) root.style.setProperty('--silver-tagline', theme.accentSecondary);
+      }
+
+      function getCurrentShareUrl() {
+        const base = window.location.href.split('?')[0].split('#')[0];
+        const uid = currentProfile ? currentProfile.id : 'artautas';
+        if (currentKey && decryptedState.unlocked) {
+          return `${base}?u=${encodeURIComponent(uid)}&k=${encodeURIComponent(currentKey)}`;
+        }
+        return `${base}?u=${encodeURIComponent(uid)}`;
+      }
+
+      function renderProfileUI() {
+        if (!currentProfile) return;
+
+        applyThemeColors(currentProfile.theme);
+
+        // Decrypt sensitive fields in memory ONLY when a valid key (?k= or #user:key) is provided in URL
+        const phoneDec = SmartWalletCrypto.decryptField(currentProfile.encryptedPhone, currentKey);
+        const emailDec = SmartWalletCrypto.decryptField(currentProfile.encryptedEmail, currentKey);
+
+        const isUnlocked = phoneDec.unlocked && emailDec.unlocked;
+        decryptedState = {
+          unlocked: isUnlocked,
+          phone: isUnlocked ? phoneDec.value : '',
+          email: isUnlocked ? emailDec.value : ''
+        };
+
+        // Front of 3D Card: Minimalist Centered Name + 3 Tagline Lines (no pill backgrounds, no avatar)
+        document.getElementById('cardFrontName').textContent = String(currentProfile.name || '').toUpperCase();
+        const lines = formatTaglineLines(currentProfile);
+        const taglineContainer = document.getElementById('cardFrontTaglines');
+        taglineContainer.innerHTML = '';
+        lines.forEach((lineText) => {
+          const div = document.createElement('div');
+          div.className = 'tagline-line';
+          div.textContent = lineText;
+          taglineContainer.appendChild(div);
+        });
+
+        // Fit single-line typography against (cardWidth - 36px)
+        fitCardTypography();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => fitCardTypography());
+        }
+
+        // Avatar inside "Save to Contacts" button only
+        const vcardAvatar = document.getElementById('vcardBtnAvatar');
+        if (vcardAvatar) {
+          if (currentProfile.photoBase64) {
+            vcardAvatar.src = currentProfile.photoBase64;
+            vcardAvatar.style.display = 'block';
+          } else if (currentProfile.photoUrl) {
+            vcardAvatar.src = currentProfile.photoUrl;
+            vcardAvatar.style.display = 'block';
+          } else {
+            vcardAvatar.style.display = 'none';
+          }
+        }
+
+        // Back of 3D Card: LET'S CONNECT. + NFC Wave + Silver QR on Sapphire + Matte Silver Details
+        let rawSlogan = String(currentProfile.slogan || "LET'S CONNECT.").toUpperCase().trim();
+        if (!rawSlogan.endsWith('.')) rawSlogan += '.';
+        document.getElementById('cardBackSlogan').textContent = rawSlogan;
+        document.getElementById('cardBackLocationText').textContent = currentProfile.location || 'Heidelberg, Germany';
+
+        const linkedinUrl = currentProfile.linkedin || 'https://www.linkedin.com/in/artautas/';
+        const linkedinDisp =
+          currentProfile.linkedinDisplay ||
+          linkedinUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+
+        const backLinkedinRow = document.getElementById('cardBackLinkedinRow');
+        backLinkedinRow.href = linkedinUrl;
+        document.getElementById('cardBackLinkedinText').textContent = linkedinDisp;
+
+        const linkedinCta = document.getElementById('linkedinCtaBtn');
+        linkedinCta.href = linkedinUrl;
+        document.getElementById('linkedinSubtitle').textContent = `${linkedinDisp} · Native App Deep-Link`;
+
+        // Phone & Email on Back of Card (gracefully hidden / locked message when opened without ?k=)
+        const phoneRow = document.getElementById('cardBackPhoneRow');
+        const phoneText = document.getElementById('cardBackPhoneText');
+        const emailRow = document.getElementById('cardBackEmailRow');
+        const emailText = document.getElementById('cardBackEmailText');
+        const quickCallBtn = document.getElementById('quickCallBtn');
+        const quickEmailBtn = document.getElementById('quickEmailBtn');
+        const waWrapper = document.getElementById('whatsappDrawerWrapper');
+
+        if (isUnlocked) {
+          phoneRow.style.display = 'flex';
+          phoneRow.style.pointerEvents = 'auto';
+          phoneRow.style.opacity = '1';
+          phoneText.textContent = formatPhoneReadable(decryptedState.phone);
+          phoneRow.href = 'tel:' + decryptedState.phone;
+
+          emailRow.style.display = 'flex';
+          emailRow.style.pointerEvents = 'auto';
+          emailText.textContent = decryptedState.email;
+          emailRow.href = 'mailto:' + decryptedState.email;
+
+          quickCallBtn.style.display = 'inline-flex';
+          quickCallBtn.href = 'tel:' + decryptedState.phone;
+          quickEmailBtn.style.display = 'inline-flex';
+          quickEmailBtn.href = 'mailto:' + decryptedState.email;
+          if (waWrapper) waWrapper.style.display = 'block';
+        } else {
+          phoneRow.style.display = 'flex';
+          phoneRow.style.pointerEvents = 'none';
+          phoneRow.style.opacity = '0.78';
+          phoneRow.removeAttribute('href');
+          phoneText.textContent = 'Scan QR pass to unlock direct contact';
+
+          emailRow.style.display = 'none';
+          emailRow.removeAttribute('href');
+          emailText.textContent = '';
+
+          quickCallBtn.style.display = 'none';
+          quickCallBtn.removeAttribute('href');
+          quickEmailBtn.style.display = 'none';
+          quickEmailBtn.removeAttribute('href');
+          if (waWrapper) waWrapper.style.display = 'none';
+        }
+
+        // Render Crisp Silver/White QR Code on Transparent/Sapphire Background
+        const shareUrl = getCurrentShareUrl();
+        const qrSvg = SmartWalletQR.toSvgString(shareUrl, {
+          ecLevel: 'M',
+          margin: 0,
+          darkColor: '#D6DEE7',
+          lightColor: 'transparent',
+          rounded: false
+        });
+        document.getElementById('cardBackQrBox').innerHTML = qrSvg;
+        document.getElementById('qrModalBox').innerHTML = qrSvg;
+        document.getElementById('qrModalProfileName').textContent = currentProfile.name;
+
+        const studioLink = document.getElementById('studioNavLink');
+        if (studioLink) {
+          studioLink.href = `admin.html?u=${encodeURIComponent(currentProfile.id)}&k=${encodeURIComponent(currentKey)}`;
+        }
+      }
+
+      /**
+       * Folds long vCard lines (such as Base64 PHOTO) at 75 octets per RFC 2426.
+       */
+      function foldVcardLine(line) {
+        if (line.length <= 75) return line;
+        const chunks = [line.slice(0, 75)];
+        let i = 75;
+        while (i < line.length) {
+          chunks.push(' ' + line.slice(i, i + 74));
+          i += 74;
+        }
+        return chunks.join('\r\n');
+      }
+
+      /**
+       * Generates and downloads a standards-compliant VCARD 3.0 (.vcf) in memory.
+       */
+      async function downloadVcard() {
+        if (!currentProfile) return;
+
+        let rawBase64Photo = '';
+        if (currentProfile.photoBase64) {
+          rawBase64Photo = currentProfile.photoBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, '').trim();
+        }
+
+        const fullName = currentProfile.name || 'Artautas Šimkus, LL.M.';
+        const structuredName = currentProfile.vcardName || 'Šimkus;Artautas;;;LL.M.';
+        const title =
+          currentProfile.tagline ||
+          'Lawyer (LL.M.) | Legal Translator | European Company Law | Business Development | Startup Ecosystems';
+        const note =
+          currentProfile.vcardNote ||
+          `${title} - Let's connect!`;
+        const locationStr = currentProfile.location || 'Heidelberg, Germany';
+        const locParts = locationStr.split(',').map((s) => s.trim());
+        const city = locParts[0] || 'Heidelberg';
+        const country = locParts[1] || 'Germany';
+        const linkedinUrl = currentProfile.linkedin || 'https://www.linkedin.com/in/artautas/';
+
+        const vcardLines = [
+          'BEGIN:VCARD',
+          'VERSION:3.0',
+          `N;CHARSET=UTF-8:${structuredName}`,
+          `FN;CHARSET=UTF-8:${fullName}`,
+          `TITLE;CHARSET=UTF-8:${title}`,
+          `ROLE;CHARSET=UTF-8:${title}`
+        ];
+
+        if (decryptedState.unlocked && decryptedState.phone) {
+          vcardLines.push(`TEL;TYPE=CELL,VOICE,PREF:${decryptedState.phone}`);
+        }
+        if (decryptedState.unlocked && decryptedState.email) {
+          vcardLines.push(`EMAIL;TYPE=INTERNET,PREF:${decryptedState.email}`);
+        }
+
+        vcardLines.push(
+          `ADR;TYPE=WORK;CHARSET=UTF-8:;;${city};;;${country};${locationStr}`,
+          `URL;TYPE=LinkedIn:${linkedinUrl}`,
+          `X-SOCIALPROFILE;TYPE=linkedin:${linkedinUrl}`,
+          `NOTE;CHARSET=UTF-8:${note}`
+        );
+
+        if (rawBase64Photo) {
+          vcardLines.push(foldVcardLine(`PHOTO;ENCODING=b;TYPE=JPEG:${rawBase64Photo}`));
+        }
+
+        vcardLines.push('END:VCARD');
+
+        const vcardContent = vcardLines.join('\r\n') + '\r\n';
+        const blob = new Blob([vcardContent], { type: 'text/vcard;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const safeFileName =
+          fullName
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]+/g, '_')
+            .replace(/^_|_$/g, '') + '.vcf';
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = safeFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+
+        showToast(`Saved ${safeFileName} to Contacts`);
+      }
+
+      function setupInteractions() {
+        const cardScene = document.getElementById('cardScene');
+        const cardFrontFace = document.getElementById('cardFrontFace');
+        const flipPillBtn = document.getElementById('flipPillBtn');
+        const flipPillSideLabel = document.getElementById('flipPillSideLabel');
+
+        // ResizeObserver to automatically refit single-line typography on any viewport/orientation change
+        if (typeof ResizeObserver !== 'undefined' && cardFrontFace) {
+          const ro = new ResizeObserver(() => fitCardTypography());
+          ro.observe(cardFrontFace);
+        } else {
+          window.addEventListener('resize', fitCardTypography);
+        }
+
+        function toggleCardFlip(e) {
+          if (e && e.target && e.target.closest('[data-no-flip="true"]')) {
+            return;
+          }
+          const flipped = cardScene.classList.toggle('is-flipped');
+          flipPillSideLabel.textContent = flipped ? 'BACK' : 'FRONT';
+        }
+
+        cardScene.addEventListener('click', toggleCardFlip);
+        cardScene.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleCardFlip();
+          }
+        });
+        flipPillBtn.addEventListener('click', () => toggleCardFlip());
+
+        // Save to Contacts (.vcf)
+        document.getElementById('saveVcardBtn').addEventListener('click', downloadVcard);
+
+        // Two-Way Contact Exchange Drawer (WhatsApp)
+        const waWrapper = document.getElementById('whatsappDrawerWrapper');
+        const waToggle = document.getElementById('whatsappDrawerToggle');
+        const waForm = document.getElementById('whatsappExchangeForm');
+
+        waToggle.addEventListener('click', () => {
+          const isOpen = waWrapper.classList.toggle('open');
+          waToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        waForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const visitorName = document.getElementById('waVisitorName').value.trim() || '[Name]';
+          const visitorCompany = document.getElementById('waVisitorCompany').value.trim() || '[LinkedIn/Company]';
+          const visitorNote = document.getElementById('waVisitorNote').value.trim() || '[Note]';
+          const hostFirst = currentProfile.firstName || 'Artautas';
+
+          const message = `Hi ${hostFirst}! Great connecting with you. Here are my details: ${visitorName} - ${visitorCompany}. ${visitorNote}`;
+          const cleanDigits = decryptedState.phone.replace(/[^0-9]/g, '');
+          const waUrl = `https://wa.me/${cleanDigits}?text=${encodeURIComponent(message)}`;
+          window.open(waUrl, '_blank', 'noopener,noreferrer');
+        });
+
+        // Share Card Button
+        document.getElementById('quickShareBtn').addEventListener('click', async () => {
+          const shareUrl = getCurrentShareUrl();
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: currentProfile.name,
+                text: `${currentProfile.name} — Digital Business Card`,
+                url: shareUrl
+              });
+              return;
+            } catch (err) {}
+          }
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            showToast('Share URL copied to clipboard!');
+          } catch (err) {
+            showToast('Share URL: ' + shareUrl);
+          }
+        });
+
+        // Fullscreen QR Modal
+        const qrModal = document.getElementById('qrModalBackdrop');
+        document.getElementById('openQrModalBtn').addEventListener('click', () => {
+          qrModal.classList.add('open');
+        });
+        document.getElementById('closeQrModalBtn').addEventListener('click', () => {
+          qrModal.classList.remove('open');
+        });
+        qrModal.addEventListener('click', (e) => {
+          if (e.target === qrModal) qrModal.classList.remove('open');
+        });
+
+        // Listen for hash changes (e.g. #artautas:KEY)
+        window.addEventListener('hashchange', () => {
+          const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+          if (profilesStore && profilesStore.profiles[creds.user]) {
+            currentProfile = profilesStore.profiles[creds.user];
+          }
+          currentKey = creds.key || '';
+          renderProfileUI();
+        });
+      }
+
+      async function init() {
+        await loadProfilesDatabase();
+        const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+        const profileMap = (profilesStore && profilesStore.profiles) || {};
+        const defaultId = (profilesStore && profilesStore.defaultProfile) || 'artautas';
+
+        currentProfile = profileMap[creds.user] || profileMap[defaultId] || Object.values(profileMap)[0];
+        // Unlock ONLY when secret key ?k= (or #user:key) is provided in URL
+        currentKey = creds.key || '';
+
+        // Show top QR & Wallet Studio navigation buttons ONLY if ?admin=1 is in the URL
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get('admin') === '1') {
+          document.getElementById('adminTopBar').classList.add('visible');
+        }
+
+        setupInteractions();
+        renderProfileUI();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
