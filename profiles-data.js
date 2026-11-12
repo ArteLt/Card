@@ -1,7 +1,7 @@
 /** Auto-generated fallback for file:// protocol (100% encrypted, zero plaintext PII, zero keys) */
 window.SMART_WALLET_DEFAULT_PROFILES = {
   "version": "2.3.0",
-  "updatedAt": "2026-11-12T21:00:20.254Z",
+  "updatedAt": "2026-11-12T21:01:09.722Z",
   "defaultProfile": "artautas",
   "securityPolicy": "AES-XOR-SHA256-SWC1 (noindex, nofollow, zero-plaintext, zero-hardcoded-key)",
   "profiles": {
@@ -180,14 +180,14 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
       "theme": {
         "preset": "custom",
         "name": "Custom Palette (Manual Colors Below)",
-        "bgGradientStart": "#7B0F5E",
+        "bgGradientStart": "#6E7B0F",
         "bgGradientEnd": "#110E08",
         "accentColor": "#C7D6E6",
         "walletBgHex": "#547192",
         "borderStyle": "single-silver-frame",
         "fontPairing": "cinzel-inter",
         "textureIntensity": "subtle-grain",
-        "bgPrimary": "#7B0F5E",
+        "bgPrimary": "#6E7B0F",
         "bgCenter": "#547192",
         "bgSecondary": "#110E08",
         "accentPrimary": "#C7D6E6",
