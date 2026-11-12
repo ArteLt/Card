@@ -1,7 +1,7 @@
 /** Auto-generated fallback for file:// protocol (100% encrypted, zero plaintext PII, zero keys) */
 window.SMART_WALLET_DEFAULT_PROFILES = {
   "version": "2.3.0",
-  "updatedAt": "2026-11-12T19:29:15.538Z",
+  "updatedAt": "2026-11-12T19:39:14.769Z",
   "defaultProfile": "artautas",
   "securityPolicy": "AES-XOR-SHA256-SWC1 (noindex, nofollow, zero-plaintext, zero-hardcoded-key)",
   "profiles": {
@@ -105,25 +105,25 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
     },
     "brother": {
       "id": "brother",
-      "name": "Šimkus Family Member",
+      "name": "Radvila Simkus",
       "vcardName": "Šimkus;Brother;;;",
-      "firstName": "Brother",
-      "tagline": "Technology & Engineering | Product Architecture | Strategic Advisory",
+      "firstName": "Radvila",
+      "tagline": "Technology & Engineering | Product Architecture | UI & UX Design",
       "taglineLines": [
         "TECHNOLOGY & ENGINEERING",
         "PRODUCT ARCHITECTURE",
-        "STRATEGIC ADVISORY"
+        "UI & UX DESIGN"
       ],
       "slogan": "LET'S CONNECT.",
       "walletTopLabel": "HEIDELBERG · GERMANY",
-      "encryptedPhone": "SWC1:a51234e98b77:75714bc22fad:8364f956c27b2ea2d1ee0b9fdd",
-      "encryptedEmail": "SWC1:b87654f32d11:00939c41ec93:e0cee8172b22407cfbd41ac572eab739673876",
-      "location": "Germany",
+      "encryptedPhone": "SWC1:59cc32540b02:2c3b2a0cda57:c94089b64c0efe8de3a89300",
+      "encryptedEmail": "SWC1:136ee632f573:53957a7516de:ceb7df1f898bc5fcef808c62e16c6f000476f900f09d3e90",
+      "location": "Vilnius, Lithuania",
       "linkedin": "https://www.linkedin.com/",
-      "linkedinDisplay": "linkedin.com/in/simkus",
+      "linkedinDisplay": "linkedin.com",
       "photoUrl": "",
       "photoBase64": "",
-      "vcardNote": "Technology & Engineering | Product Architecture - Let's connect!",
+      "vcardNote": "Technology & Engineering | Product Architecture | UI & UX Design - Let's connect!",
       "typography": {
         "nameScale": 100,
         "taglineScale": 90,
@@ -132,7 +132,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
       },
       "theme": {
         "preset": "obsidian-titanium",
-        "name": "Obsidian & Brushed Titanium",
+        "name": "Obsidian & Brushed Titanium (Charcoal Black)",
         "bgGradientStart": "#1C1F24",
         "bgGradientEnd": "#0D0F12",
         "accentColor": "#D0D5DD",
@@ -143,8 +143,8 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "bgPrimary": "#1C1F24",
         "bgCenter": "#121417",
         "bgSecondary": "#0D0F12",
-        "accentPrimary": "#E4E7EC",
-        "accentSecondary": "#D0D5DD"
+        "accentPrimary": "#D0D5DD",
+        "accentSecondary": "#B8C4D0"
       },
       "walletConfig": {
         "issuerId": "3388000000023225565",
