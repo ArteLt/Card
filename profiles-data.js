@@ -40,7 +40,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "accentSecondary": "#B8C4D0"
       },
       "walletConfig": {
-        "issuerId": "3388000000022948101",
+        "issuerId": "3388000000023225565",
         "classSuffix": "executive_sapphire_card",
         "objectSuffix": "artautas_simkus_llm"
       }
@@ -80,7 +80,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "accentSecondary": "#B8C4D0"
       },
       "walletConfig": {
-        "issuerId": "3388000000022948101",
+        "issuerId": "3388000000023225565",
         "classSuffix": "executive_sapphire_card",
         "objectSuffix": "paulina_card"
       }
@@ -120,7 +120,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "accentSecondary": "#B8C4D0"
       },
       "walletConfig": {
-        "issuerId": "3388000000022948101",
+        "issuerId": "3388000000023225565",
         "classSuffix": "executive_sapphire_card",
         "objectSuffix": "brother_card"
       }

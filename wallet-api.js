@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Smart Wallet Cards — Official Google Wallet API Pass Generator & Auto-Updater (wallet-api.js)
+ * Smart Wallet Cards — Official Google Wallet API Pass Generator & Live REST API Provisioner (wallet-api.js)
  * Dual-mode module:
  *   1. Browser library (`window.SmartWalletPassAPI`) for `admin.html`
- *   2. Standalone Zero-Dependency Node.js CLI (`node wallet-api.js [generate|patch|class|object]`)
+ *   2. Standalone Zero-Dependency Node.js CLI (`node wallet-api.js [sync|generate|patch|class|object]`)
  *
- * Creates Google Wallet `GenericClass` & `GenericObject` in Deep Sapphire (#0D2340),
- * signs RS256 `https://pay.google.com/gp/v/save/<JWT>` links, renders scannable QR codes,
- * and executes `PATCH` updates to push live changes automatically to users' phones.
+ * Creates & updates Google Wallet `GenericClass` & `GenericObject` in Deep Sapphire (#163A63)
+ * under Issuer ID `3388000000023225565`, signs RS256 `https://pay.google.com/gp/v/save/<JWT>` links,
+ * renders scannable QR codes, and executes REST API `POST` / `PUT` / `PATCH` calls to Google Wallet.
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -31,6 +31,12 @@
   nodePath
 ) {
   'use strict';
+
+  const DEFAULT_ISSUER_ID = '3388000000023225565';
+  const DEFAULT_CLASS_SUFFIX = 'executive_sapphire_card';
+  const DEFAULT_HUB_BASE_URL = 'https://artelt.github.io/Card/';
+  const DEFAULT_HERO_BANNER_URL = 'https://artelt.github.io/Card/hero-artautas.png';
+  const DEFAULT_SERVICE_ACCOUNT_EMAIL = 'wallet-pass-issuer@project-71308897-865e-49aa-830.iam.gserviceaccount.com';
 
   function base64UrlEncodeString(str) {
     if (typeof Buffer !== 'undefined') {
@@ -64,14 +70,19 @@
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
+  function formatPhoneReadable(phoneStr) {
+    const clean = String(phoneStr || '').trim();
+    return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+  }
+
   /**
    * Builds the Google Wallet `GenericClass` payload (Template for Executive Business Cards).
    */
   function buildGenericClass(options) {
     const opts = Object.assign(
       {
-        issuerId: '3388000000022948101',
-        classSuffix: 'executive_sapphire_card'
+        issuerId: DEFAULT_ISSUER_ID,
+        classSuffix: DEFAULT_CLASS_SUFFIX
       },
       options || {}
     );
@@ -79,7 +90,7 @@
 
     return {
       id: classId,
-      issuerName: 'Smart Wallet Executive Cards',
+      issuerName: 'Artautas Šimkus, LL.M.',
       reviewStatus: 'UNDER_REVIEW',
       multipleDevicesAndHoldersAllowedStatus: 'MULTIPLE_HOLDERS',
       classTemplateInfo: {
@@ -120,18 +131,17 @@
   }
 
   /**
-   * Builds the Google Wallet `GenericObject` payload in Deep Sapphire (#0D2340) for a specific user profile.
+   * Builds the Google Wallet `GenericObject` payload in Deep Sapphire (#163A63) for a specific user profile.
    */
   function buildGenericObject(profile, options) {
     const opts = Object.assign(
       {
-        issuerId: (profile.walletConfig && profile.walletConfig.issuerId) || '3388000000022948101',
-        classSuffix: (profile.walletConfig && profile.walletConfig.classSuffix) || 'executive_sapphire_card',
+        issuerId: (profile.walletConfig && profile.walletConfig.issuerId) || DEFAULT_ISSUER_ID,
+        classSuffix: (profile.walletConfig && profile.walletConfig.classSuffix) || DEFAULT_CLASS_SUFFIX,
         objectSuffix: (profile.walletConfig && profile.walletConfig.objectSuffix) || `${profile.id}_card`,
         secretKey: '',
-        hubBaseUrl: 'https://artelt.github.io/Card/index.html',
-        heroBannerUrl: 'https://artelt.github.io/Card/hero-banner-1032x336.png',
-        logoUrl: 'https://artelt.github.io/Card/artautas.jpg'
+        hubBaseUrl: DEFAULT_HUB_BASE_URL,
+        heroBannerUrl: DEFAULT_HERO_BANNER_URL
       },
       options || {}
     );
@@ -141,7 +151,7 @@
 
     const phoneDec = SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
     const emailDec = SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
-    const phoneDisplay = phoneDec.unlocked ? phoneDec.value : 'Protected (Scan QR)';
+    const phoneDisplay = phoneDec.unlocked ? formatPhoneReadable(phoneDec.value) : 'Protected (Scan QR)';
     const emailDisplay = emailDec.unlocked ? emailDec.value : 'Protected (Scan QR)';
 
     const shareUrl = SmartWalletCrypto.buildShareUrl(
@@ -190,17 +200,6 @@
           value: profile.name || 'Artautas Šimkus, LL.M.'
         }
       },
-      logo: {
-        sourceUri: {
-          uri: opts.logoUrl
-        },
-        contentDescription: {
-          defaultValue: {
-            language: 'en-US',
-            value: profile.name || 'Artautas Šimkus, LL.M.'
-          }
-        }
-      },
       heroImage: {
         sourceUri: {
           uri: opts.heroBannerUrl
@@ -215,7 +214,7 @@
       barcode: {
         type: 'QR_CODE',
         value: shareUrl,
-        alternateText: `${sloganText} · SCAN TO SAVE CONTACT`
+        alternateText: sloganText
       },
       textModulesData: [
         {
@@ -263,16 +262,23 @@
 
   /**
    * Builds the Google Wallet Save JWT claims payload (`savetowallet`).
+   * Supports both skinny JWT (referencing the REST-provisioned GenericObject ID for compact QR scanning)
+   * and full embedded object payload.
    */
   function buildJwtClaims(genericClass, genericObject, options) {
     const opts = Object.assign(
       {
-        serviceAccountEmail: 'wallet-pass-issuer@smart-wallet-cards.iam.gserviceaccount.com',
+        serviceAccountEmail: DEFAULT_SERVICE_ACCOUNT_EMAIL,
         origins: ['https://artelt.github.io', 'http://localhost:8080'],
-        includeClassInJwt: false
+        includeClassInJwt: false,
+        skinnyJwt: true
       },
       options || {}
     );
+
+    const objectEntry = opts.skinnyJwt
+      ? { id: genericObject.id }
+      : genericObject;
 
     const payload = {
       iss: opts.serviceAccountEmail,
@@ -281,11 +287,11 @@
       iat: Math.floor(Date.now() / 1000),
       origins: opts.origins,
       payload: {
-        genericObjects: [genericObject]
+        genericObjects: [objectEntry]
       }
     };
 
-    if (opts.includeClassInJwt && genericClass) {
+    if (opts.includeClassInJwt && genericClass && !opts.skinnyJwt) {
       payload.payload.genericClasses = [genericClass];
     }
 
@@ -310,23 +316,20 @@
 
   /**
    * Signs the Google Wallet JWT using RS256 (Browser WebCrypto or Node.js crypto).
-   * If no real GCP Service Account Private Key PEM is provided yet, creates a deterministic
-   * preview signature (in browser) or signs with an ephemeral RSA-2048 key (in Node.js)
-   * so the `https://pay.google.com/gp/v/save/<JWT>` link and QR code can be tested immediately.
    */
   async function createSaveToWalletJwt(profile, options) {
     const opts = Object.assign(
       {
-        issuerId: (profile.walletConfig && profile.walletConfig.issuerId) || '3388000000022948101',
-        classSuffix: (profile.walletConfig && profile.walletConfig.classSuffix) || 'executive_sapphire_card',
+        issuerId: (profile.walletConfig && profile.walletConfig.issuerId) || DEFAULT_ISSUER_ID,
+        classSuffix: (profile.walletConfig && profile.walletConfig.classSuffix) || DEFAULT_CLASS_SUFFIX,
         objectSuffix: (profile.walletConfig && profile.walletConfig.objectSuffix) || `${profile.id}_card`,
         secretKey: '',
-        serviceAccountEmail: 'wallet-pass-issuer@smart-wallet-cards.iam.gserviceaccount.com',
+        serviceAccountEmail: DEFAULT_SERVICE_ACCOUNT_EMAIL,
         privateKeyPem: '',
-        hubBaseUrl: 'https://artelt.github.io/Card/index.html',
-        heroBannerUrl: 'https://artelt.github.io/Card/hero-banner-1032x336.png',
-        logoUrl: 'https://artelt.github.io/Card/artautas.jpg',
-        includeClassInJwt: false
+        hubBaseUrl: DEFAULT_HUB_BASE_URL,
+        heroBannerUrl: DEFAULT_HERO_BANNER_URL,
+        includeClassInJwt: false,
+        skinnyJwt: true
       },
       options || {}
     );
@@ -349,7 +352,6 @@
       if (pemKey && pemKey.includes('BEGIN')) {
         signedMode = 'service-account-rs256';
       } else {
-        // Generate an ephemeral RSA-2048 keypair so Node CLI produces a real RS256 cryptographic signature
         const kp = nodeCrypto.generateKeyPairSync('rsa', {
           modulusLength: 2048,
           privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
@@ -393,7 +395,7 @@
         signedMode = 'preview-invalid-pem';
       }
     }
-    // 3. Browser Preview mode (no GCP service-account.json loaded yet)
+    // 3. Browser Preview mode (or pre-signed live JWT from local-keys.js)
     else {
       const h1 = SmartWalletCrypto.sha256Hex('WALLET_SIG_1|' + signingInput);
       const h2 = SmartWalletCrypto.sha256Hex('WALLET_SIG_2|' + signingInput);
@@ -422,12 +424,13 @@
     const opts = options || {};
     const uid = profile.id || 'artautas';
     const keyArg = opts.secretKey ? ` --key ${opts.secretKey}` : ' --key <YOUR_16_CHAR_KEY>';
-    const issuerId = opts.issuerId || (profile.walletConfig && profile.walletConfig.issuerId) || '3388000000022948101';
+    const issuerId =
+      opts.issuerId || (profile.walletConfig && profile.walletConfig.issuerId) || DEFAULT_ISSUER_ID;
     const objectSuffix =
       opts.objectSuffix || (profile.walletConfig && profile.walletConfig.objectSuffix) || `${uid}_card`;
     const resourceId = `${issuerId}.${objectSuffix}`;
 
-    const nodeCmd = `node wallet-api.js patch --user ${uid}${keyArg} --issuer ${issuerId} --object ${objectSuffix}`;
+    const nodeCmd = `node wallet-api.js sync --user ${uid}${keyArg} --issuer ${issuerId} --object ${objectSuffix}`;
     const curlCmd = [
       `curl -X PATCH "https://walletobjects.googleapis.com/walletobjects/v1/genericObject/${resourceId}" \\`,
       `  -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \\`,
@@ -444,93 +447,144 @@
   }
 
   /**
-   * Node.js OAuth2 Service Account Token Exchange + Google Wallet REST API PATCH execution.
+   * Helper to make HTTPS JSON requests in Node.js.
    */
-  function executeNodePatchRequest(genericObject, serviceAccountJson) {
+  function httpsJsonRequest(urlStr, method, headers, bodyObj) {
     return new Promise((resolve, reject) => {
-      if (!nodeCrypto || !nodeHttps) {
-        return reject(new Error('PATCH network execution requires Node.js environment'));
+      const payload = bodyObj ? (typeof bodyObj === 'string' ? bodyObj : JSON.stringify(bodyObj)) : null;
+      const reqHeaders = Object.assign({}, headers || {});
+      if (payload && !reqHeaders['Content-Length']) {
+        reqHeaders['Content-Length'] = Buffer.byteLength(payload);
       }
-      const now = Math.floor(Date.now() / 1000);
-      const header = { alg: 'RS256', typ: 'JWT' };
-      const claimSet = {
-        iss: serviceAccountJson.client_email,
-        scope: 'https://www.googleapis.com/auth/wallet_object.issuer',
-        aud: 'https://oauth2.googleapis.com/token',
-        iat: now,
-        exp: now + 3600
-      };
-      const input = `${base64UrlEncodeString(JSON.stringify(header))}.${base64UrlEncodeString(
-        JSON.stringify(claimSet)
-      )}`;
-      const signer = nodeCrypto.createSign('RSA-SHA256');
-      signer.update(input);
-      signer.end();
-      const assertion = `${input}.${base64UrlEncodeBytes(signer.sign(serviceAccountJson.private_key))}`;
-
-      const tokenBody = `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${assertion}`;
-      const tokenReq = nodeHttps.request(
-        'https://oauth2.googleapis.com/token',
+      const req = nodeHttps.request(
+        urlStr,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(tokenBody)
-          }
+          method: method || 'GET',
+          headers: reqHeaders
         },
         (res) => {
           let raw = '';
           res.on('data', (chunk) => (raw += chunk));
           res.on('end', () => {
+            let parsed = raw;
             try {
-              const tokenResp = JSON.parse(raw);
-              if (!tokenResp.access_token) {
-                return reject(new Error('OAuth2 token error: ' + raw));
-              }
-              const patchData = JSON.stringify(genericObject);
-              const patchUrl = `https://walletobjects.googleapis.com/walletobjects/v1/genericObject/${encodeURIComponent(
-                genericObject.id
-              )}`;
-              const patchReq = nodeHttps.request(
-                patchUrl,
-                {
-                  method: 'PATCH',
-                  headers: {
-                    Authorization: `Bearer ${tokenResp.access_token}`,
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(patchData)
-                  }
-                },
-                (pRes) => {
-                  let pRaw = '';
-                  pRes.on('data', (c) => (pRaw += c));
-                  pRes.on('end', () => {
-                    resolve({ statusCode: pRes.statusCode, body: pRaw });
-                  });
-                }
-              );
-              patchReq.on('error', reject);
-              patchReq.write(patchData);
-              patchReq.end();
-            } catch (e) {
-              reject(e);
-            }
+              parsed = JSON.parse(raw);
+            } catch (e) {}
+            resolve({ statusCode: res.statusCode, body: parsed, raw });
           });
         }
       );
-      tokenReq.on('error', reject);
-      tokenReq.write(tokenBody);
-      tokenReq.end();
+      req.on('error', reject);
+      if (payload) req.write(payload);
+      req.end();
     });
   }
 
+  /**
+   * Exchanges GCP service-account.json for an OAuth2 Bearer access token.
+   */
+  async function getGoogleWalletAccessToken(serviceAccountJson) {
+    if (!nodeCrypto || !nodeHttps) {
+      throw new Error('OAuth2 token exchange requires Node.js environment');
+    }
+    const now = Math.floor(Date.now() / 1000);
+    const header = { alg: 'RS256', typ: 'JWT' };
+    const claimSet = {
+      iss: serviceAccountJson.client_email,
+      scope: 'https://www.googleapis.com/auth/wallet_object.issuer',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: now,
+      exp: now + 3600
+    };
+    const input = `${base64UrlEncodeString(JSON.stringify(header))}.${base64UrlEncodeString(
+      JSON.stringify(claimSet)
+    )}`;
+    const signer = nodeCrypto.createSign('RSA-SHA256');
+    signer.update(input);
+    signer.end();
+    const assertion = `${input}.${base64UrlEncodeBytes(signer.sign(serviceAccountJson.private_key))}`;
+
+    const tokenBody = `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${assertion}`;
+    const res = await httpsJsonRequest(
+      'https://oauth2.googleapis.com/token',
+      'POST',
+      { 'Content-Type': 'application/x-www-form-urlencoded' },
+      tokenBody
+    );
+    if (res.statusCode !== 200 || !res.body || !res.body.access_token) {
+      throw new Error(`OAuth2 token error (${res.statusCode}): ${res.raw}`);
+    }
+    return res.body.access_token;
+  }
+
+  /**
+   * Creates or updates (`GET` -> `POST` if 404, or `PUT`/`PATCH` if 200) both `GenericClass` and `GenericObject`
+   * in the live Google Wallet REST API.
+   */
+  async function syncClassAndObjectToGoogleWallet(genericClass, genericObject, serviceAccountJson) {
+    const accessToken = await getGoogleWalletAccessToken(serviceAccountJson);
+    const authHeaders = {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    };
+
+    // 1. Upsert GenericClass
+    const classGetUrl = `https://walletobjects.googleapis.com/walletobjects/v1/genericClass/${encodeURIComponent(
+      genericClass.id
+    )}`;
+    const classCheck = await httpsJsonRequest(classGetUrl, 'GET', authHeaders, null);
+    let classResult;
+    if (classCheck.statusCode === 404) {
+      classResult = await httpsJsonRequest(
+        'https://walletobjects.googleapis.com/walletobjects/v1/genericClass',
+        'POST',
+        authHeaders,
+        genericClass
+      );
+      classResult.operation = 'CREATED (POST)';
+    } else if (classCheck.statusCode === 200) {
+      classResult = await httpsJsonRequest(classGetUrl, 'PUT', authHeaders, genericClass);
+      classResult.operation = 'UPDATED (PUT)';
+    } else {
+      classResult = classCheck;
+      classResult.operation = `CHECK_FAILED (${classCheck.statusCode})`;
+    }
+
+    // 2. Upsert GenericObject
+    const objGetUrl = `https://walletobjects.googleapis.com/walletobjects/v1/genericObject/${encodeURIComponent(
+      genericObject.id
+    )}`;
+    const objCheck = await httpsJsonRequest(objGetUrl, 'GET', authHeaders, null);
+    let objectResult;
+    if (objCheck.statusCode === 404) {
+      objectResult = await httpsJsonRequest(
+        'https://walletobjects.googleapis.com/walletobjects/v1/genericObject',
+        'POST',
+        authHeaders,
+        genericObject
+      );
+      objectResult.operation = 'CREATED (POST)';
+    } else if (objCheck.statusCode === 200) {
+      objectResult = await httpsJsonRequest(objGetUrl, 'PUT', authHeaders, genericObject);
+      objectResult.operation = 'UPDATED (PUT)';
+    } else {
+      objectResult = objCheck;
+      objectResult.operation = `CHECK_FAILED (${objCheck.statusCode})`;
+    }
+
+    return {
+      classResult,
+      objectResult
+    };
+  }
+
   // ============================================================================
-  // NODE.JS CLI RUNNER (`node wallet-api.js ...`)
+  // NODE.JS CLI RUNNER (`node wallet-api.js [sync|generate|patch|class|object]`)
   // ============================================================================
   if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main === module) {
     (async function runCli() {
       const args = process.argv.slice(2);
-      const command = (args[0] && !args[0].startsWith('--') ? args[0] : 'generate').toLowerCase();
+      const command = (args[0] && !args[0].startsWith('--') ? args[0] : 'sync').toLowerCase();
 
       function getFlag(name, fallback) {
         const idx = args.indexOf(`--${name}`);
@@ -539,10 +593,23 @@
       }
 
       const userId = getFlag('user', 'artautas');
-      const secretKey = getFlag('key', '');
-      const issuerId = getFlag('issuer', '3388000000022948101');
-      const classSuffix = getFlag('class', 'executive_sapphire_card');
-      const hubBaseUrl = getFlag('url', 'https://artelt.github.io/Card/index.html');
+
+      // Load local key from local-keys.js if available and not passed via --key
+      let defaultLocalKey = '';
+      const localKeysPath = nodePath.join(process.cwd(), 'local-keys.js');
+      if (nodeFs.existsSync(localKeysPath)) {
+        try {
+          const lkContent = nodeFs.readFileSync(localKeysPath, 'utf8');
+          const match = lkContent.match(new RegExp(`${userId}\\s*:\\s*['"]([^'"]+)['"]`));
+          if (match && match[1]) defaultLocalKey = match[1];
+        } catch (e) {}
+      }
+
+      const secretKey = getFlag('key', defaultLocalKey);
+      const issuerId = getFlag('issuer', DEFAULT_ISSUER_ID);
+      const classSuffix = getFlag('class', DEFAULT_CLASS_SUFFIX);
+      const hubBaseUrl = getFlag('url', DEFAULT_HUB_BASE_URL);
+      const heroBannerUrl = getFlag('hero', DEFAULT_HERO_BANNER_URL);
       const saPath = getFlag('credentials', process.env.GOOGLE_APPLICATION_CREDENTIALS || './service-account.json');
 
       const profilesPath = nodePath.join(process.cwd(), 'profiles.json');
@@ -554,7 +621,9 @@
       const db = JSON.parse(nodeFs.readFileSync(profilesPath, 'utf8'));
       const profile = db.profiles[userId];
       if (!profile) {
-        console.error(`Error: Profile "${userId}" not found in profiles.json. Available: ${Object.keys(db.profiles).join(', ')}`);
+        console.error(
+          `Error: Profile "${userId}" not found in profiles.json. Available: ${Object.keys(db.profiles).join(', ')}`
+        );
         process.exit(1);
       }
 
@@ -578,9 +647,10 @@
         objectSuffix,
         secretKey,
         hubBaseUrl,
+        heroBannerUrl,
+        skinnyJwt: true,
         serviceAccountEmail:
-          (serviceAccount && serviceAccount.client_email) ||
-          'wallet-pass-issuer@smart-wallet-cards.iam.gserviceaccount.com',
+          (serviceAccount && serviceAccount.client_email) || DEFAULT_SERVICE_ACCOUNT_EMAIL,
         privateKeyPem: (serviceAccount && serviceAccount.private_key) || ''
       });
 
@@ -590,17 +660,16 @@
       }
 
       console.log('========================================================================');
-      console.log('  SMART WALLET CARDS · OFFICIAL GOOGLE WALLET API PASS GENERATOR');
+      console.log('  SMART WALLET CARDS · OFFICIAL GOOGLE WALLET API PASS PROVISIONER');
       console.log('========================================================================');
       console.log(`  Profile        : ${profile.name} (${userId})`);
+      console.log(`  Issuer ID      : ${issuerId}`);
       console.log(`  Theme Hex      : ${result.genericObject.hexBackgroundColor} (Deep Sapphire)`);
       console.log(`  GenericClass   : ${result.genericClass.id}`);
       console.log(`  GenericObject  : ${result.genericObject.id}`);
-      console.log(`  Barcode URL    : ${result.genericObject.barcode.value}`);
+      console.log(`  Hero Image URL : ${result.genericObject.heroImage.sourceUri.uri}`);
+      console.log(`  Barcode QR URL : ${result.genericObject.barcode.value}`);
       console.log(`  Signing Mode   : ${result.signedMode}`);
-      if (outFlag) {
-        console.log(`  Saved Payload  : ${outFlag}`);
-      }
       console.log('------------------------------------------------------------------------');
 
       if (command === 'class') {
@@ -613,47 +682,45 @@
         return;
       }
 
-      if (command === 'patch') {
-        console.log('\n[PATCH AUTO-UPDATE] Pushing updated GenericObject to Google Wallet...');
-        console.log(`Endpoint: ${result.patchCommand.endpoint}\n`);
-        if (serviceAccount && serviceAccount.private_key && serviceAccount.client_email) {
-          try {
-            const resp = await executeNodePatchRequest(result.genericObject, serviceAccount);
-            console.log(`HTTP Status: ${resp.statusCode}`);
-            console.log(resp.body);
-          } catch (err) {
-            console.error('PATCH request failed:', err.message);
+      if ((command === 'sync' || command === 'patch') && serviceAccount && serviceAccount.private_key) {
+        console.log('\n[GOOGLE WALLET REST API] Provisioning GenericClass & GenericObject...');
+        try {
+          const syncRes = await syncClassAndObjectToGoogleWallet(
+            result.genericClass,
+            result.genericObject,
+            serviceAccount
+          );
+          console.log(
+            `  ✓ GenericClass (${result.genericClass.id})  : ${syncRes.classResult.operation} [HTTP ${syncRes.classResult.statusCode}]`
+          );
+          if (syncRes.classResult.statusCode >= 300) {
+            console.error('    Class Response:', JSON.stringify(syncRes.classResult.body));
           }
-        } else {
-          console.log('No live GCP service-account.json detected in workspace.');
-          console.log('Prepared GenericObject payload written to:', outObjectFile);
-          console.log('\nRun with credentials or execute cURL:');
-          console.log(result.patchCommand.curlCommand);
+          console.log(
+            `  ✓ GenericObject (${result.genericObject.id}): ${syncRes.objectResult.operation} [HTTP ${syncRes.objectResult.statusCode}]`
+          );
+          if (syncRes.objectResult.statusCode >= 300) {
+            console.error('    Object Response:', JSON.stringify(syncRes.objectResult.body));
+          }
+        } catch (err) {
+          console.error('  ✗ REST API Error:', err.message);
         }
-        return;
       }
 
-      // Default: `generate` / `jwt`
-      console.log('\n1. SIGNED SAVE-TO-GOOGLE-WALLET LINK:');
+      console.log('\n1. SIGNED SAVE-TO-GOOGLE-WALLET LINK (RS256):');
       console.log(result.saveUrl);
 
-      console.log('\n2. SCANNABLE QR CODE (Point Pixel / Android Camera at Terminal):');
-      console.log(SmartWalletQR.toTerminalString(result.genericObject.barcode.value, { ecLevel: 'L', margin: 2 }));
+      console.log('\n2. SCANNABLE SAVE-TO-WALLET QR CODE (Point Pixel 11 Pro XL Camera Here):');
+      console.log(SmartWalletQR.toTerminalString(result.saveUrl, { ecLevel: 'L', margin: 2 }));
 
-      console.log('\n3. AUTO-UPDATE PATCH COMMAND (Push changes automatically to phones):');
+      console.log('\n3. AUTO-UPDATE PATCH COMMAND:');
       console.log('   ' + result.patchCommand.nodeCommand);
-      console.log('\n   Or via REST API cURL:');
-      console.log(
-        result.patchCommand.curlCommand
-          .split('\n')
-          .map((l) => '   ' + l)
-          .join('\n')
-      );
       console.log('========================================================================');
     })();
   }
 
   return {
+    DEFAULT_ISSUER_ID,
     buildGenericClass,
     buildGenericObject,
     buildJwtClaims,

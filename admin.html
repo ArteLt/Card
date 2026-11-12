@@ -1173,9 +1173,9 @@
         <button
           type="button"
           id="tabBtnOption1"
-          class="mode-tab-btn active"
+          class="mode-tab-btn"
           role="tab"
-          aria-selected="true"
+          aria-selected="false"
         >
           <span class="mode-tab-title">
             <span>Option 1: Quick Pixel Wallet Pass</span>
@@ -1187,9 +1187,9 @@
         <button
           type="button"
           id="tabBtnOption2"
-          class="mode-tab-btn"
+          class="mode-tab-btn active"
           role="tab"
-          aria-selected="false"
+          aria-selected="true"
         >
           <span class="mode-tab-title">
             <span>Option 2: Official Google Wallet API</span>
@@ -1202,7 +1202,7 @@
       <!-- ====================================================================
            OPTION 1: QUICK PIXEL WALLET PASS (ZERO CLOUD SETUP · 1080x1920 PNG)
            ==================================================================== -->
-      <div id="paneOption1" class="wallet-option-pane active" role="tabpanel">
+      <div id="paneOption1" class="wallet-option-pane" role="tabpanel">
         <div class="opt1-grid">
           <!-- High-DPI 1080x1920 Canvas Preview -->
           <div class="canvas-phone-frame">
@@ -1270,7 +1270,7 @@
       <!-- ====================================================================
            OPTION 2: OFFICIAL GOOGLE WALLET API PASS (GenericObject JWT + PATCH)
            ==================================================================== -->
-      <div id="paneOption2" class="wallet-option-pane" role="tabpanel">
+      <div id="paneOption2" class="wallet-option-pane active" role="tabpanel">
         <!-- 1. Hero Banner Generator (1032 x 336 px) -->
         <div class="form-section">
           <div class="section-subtitle">
@@ -1293,7 +1293,7 @@
           <div class="field-grid">
             <div class="field-group">
               <label for="gwIssuerId">Google Wallet Issuer ID</label>
-              <input type="text" id="gwIssuerId" class="form-input mono-input" value="3388000000022948101" />
+              <input type="text" id="gwIssuerId" class="form-input mono-input" value="3388000000023225565" />
             </div>
             <div class="field-group">
               <label for="gwClassSuffix">GenericClass Suffix</label>
@@ -1305,7 +1305,7 @@
             </div>
             <div class="field-group">
               <label for="gwHubBaseUrl">Public Hub URL (for Pass QR Barcode)</label>
-              <input type="url" id="gwHubBaseUrl" class="form-input mono-input" value="https://artelt.github.io/Card/index.html" />
+              <input type="url" id="gwHubBaseUrl" class="form-input mono-input" value="https://artelt.github.io/Card/" />
             </div>
             <div class="field-group field-full">
               <label for="gwServiceAccountFile">Optional: Load GCP <code>service-account.json</code> (Signs Live RS256 JWT in Browser Memory)</label>
@@ -1390,8 +1390,8 @@
     (function () {
       'use strict';
 
-      const STORAGE_KEY = 'smart_wallet_profiles_v2_3';
-      const KEYS_STORAGE_KEY = 'smart_wallet_admin_keys_v2_3';
+      const STORAGE_KEY = 'smart_wallet_profiles_v2_4';
+      const KEYS_STORAGE_KEY = 'smart_wallet_admin_keys_v2_4';
       const DEFAULT_PROFILE_KEYS = Object.assign({}, window.SMART_WALLET_LOCAL_KEYS || {});
 
       /**
@@ -1421,7 +1421,7 @@
 
       let db = null;
       let activeUserId = 'artautas';
-      let loadedServiceAccount = null;
+      let loadedServiceAccount = window.SMART_WALLET_LOCAL_SERVICE_ACCOUNT || null;
       let lastJwtResult = null;
       let opt2QrTarget = 'saveUrl';
       let paperNoisePatternCanvas = null;
@@ -1743,7 +1743,7 @@
           typography: Object.assign({}, DEFAULT_TYPOGRAPHY),
           theme: Object.assign({}, THEME_PRESETS.sapphire),
           walletConfig: {
-            issuerId: '3388000000022948101',
+            issuerId: '3388000000023225565',
             classSuffix: 'executive_sapphire_card',
             objectSuffix: `${slug}_card`
           }
@@ -1792,7 +1792,7 @@
         setColorInputs('AccentSecondary', theme.accentSecondary || '#B8C4D0');
 
         const wCfg = prof.walletConfig || {};
-        document.getElementById('gwIssuerId').value = wCfg.issuerId || '3388000000022948101';
+        document.getElementById('gwIssuerId').value = wCfg.issuerId || '3388000000023225565';
         document.getElementById('gwClassSuffix').value = wCfg.classSuffix || 'executive_sapphire_card';
         document.getElementById('gwObjectSuffix').value = wCfg.objectSuffix || `${prof.id}_card`;
 
@@ -1900,7 +1900,7 @@
         };
 
         prof.walletConfig = {
-          issuerId: document.getElementById('gwIssuerId').value.trim() || '3388000000022948101',
+          issuerId: document.getElementById('gwIssuerId').value.trim() || '3388000000023225565',
           classSuffix: document.getElementById('gwClassSuffix').value.trim() || 'executive_sapphire_card',
           objectSuffix: document.getElementById('gwObjectSuffix').value.trim() || `${prof.id}_card`
         };
@@ -2312,25 +2312,42 @@
         const prof = getActiveProfile();
         if (!prof) return;
 
-        const issuerId = document.getElementById('gwIssuerId').value.trim() || '3388000000022948101';
+        const issuerId = document.getElementById('gwIssuerId').value.trim() || '3388000000023225565';
         const classSuffix = document.getElementById('gwClassSuffix').value.trim() || 'executive_sapphire_card';
         const objectSuffix = document.getElementById('gwObjectSuffix').value.trim() || `${prof.id}_card`;
         const hubBaseUrl =
           document.getElementById('gwHubBaseUrl').value.trim() ||
-          'https://artelt.github.io/Card/index.html';
+          'https://artelt.github.io/Card/';
         const secretKey = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+        const heroBannerUrl = `https://artelt.github.io/Card/hero-${prof.id || 'artautas'}.png`;
 
-        const result = await SmartWalletPassAPI.createSaveToWalletJwt(prof, {
+        let result = await SmartWalletPassAPI.createSaveToWalletJwt(prof, {
           issuerId,
           classSuffix,
           objectSuffix,
           secretKey,
           hubBaseUrl,
+          heroBannerUrl,
+          skinnyJwt: true,
           serviceAccountEmail:
             (loadedServiceAccount && loadedServiceAccount.client_email) ||
-            'wallet-pass-issuer@smart-wallet-cards.iam.gserviceaccount.com',
+            'wallet-pass-issuer@project-71308897-865e-49aa-830.iam.gserviceaccount.com',
           privateKeyPem: (loadedServiceAccount && loadedServiceAccount.private_key) || ''
         });
+
+        // If browser is running on file:// where WebCrypto may fallback, use the pre-signed RS256 JWT from local-keys.js if matching
+        if (
+          result.signedMode !== 'service-account-rs256' &&
+          window.SMART_WALLET_PRE_SIGNED_JWTS &&
+          window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id]
+        ) {
+          const preSigned = window.SMART_WALLET_PRE_SIGNED_JWTS[prof.id];
+          if (preSigned.objectId === `${issuerId}.${objectSuffix}`) {
+            result.jwt = preSigned.jwt;
+            result.saveUrl = preSigned.saveUrl;
+            result.signedMode = 'service-account-rs256';
+          }
+        }
 
         lastJwtResult = result;
 
@@ -2645,11 +2662,11 @@
           const url = canvas.toDataURL('image/png');
           const a = document.createElement('a');
           a.href = url;
-          a.download = `hero-banner-1032x336-${activeUserId}.png`;
+          a.download = `hero-${activeUserId}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          showToast('Downloaded 1032×336 Hero Banner PNG!');
+          showToast(`Downloaded 1032×336 hero-${activeUserId}.png!`);
         });
 
         document.getElementById('gwServiceAccountFile').addEventListener('change', (e) => {
