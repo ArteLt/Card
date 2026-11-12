@@ -1,13 +1,13 @@
 {
   "version": "2.3.0",
-  "updatedAt": "2026-11-12T02:07:00Z",
+  "updatedAt": "2026-11-12T19:29:15.538Z",
   "defaultProfile": "artautas",
   "securityPolicy": "AES-XOR-SHA256-SWC1 (noindex, nofollow, zero-plaintext, zero-hardcoded-key)",
   "profiles": {
     "artautas": {
       "id": "artautas",
-      "name": "Artautas Šimkus, LL.M.",
-      "vcardName": "Šimkus;Artautas;;;LL.M.",
+      "name": "Artautas Simkus, LL.M.",
+      "vcardName": "Simkus;Artautas;;;LL.M.",
       "firstName": "Artautas",
       "tagline": "Lawyer (LL.M.) | Legal Translator | European Company Law | Business Development | Startup Ecosystems",
       "taglineLines": [
@@ -17,8 +17,8 @@
       ],
       "slogan": "LET'S CONNECT.",
       "walletTopLabel": "HEIDELBERG · GERMANY",
-      "encryptedPhone": "SWC1:c94a17e280b3:652bd366e6e5:4318b55f0286abb32ce2840def",
-      "encryptedEmail": "SWC1:d52f98a416e7:03d515f09f7d:4d55b6fc7fd4fd87bf6ec2f3f326adff83fe3b2d8c7c1589df",
+      "encryptedPhone": "SWC1:62417b5b496c:f01006cc5f7e:6be2e8af074f3b3113816b9970",
+      "encryptedEmail": "SWC1:c47cdd001788:0d232d71f642:edbd3f726233dea8e48ce34cc6db99d1f58746e30838ec9dcb",
       "location": "Heidelberg, Germany",
       "linkedin": "https://www.linkedin.com/in/artautas/",
       "linkedinDisplay": "linkedin.com/in/artautas",
@@ -33,7 +33,7 @@
       },
       "theme": {
         "preset": "deep-sapphire",
-        "name": "Deep Sapphire & Matte Silver",
+        "name": "Deep Sapphire & Matte Silver (Default)",
         "bgGradientStart": "#163A63",
         "bgGradientEnd": "#0B213B",
         "accentColor": "#C8D2DC",
@@ -44,7 +44,7 @@
         "bgPrimary": "#163A63",
         "bgCenter": "#0F2B4C",
         "bgSecondary": "#0B213B",
-        "accentPrimary": "#D6DEE7",
+        "accentPrimary": "#C8D2DC",
         "accentSecondary": "#B8C4D0"
       },
       "walletConfig": {
