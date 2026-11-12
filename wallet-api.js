@@ -167,7 +167,7 @@
     const hexBg = (profile.theme && profile.theme.bgPrimary) || '#163A63';
     const linkedinUrl = profile.linkedin || 'https://www.linkedin.com/in/artautas/';
     const cardTitleText = profile.walletTopLabel || 'HEIDELBERG · GERMANY';
-    const avatarUrl = `https://artelt.github.io/Card/avatar-${profile.id || 'artautas'}.png`;
+    const avatarUrl = profile.avatarUrl || `https://artelt.github.io/Card/avatar-${profile.id || 'artautas'}.png`;
 
     return {
       id: objectId,
@@ -532,6 +532,22 @@
     } else {
       classResult = classCheck;
       classResult.operation = `CHECK_FAILED (${classCheck.statusCode})`;
+    }
+
+    // Verify logo image URL is reachable so Google Wallet never throws 400 Bad Request
+    if (genericObject.logo && genericObject.logo.sourceUri && genericObject.logo.sourceUri.uri) {
+      const logoUri = genericObject.logo.sourceUri.uri;
+      try {
+        const check = await httpsJsonRequest(logoUri, 'GET', {}, null);
+        if (check.statusCode === 404 && logoUri.endsWith('.png')) {
+          const fallbackJpg = logoUri.replace(/\.png$/, '.jpg').replace(/avatar-/, '');
+          const checkJpg = await httpsJsonRequest(fallbackJpg, 'GET', {}, null);
+          if (checkJpg.statusCode === 200) {
+            console.log(`  [INFO] Logo ${logoUri} not yet on GitHub Pages, auto-falling back to ${fallbackJpg}`);
+            genericObject.logo.sourceUri.uri = fallbackJpg;
+          }
+        }
+      } catch (e) {}
     }
 
     // 2. Upsert GenericObject
