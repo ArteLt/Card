@@ -10,22 +10,23 @@
   <meta name="theme-color" content="#121316" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Digital Business Card</title>
+  <title>Digital Executive Card</title>
 
   <!-- Profiles Data & Cryptography Pre-loaded in Head for Zero-Flash Startup -->
   <script src="profiles-data.js"></script>
   <script src="crypto-vault.js"></script>
   <script>
-    // Synchronous Pre-Paint Theme & Profile Resolver
-    // Applies target profile's theme CSS variables before initial browser paint
+    // Synchronous Pre-Paint Theme & Profile Resolver + Clean URL Stripper
+    // Applies target profile's theme CSS variables before initial browser paint and strips &k= from address bar
     (function () {
       try {
+        var creds = window.SmartWalletCrypto
+          ? window.SmartWalletCrypto.parseUrlCredentials(window.location)
+          : { user: '', key: '' };
         var params = new URLSearchParams(window.location.search);
-        var targetUser = params.get('u');
-        if (!targetUser && window.location.hash) {
-          var hashMatch = window.location.hash.match(/^#([a-zA-Z0-9_-]+)/);
-          if (hashMatch) targetUser = hashMatch[1];
-        }
+        var targetUser = params.get('u') || creds.user || '';
+        var isAdmin = params.get('admin') === '1';
+
         var store = null;
         try {
           var local = localStorage.getItem('smart_wallet_profiles_v2_4');
@@ -34,31 +35,66 @@
         if (!store && window.SMART_WALLET_DEFAULT_PROFILES) {
           store = window.SMART_WALLET_DEFAULT_PROFILES;
         }
-        if (store && store.profiles) {
-          var defaultId = store.defaultProfile || 'artautas';
-          var prof = (targetUser && store.profiles[targetUser]) || store.profiles[defaultId] || Object.values(store.profiles)[0];
-          if (prof) {
-            if (prof.name) {
-              document.title = prof.name + ' · Digital Business Card';
+
+        var defaultId = (store && store.defaultProfile) || 'artautas';
+        var prof =
+          store && store.profiles
+            ? (targetUser && store.profiles[targetUser]) || store.profiles[defaultId] || Object.values(store.profiles)[0]
+            : null;
+        var resolvedSlug = (prof && prof.id) || targetUser || defaultId;
+
+        window.__SWC_BOOTSTRAP = {
+          user: resolvedSlug,
+          key: creds.key || '',
+          isAdmin: isAdmin
+        };
+
+        try {
+          var cleanUrl =
+            window.location.pathname +
+            '?u=' +
+            encodeURIComponent(resolvedSlug) +
+            (isAdmin ? '&admin=1' : '');
+          if (window.history && typeof window.history.replaceState === 'function') {
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+        } catch (e) {}
+
+        if (prof) {
+          if (prof.name) {
+            document.title = prof.name + ' \u2014 Digital Executive Card';
+          }
+          if (prof.theme) {
+            var th = prof.theme;
+            var root = document.documentElement;
+            var bgStart = th.bgGradientStart || th.bgPrimary;
+            var bgEnd = th.bgGradientEnd || th.bgSecondary;
+            var accent = th.accentColor || th.accentPrimary;
+            if (bgStart) {
+              root.style.setProperty('--bg-start', bgStart);
+              root.style.setProperty('--sapphire-top', bgStart);
             }
-            if (prof.theme) {
-              var th = prof.theme;
-              var root = document.documentElement;
-              if (th.bgGradientStart) root.style.setProperty('--bg-start', th.bgGradientStart);
-              if (th.bgGradientEnd) root.style.setProperty('--bg-end', th.bgGradientEnd);
-              if (th.accentColor) {
-                root.style.setProperty('--accent-metal', th.accentColor);
-                var m = th.accentColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-                if (m) {
-                  root.style.setProperty('--accent-rgb', parseInt(m[1], 16) + ', ' + parseInt(m[2], 16) + ', ' + parseInt(m[3], 16));
-                }
+            if (bgEnd) {
+              root.style.setProperty('--bg-end', bgEnd);
+              root.style.setProperty('--sapphire-deep', bgEnd);
+            }
+            if (accent) {
+              root.style.setProperty('--accent-metal', accent);
+              root.style.setProperty('--silver-title', accent);
+              root.style.setProperty('--silver-tagline', th.accentSecondary || accent);
+              var m = accent.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+              if (m) {
+                root.style.setProperty(
+                  '--accent-rgb',
+                  parseInt(m[1], 16) + ', ' + parseInt(m[2], 16) + ', ' + parseInt(m[3], 16)
+                );
               }
-              if (th.borderStyle === 'double-executive-frame') {
-                root.style.setProperty('--card-border', '1.5px solid rgba(' + (th.accentColor || '#C8D2DC') + ', 0.45)');
-              } else if (th.borderStyle === 'minimal-borderless') {
-                root.style.setProperty('--card-border', 'none');
-                root.style.setProperty('--card-inset-shadow', 'none');
-              }
+            }
+            if (th.borderStyle === 'double-executive-frame') {
+              root.style.setProperty('--card-border', '1.5px solid color-mix(in srgb, var(--accent-metal) 45%, transparent)');
+            } else if (th.borderStyle === 'minimal-borderless') {
+              root.style.setProperty('--card-border', 'none');
+              root.style.setProperty('--card-inset-shadow', 'none');
             }
           }
         }
@@ -102,8 +138,11 @@
     html, body {
       min-height: 100%;
       min-height: 100dvh;
-      /* Deep matte studio charcoal (#121316, no grid lines) */
+      /* Deep matte studio charcoal with subtle radial theme glow */
       background-color: var(--studio-charcoal);
+      background-image:
+        radial-gradient(ellipse 85% 42% at 50% 0%, color-mix(in srgb, var(--bg-start) 26%, transparent), transparent 72%),
+        radial-gradient(ellipse 75% 38% at 50% 100%, color-mix(in srgb, var(--bg-end) 20%, transparent), transparent 76%);
       color: var(--silver-title);
       font-family: var(--font-sans);
       -webkit-font-smoothing: antialiased;
@@ -143,8 +182,8 @@
       height: 30px;
       padding: 0 11px;
       border-radius: 999px;
-      background: rgba(22, 58, 99, 0.45);
-      border: 1px solid rgba(180, 200, 225, 0.2);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 48%, #080A0E), color-mix(in srgb, var(--bg-end) 68%, #05070A));
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 24%, transparent);
       color: var(--silver-tagline);
       font-size: 11px;
       font-weight: 600;
@@ -154,9 +193,9 @@
     }
 
     .icon-btn:hover {
-      background: rgba(22, 58, 99, 0.75);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 68%, #080A0E), color-mix(in srgb, var(--bg-end) 82%, #05070A));
       color: var(--silver-title);
-      border-color: rgba(180, 200, 225, 0.35);
+      border-color: color-mix(in srgb, var(--accent-metal) 38%, transparent);
     }
 
     /* ==========================================================================
@@ -276,8 +315,8 @@
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #D6DEE7;
-      background: linear-gradient(180deg, #EBF0F5 0%, #D6DEE7 48%, #B0BCC9 100%);
+      color: var(--accent-metal);
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--accent-metal) 48%, color-mix(in srgb, var(--accent-metal) 72%, #181A1F) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -286,7 +325,7 @@
       white-space: nowrap !important;
     }
 
-    /* Directly underneath: Centered, no pill backgrounds, crisp matte silver #B8C4D0 */
+    /* Directly underneath: Centered, no pill backgrounds, crisp metallic accent */
     .front-tagline-stack {
       display: flex;
       flex-direction: column;
@@ -298,7 +337,7 @@
     .tagline-line {
       display: inline-block;
       font-family: var(--font-display);
-      color: #B8C4D0;
+      color: color-mix(in srgb, var(--accent-metal) 92%, #FFFFFF 8%);
       font-size: 0.62rem;
       font-weight: 500;
       letter-spacing: 0.11em;
@@ -340,13 +379,13 @@
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #D6DEE7;
+      color: var(--accent-metal);
     }
 
     .back-nfc-icon {
       width: 19px;
       height: 19px;
-      color: #C8D2DC;
+      color: var(--accent-metal);
       opacity: 0.9;
     }
 
@@ -391,7 +430,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #C8D2DC;
+      color: var(--accent-metal);
       text-decoration: none;
       font-family: var(--font-sans);
       font-size: 0.74rem;
@@ -416,8 +455,8 @@
       width: 13px;
       height: 13px;
       border-radius: 2px;
-      background: #C8D2DC;
-      color: #0F2B4C;
+      background: var(--accent-metal);
+      color: var(--bg-end);
       font-family: var(--font-sans);
       font-size: 9px;
       font-weight: 800;
@@ -432,8 +471,8 @@
       gap: 7px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(22, 58, 99, 0.28);
-      border: 1px solid rgba(180, 200, 225, 0.16);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 40%, #080A0E), color-mix(in srgb, var(--bg-end) 60%, #05070A));
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 24%, transparent);
       color: var(--silver-tagline);
       font-family: var(--font-sans);
       font-size: 11.5px;
@@ -444,9 +483,9 @@
     }
 
     .flip-pill-btn:hover {
-      background: rgba(22, 58, 99, 0.48);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 60%, #080A0E), color-mix(in srgb, var(--bg-end) 78%, #05070A));
       color: var(--silver-title);
-      border-color: rgba(180, 200, 225, 0.3);
+      border-color: color-mix(in srgb, var(--accent-metal) 38%, transparent);
     }
 
     .flip-pill-side {
@@ -455,9 +494,9 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--silver-tagline);
-      opacity: 0.8;
+      opacity: 0.85;
       padding-left: 6px;
-      border-left: 1px solid rgba(180, 200, 225, 0.2);
+      border-left: 1px solid color-mix(in srgb, var(--accent-metal) 25%, transparent);
     }
 
     /* ==========================================================================
@@ -492,11 +531,11 @@
       transform: scale(0.985);
     }
 
-    /* 1. Primary Silver/White CTA ("Save to Contacts") */
+    /* 1. Primary Metallic CTA ("Save to Contacts") */
     .hub-btn-primary {
-      background: linear-gradient(135deg, #EBF0F5 0%, #D6DEE7 55%, #B8C4D0 100%);
-      color: #0B213B;
-      border-color: rgba(255, 255, 255, 0.65);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent-metal) 36%, #FFFFFF) 0%, var(--accent-metal) 56%, color-mix(in srgb, var(--accent-metal) 80%, #121316) 100%);
+      color: color-mix(in srgb, var(--bg-end) 88%, #000000);
+      border-color: color-mix(in srgb, var(--accent-metal) 70%, #FFFFFF);
       box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.65);
     }
 
@@ -505,19 +544,19 @@
       box-shadow: 0 16px 30px -6px rgba(0, 0, 0, 0.75);
     }
 
-    /* 2. Secondary Dark-Sapphire Glassmorphism CTA */
+    /* 2. Secondary Theme Glassmorphism CTA */
     .hub-btn-glass {
-      background: linear-gradient(135deg, rgba(22, 58, 99, 0.52) 0%, rgba(11, 33, 59, 0.72) 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 55%, #080A0E), color-mix(in srgb, var(--bg-end) 75%, #05070A));
       color: var(--silver-title);
-      border: 1px solid rgba(180, 200, 225, 0.18);
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 28%, transparent);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.55);
     }
 
     .hub-btn-glass:hover {
-      border-color: rgba(180, 200, 225, 0.34);
-      background: linear-gradient(135deg, rgba(22, 58, 99, 0.68) 0%, rgba(15, 43, 76, 0.85) 100%);
+      border-color: color-mix(in srgb, var(--accent-metal) 44%, transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 70%, #080A0E), color-mix(in srgb, var(--bg-end) 85%, #05070A));
       transform: translateY(-1px);
     }
 
@@ -540,15 +579,16 @@
     }
 
     .hub-btn-primary .btn-icon-box {
-      background: linear-gradient(135deg, #163A63 0%, #0B213B 100%);
-      color: #EBF0F5;
-      box-shadow: 0 3px 8px rgba(11, 33, 59, 0.3);
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      color: var(--accent-metal);
+      box-shadow: 0 3px 8px color-mix(in srgb, var(--bg-end) 45%, transparent);
     }
 
-    .hub-btn-glass .btn-icon-box {
-      background: rgba(214, 222, 231, 0.08);
-      border: 1px solid rgba(180, 200, 225, 0.16);
-      color: var(--silver-title);
+    .hub-btn-glass .btn-icon-box,
+    .whatsapp-trigger .btn-icon-box {
+      background: color-mix(in srgb, var(--accent-metal) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 22%, transparent);
+      color: var(--accent-metal);
     }
 
     .vcard-btn-avatar {
@@ -592,8 +632,8 @@
     /* 3. Two-Way Contact Exchange Drawer (WhatsApp) */
     .whatsapp-card-wrapper {
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(22, 58, 99, 0.52) 0%, rgba(11, 33, 59, 0.72) 100%);
-      border: 1px solid rgba(180, 200, 225, 0.18);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 55%, #080A0E), color-mix(in srgb, var(--bg-end) 75%, #05070A));
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 28%, transparent);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.55);
@@ -602,7 +642,7 @@
     }
 
     .whatsapp-card-wrapper.open {
-      border-color: rgba(180, 200, 225, 0.34);
+      border-color: color-mix(in srgb, var(--accent-metal) 44%, transparent);
     }
 
     .whatsapp-trigger {
@@ -628,7 +668,7 @@
     .whatsapp-drawer-body {
       display: none;
       padding: 6px 16px 16px;
-      border-top: 1px solid rgba(180, 200, 225, 0.12);
+      border-top: 1px solid color-mix(in srgb, var(--accent-metal) 16%, transparent);
     }
 
     .whatsapp-card-wrapper.open .whatsapp-drawer-body {
@@ -656,8 +696,8 @@
       height: 38px;
       padding: 0 12px;
       border-radius: 8px;
-      border: 1px solid rgba(180, 200, 225, 0.2);
-      background: rgba(11, 24, 42, 0.72);
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 24%, transparent);
+      background: color-mix(in srgb, var(--bg-end) 72%, #05070A);
       color: var(--silver-title);
       font-family: var(--font-sans);
       font-size: 13px;
@@ -666,7 +706,7 @@
     }
 
     .drawer-input::placeholder {
-      color: rgba(184, 196, 208, 0.45);
+      color: color-mix(in srgb, var(--accent-metal) 45%, transparent);
     }
 
     .drawer-input:focus {
@@ -677,9 +717,9 @@
       margin-top: 4px;
       height: 42px;
       border-radius: 9px;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      background: linear-gradient(135deg, #EBF0F5 0%, #B8C4D0 100%);
-      color: #0B213B;
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 55%, #FFFFFF);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent-metal) 36%, #FFFFFF) 0%, var(--accent-metal) 100%);
+      color: color-mix(in srgb, var(--bg-end) 88%, #000000);
       font-family: var(--font-sans);
       font-size: 13px;
       font-weight: 700;
@@ -710,8 +750,8 @@
       gap: 6px;
       height: 38px;
       border-radius: 10px;
-      background: rgba(22, 58, 99, 0.28);
-      border: 1px solid rgba(180, 200, 225, 0.15);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 44%, #080A0E), color-mix(in srgb, var(--bg-end) 68%, #05070A));
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 24%, transparent);
       color: var(--silver-tagline);
       font-size: 11.5px;
       font-weight: 600;
@@ -721,9 +761,9 @@
     }
 
     .quick-pill:hover {
-      background: rgba(22, 58, 99, 0.5);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--bg-start) 64%, #080A0E), color-mix(in srgb, var(--bg-end) 82%, #05070A));
       color: var(--silver-title);
-      border-color: rgba(180, 200, 225, 0.28);
+      border-color: color-mix(in srgb, var(--accent-metal) 38%, transparent);
     }
 
     /* Fullscreen QR Code Modal */
@@ -748,8 +788,8 @@
       width: 100%;
       max-width: 340px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #163A63 0%, #0F2B4C 50%, #0B213B 100%);
-      border: 1px solid rgba(180, 200, 225, 0.25);
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 28%, transparent);
       padding: 24px 20px 20px;
       display: flex;
       flex-direction: column;
@@ -771,8 +811,8 @@
       bottom: 22px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: rgba(15, 43, 76, 0.96);
-      border: 1px solid rgba(180, 200, 225, 0.3);
+      background: color-mix(in srgb, var(--bg-end) 92%, #080A0E);
+      border: 1px solid color-mix(in srgb, var(--accent-metal) 32%, transparent);
       color: var(--silver-title);
       padding: 9px 16px;
       border-radius: 999px;
@@ -1022,9 +1062,7 @@
         LET'S CONNECT.
       </div>
       <div id="qrModalBox" class="qr-modal-box"></div>
-      <div id="qrModalProfileName" style="font-weight:600;font-size:14px;color:var(--silver-title);">
-        Artautas Šimkus, LL.M.
-      </div>
+      <div id="qrModalProfileName" style="font-weight:600;font-size:14px;color:var(--silver-title);"></div>
       <button type="button" id="closeQrModalBtn" class="whatsapp-send-btn" style="width:100%;height:38px;margin-top:4px;">
         Close
       </button>
@@ -1178,8 +1216,18 @@
       }
 
       function formatPhoneReadable(phoneStr) {
-        const clean = String(phoneStr || '').trim();
-        return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+        const raw = String(phoneStr || '').trim();
+        if (!raw.startsWith('+')) return raw;
+        const compact = '+' + raw.slice(1).replace(/\D/g, '');
+        const cc3Match = compact.match(/^\+(370|371|372|35[1-9]|380|420|421)(\d{3})(\d+)$/);
+        if (cc3Match) {
+          return `+${cc3Match[1]} ${cc3Match[2]} ${cc3Match[3]}`;
+        }
+        const cc2Match = compact.match(/^\+(\d{2})(\d{3})(\d+)$/);
+        if (cc2Match) {
+          return `+${cc2Match[1]} ${cc2Match[2]} ${cc2Match[3]}`;
+        }
+        return raw;
       }
 
       async function loadProfilesDatabase() {
@@ -1287,9 +1335,6 @@
       function getCurrentShareUrl() {
         const base = window.location.href.split('?')[0].split('#')[0];
         const uid = currentProfile ? currentProfile.id : 'artautas';
-        if (currentKey && decryptedState.unlocked) {
-          return `${base}?u=${encodeURIComponent(uid)}&k=${encodeURIComponent(currentKey)}`;
-        }
         return `${base}?u=${encodeURIComponent(uid)}`;
       }
 
@@ -1298,9 +1343,15 @@
 
         applyThemeColors(currentProfile.theme);
 
-        // Decrypt sensitive fields in memory ONLY when a valid key (?k= or #user:key) is provided in URL
-        const phoneDec = SmartWalletCrypto.decryptField(currentProfile.encryptedPhone, currentKey);
-        const emailDec = SmartWalletCrypto.decryptField(currentProfile.encryptedEmail, currentKey);
+        // Decrypt with URL key if passed (backward compat), or automatically decode via slug wrapper for clean ?u=<user> URLs
+        let phoneDec = SmartWalletCrypto.decryptField(currentProfile.encryptedPhone, currentKey);
+        let emailDec = SmartWalletCrypto.decryptField(currentProfile.encryptedEmail, currentKey);
+        if (!phoneDec.unlocked && currentProfile.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          phoneDec = SmartWalletCrypto.unsealForSlug(currentProfile.obfuscatedPhone, currentProfile.id);
+        }
+        if (!emailDec.unlocked && currentProfile.obfuscatedEmail && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          emailDec = SmartWalletCrypto.unsealForSlug(currentProfile.obfuscatedEmail, currentProfile.id);
+        }
 
         const isUnlocked = phoneDec.unlocked && emailDec.unlocked;
         decryptedState = {
@@ -1404,12 +1455,13 @@
           if (waWrapper) waWrapper.style.display = 'none';
         }
 
-        // Render Crisp Silver/White QR Code on Transparent/Sapphire Background
+        // Render Crisp Metallic QR Code on Transparent/Themed Background
         const shareUrl = getCurrentShareUrl();
+        const qrAccent = (currentProfile.theme && currentProfile.theme.accentColor) || '#D6DEE7';
         const qrSvg = SmartWalletQR.toSvgString(shareUrl, {
           ecLevel: 'M',
           margin: 0,
-          darkColor: '#D6DEE7',
+          darkColor: qrAccent,
           lightColor: 'transparent',
           rounded: false
         });
@@ -1418,12 +1470,12 @@
         document.getElementById('qrModalProfileName').textContent = currentProfile.name;
 
         if (currentProfile.name) {
-          document.title = `${currentProfile.name} · Digital Business Card`;
+          document.title = `${currentProfile.name} — Digital Executive Card`;
         }
 
         const studioLink = document.getElementById('studioNavLink');
         if (studioLink) {
-          studioLink.href = `admin.html?u=${encodeURIComponent(currentProfile.id)}&k=${encodeURIComponent(currentKey)}`;
+          studioLink.href = `admin.html?u=${encodeURIComponent(currentProfile.id)}`;
         }
 
         const stage = document.querySelector('.card-stage');
@@ -1444,6 +1496,22 @@
         return chunks.join('\r\n');
       }
 
+      function formatVcardStructuredNameFallback(fullName) {
+        if (!fullName) return ';;;;';
+        let clean = String(fullName).trim();
+        let suffix = '';
+        const suffixMatch = clean.match(/,\s*([A-Za-z0-9\.\s]+)$/);
+        if (suffixMatch) {
+          suffix = suffixMatch[1].trim();
+          clean = clean.replace(/,\s*[A-Za-z0-9\.\s]+$/, '').trim();
+        }
+        const parts = clean.split(/\s+/).filter(Boolean);
+        if (parts.length === 1) return `;${parts[0]};;;${suffix}`;
+        const last = parts[parts.length - 1];
+        const first = parts.slice(0, parts.length - 1).join(' ');
+        return `${last};${first};;;${suffix}`;
+      }
+
       /**
        * Generates and downloads a standards-compliant VCARD 3.0 (.vcf) in memory.
        */
@@ -1456,7 +1524,11 @@
         }
 
         const fullName = currentProfile.name || 'Artautas Šimkus, LL.M.';
-        const structuredName = currentProfile.vcardName || 'Šimkus;Artautas;;;LL.M.';
+        const rawStructured = String(currentProfile.vcardName || '').trim();
+        const structuredName =
+          rawStructured && !rawStructured.startsWith(';')
+            ? rawStructured
+            : formatVcardStructuredNameFallback(fullName);
         const title =
           currentProfile.tagline ||
           'Lawyer (LL.M.) | Legal Translator | European Company Law | Business Development | Startup Ecosystems';
@@ -1617,25 +1689,45 @@
             currentProfile = profilesStore.profiles[creds.user];
           }
           currentKey = creds.key || '';
+          const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+          const uid = (currentProfile && currentProfile.id) || creds.user;
+          try {
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname + '?u=' + encodeURIComponent(uid) + (isAdmin ? '&admin=1' : '')
+            );
+          } catch (e) {}
           renderProfileUI();
         });
       }
 
       async function init() {
         await loadProfilesDatabase();
+        const boot = window.__SWC_BOOTSTRAP || {};
         const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
         const profileMap = (profilesStore && profilesStore.profiles) || {};
         const defaultId = (profilesStore && profilesStore.defaultProfile) || 'artautas';
+        const targetUser = boot.user || creds.user || defaultId;
 
-        currentProfile = profileMap[creds.user] || profileMap[defaultId] || Object.values(profileMap)[0];
-        // Unlock ONLY when secret key ?k= (or #user:key) is provided in URL
-        currentKey = creds.key || '';
+        currentProfile = profileMap[targetUser] || profileMap[defaultId] || Object.values(profileMap)[0];
+        // Backward compatibility: preserve ?k= in memory if passed, while keeping address bar clean
+        currentKey = boot.key || creds.key || '';
 
-        // Show top QR & Wallet Studio navigation buttons ONLY if ?admin=1 is in the URL
         const searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get('admin') === '1') {
+        const isAdmin = Boolean(boot.isAdmin || searchParams.get('admin') === '1');
+        if (isAdmin) {
           document.getElementById('adminTopBar').classList.add('visible');
         }
+
+        const resolvedUid = (currentProfile && currentProfile.id) || targetUser;
+        try {
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname + '?u=' + encodeURIComponent(resolvedUid) + (isAdmin ? '&admin=1' : '')
+          );
+        } catch (e) {}
 
         setupInteractions();
         renderProfileUI();

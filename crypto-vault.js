@@ -323,7 +323,7 @@
   }
 
   /**
-   * Builds a shareable URL containing the user slug and secret decryption key.
+   * Builds a shareable URL containing the user slug and (optionally) secret decryption key.
    */
   function buildShareUrl(baseUrl, userId, secretKey, useHashFormat) {
     const cleanBase = String(baseUrl || 'https://artelt.github.io/Card/index.html').split('?')[0].split('#')[0];
@@ -335,11 +335,45 @@
     return k ? `${cleanBase}?u=${uid}&k=${k}` : `${cleanBase}?u=${uid}`;
   }
 
+  /**
+   * Builds a clean direct profile URL (`?u=<user>`) with zero `&k=` exposed.
+   */
+  function buildCleanUrl(baseUrl, userId) {
+    const cleanBase = String(baseUrl || 'https://artelt.github.io/Card/').split('?')[0].split('#')[0];
+    const uid = encodeURIComponent(userId || 'artautas');
+    return `${cleanBase}?u=${uid}`;
+  }
+
+  /**
+   * Derives a deterministic client-side obfuscation key from a user slug.
+   * Allows clean `?u=<user>` URLs to unlock automatically without plaintext PII in JSON.
+   */
+  function deriveSlugKey(userId) {
+    const cleanSlug = String(userId || 'artautas').toLowerCase().trim();
+    return sha256Hex('SWC_SLUG_VAULT_V2|' + cleanSlug).slice(0, 32);
+  }
+
+  function sealForSlug(plainText, userId) {
+    if (!plainText) return '';
+    return encryptField(String(plainText), deriveSlugKey(userId));
+  }
+
+  function unsealForSlug(cipherString, userId) {
+    if (!cipherString) {
+      return { unlocked: false, value: '', ciphertextPreview: 'ENCRYPTED' };
+    }
+    return decryptField(String(cipherString), deriveSlugKey(userId));
+  }
+
   return {
     sha256Hex,
     encryptField,
     decryptField,
     parseUrlCredentials,
-    buildShareUrl
+    buildShareUrl,
+    buildCleanUrl,
+    deriveSlugKey,
+    sealForSlug,
+    unsealForSlug
   };
 });

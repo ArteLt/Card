@@ -71,8 +71,18 @@
   }
 
   function formatPhoneReadable(phoneStr) {
-    const clean = String(phoneStr || '').trim();
-    return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+    const raw = String(phoneStr || '').trim();
+    if (!raw.startsWith('+')) return raw;
+    const compact = '+' + raw.slice(1).replace(/\D/g, '');
+    const cc3Match = compact.match(/^\+(370|371|372|35[1-9]|380|420|421)(\d{3})(\d+)$/);
+    if (cc3Match) {
+      return `+${cc3Match[1]} ${cc3Match[2]} ${cc3Match[3]}`;
+    }
+    const cc2Match = compact.match(/^\+(\d{2})(\d{3})(\d+)$/);
+    if (cc2Match) {
+      return `+${cc2Match[1]} ${cc2Match[2]} ${cc2Match[3]}`;
+    }
+    return raw;
   }
 
   /**
@@ -129,17 +139,21 @@
     const classId = `${opts.issuerId}.${opts.classSuffix}`;
     const objectId = `${opts.issuerId}.${opts.objectSuffix}`;
 
-    const phoneDec = SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
-    const emailDec = SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
-    const phoneDisplay = phoneDec.unlocked ? formatPhoneReadable(phoneDec.value) : '+49 177 6090991';
-    const emailDisplay = emailDec.unlocked ? emailDec.value : 'artautas.simkus@gmail.com';
+    let phoneDec = SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
+    let emailDec = SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
+    if (!phoneDec.unlocked && profile.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+      phoneDec = SmartWalletCrypto.unsealForSlug(profile.obfuscatedPhone, profile.id);
+    }
+    if (!emailDec.unlocked && profile.obfuscatedEmail && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+      emailDec = SmartWalletCrypto.unsealForSlug(profile.obfuscatedEmail, profile.id);
+    }
+    const phoneDisplay = phoneDec.unlocked ? formatPhoneReadable(phoneDec.value) : '';
+    const emailDisplay = emailDec.unlocked ? emailDec.value : '';
 
-    const shareUrl = SmartWalletCrypto.buildShareUrl(
-      opts.hubBaseUrl,
-      profile.id || 'artautas',
-      opts.secretKey,
-      false
-    );
+    const shareUrl =
+      typeof SmartWalletCrypto.buildCleanUrl === 'function'
+        ? SmartWalletCrypto.buildCleanUrl(opts.hubBaseUrl, profile.id || 'artautas')
+        : SmartWalletCrypto.buildShareUrl(opts.hubBaseUrl, profile.id || 'artautas', '', false);
 
     const taglineLines =
       Array.isArray(profile.taglineLines) && profile.taglineLines.length
@@ -214,7 +228,7 @@
       uris.push({
         id: 'phone_call',
         uri: `tel:${telClean}`,
-        description: `📞 Call ${phoneDisplay}`
+        description: `📞 Call: ${phoneDisplay}`
       });
     }
 
@@ -222,7 +236,7 @@
       uris.push({
         id: 'email_direct',
         uri: `mailto:${emailDisplay}`,
-        description: `✉️ Email ${emailDisplay}`
+        description: `✉️ Email: ${emailDisplay}`
       });
     }
 
@@ -1011,7 +1025,7 @@
       console.log('========================================================================');
       console.log(`  Profile        : ${profile.name} (${userId})`);
       console.log(`  Issuer ID      : ${issuerId}`);
-      console.log(`  Theme Hex      : ${result.genericObject.hexBackgroundColor} (Deep Sapphire)`);
+      console.log(`  Theme Hex      : ${result.genericObject.hexBackgroundColor} (${(profile.theme && profile.theme.name) || 'Theme'})`);
       console.log(`  GenericClass   : ${result.genericClass.id}`);
       console.log(`  GenericObject  : ${result.genericObject.id}`);
       console.log(`  Logo Avatar    : ${result.genericObject.logo ? result.genericObject.logo.sourceUri.uri : 'None'}`);

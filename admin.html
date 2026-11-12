@@ -1341,7 +1341,7 @@
                 <div id="adminPreviewSlogan" style="font-family:var(--font-display);font-size:0.88rem;font-weight:500;letter-spacing:0.12em;color:#D6DEE7;">
                   LET'S CONNECT.
                 </div>
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8D2DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="adminPreviewNfcIcon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8D2DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M8.5 14.5A4 4 0 0 1 8.5 9.5"/>
                   <path d="M11.5 17A7.5 7.5 0 0 1 11.5 7"/>
                   <path d="M14.5 19.5a11 11 0 0 1 0-15"/>
@@ -1350,12 +1350,12 @@
               </div>
               <div style="display:grid;grid-template-columns:86px 1fr;gap:16px;align-items:center;margin-top:auto;">
                 <div id="adminPreviewBackQr" style="width:84px;height:84px;"></div>
-                <div style="display:flex;flex-direction:column;gap:4px;text-align:left;font-size:0.74rem;color:#C8D2DC;">
+                <div id="adminPreviewBackDetails" style="display:flex;flex-direction:column;gap:4px;text-align:left;font-size:0.74rem;color:#C8D2DC;">
                   <div id="adminPreviewPhone"></div>
                   <div id="adminPreviewEmail"></div>
                   <div id="adminPreviewLocation"></div>
                   <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:2px;background:#C8D2DC;color:#0F2B4C;font-size:9px;font-weight:800;">in</span>
+                    <span id="adminPreviewLinkedinBadge" style="display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:2px;background:#C8D2DC;color:#0F2B4C;font-size:9px;font-weight:800;">in</span>
                     <span id="adminPreviewLinkedin"></span>
                   </div>
                 </div>
@@ -1403,7 +1403,7 @@
             <span>Option 2: Official Google Wallet API</span>
             <span style="font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(96,165,250,0.2);color:#93C5FD;">JWT + PATCH</span>
           </span>
-          <span class="mode-tab-sub">GenericObject (#163A63) + 1032×336 Hero + Live Screen QR</span>
+          <span class="mode-tab-sub" id="opt2TabSubtitle">GenericObject (#0F2B4C) + 1032×336 Hero + Live Screen QR</span>
         </button>
       </div>
 
@@ -1422,8 +1422,8 @@
             <h3 style="font-family:var(--font-display);font-size:14.5px;font-weight:600;letter-spacing:0.06em;margin-bottom:6px;">
               1080 × 1920 px Vertical Google Wallet Pass
             </h3>
-            <p style="font-size:12.5px;color:var(--silver-matte);line-height:1.5;margin-bottom:14px;">
-              Synchronized with your Deep Sapphire (`#163A63` → `#0F2B4C` → `#0B213B`) &amp; Matte Silver design: brushed paper grain, thin silver frame, single-line auto-fitted Tagline, <code>LET'S CONNECT.</code> + NFC wave, high-contrast QR code on a clean white/silver pad, and matte silver contact details at the bottom.
+            <p id="opt1ThemeDescription" style="font-size:12.5px;color:var(--silver-matte);line-height:1.5;margin-bottom:14px;">
+              Synchronized with your selected profile theme: brushed paper grain, thin metallic frame, circular portrait badge, single-line auto-fitted Tagline, <code>LET'S CONNECT.</code> + NFC wave, high-contrast QR code on a clean pad, and metallic contact details at the bottom.
             </p>
 
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1442,7 +1442,7 @@
               <div id="opt1PreviewQrBox" class="qr-box-md"></div>
               <div>
                 <div style="font-size:12.5px;font-weight:700;color:var(--silver-bright);margin-bottom:4px;">
-                  Encrypted Share URL QR Preview
+                  Direct Profile URL QR Preview
                 </div>
                 <div id="opt1ShareUrlDisplay" style="font-family:var(--font-mono);font-size:10.5px;color:#6EE7B7;word-break:break-all;margin-bottom:6px;"></div>
                 <div style="font-size:11.5px;color:var(--silver-matte);">
@@ -1498,7 +1498,7 @@
             </div>
             <div class="wallet-mock-qr-wrap">
               <div id="mockPassQrCode"></div>
-              <div class="wallet-mock-alt">LET'S CONNECT</div>
+              <div class="wallet-mock-alt" id="mockPassAltText">LET'S CONNECT</div>
             </div>
             <div class="wallet-mock-row">
               <div class="wallet-mock-row-label" id="mockPassFocusLabel">FOCUS &amp; LOCATION</div>
@@ -1573,7 +1573,7 @@
                     QR: Save-to-Wallet JWT
                   </button>
                   <button type="button" id="qrModeHubUrlBtn" class="preset-pill">
-                    QR: Encrypted Hub URL
+                    QR: Clean Profile URL
                   </button>
                 </div>
               </div>
@@ -1662,22 +1662,48 @@
       let lastJwtResult = null;
       let opt2QrTarget = 'saveUrl';
       let paperNoisePatternCanvas = null;
+      let walletBgManuallyOverridden = false;
+      const avatarImgCache = {};
 
-      function hexToRgb(hex) {
+      function parseHexRgb(hex) {
         const clean = String(hex || '').replace('#', '').trim();
         if (clean.length === 3) {
-          const r = parseInt(clean[0] + clean[0], 16);
-          const g = parseInt(clean[1] + clean[1], 16);
-          const b = parseInt(clean[2] + clean[2], 16);
-          return `${r}, ${g}, ${b}`;
+          return [
+            parseInt(clean[0] + clean[0], 16),
+            parseInt(clean[1] + clean[1], 16),
+            parseInt(clean[2] + clean[2], 16)
+          ];
         }
         if (clean.length === 6) {
-          const r = parseInt(clean.substring(0, 2), 16);
-          const g = parseInt(clean.substring(2, 4), 16);
-          const b = parseInt(clean.substring(4, 6), 16);
-          return `${r}, ${g}, ${b}`;
+          return [
+            parseInt(clean.substring(0, 2), 16),
+            parseInt(clean.substring(2, 4), 16),
+            parseInt(clean.substring(4, 6), 16)
+          ];
         }
-        return '200, 210, 220';
+        return [15, 43, 76];
+      }
+
+      function deriveWalletBgHex(startHex, endHex) {
+        const s = parseHexRgb(startHex);
+        const e = parseHexRgb(endHex);
+        let r = Math.round(s[0] * 0.28 + e[0] * 0.72);
+        let g = Math.round(s[1] * 0.28 + e[1] * 0.72);
+        let b = Math.round(s[2] * 0.28 + e[2] * 0.72);
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        if (lum > 0.28) {
+          const factor = 0.24 / lum;
+          r = Math.round(r * factor);
+          g = Math.round(g * factor);
+          b = Math.round(b * factor);
+        }
+        const toHex = (n) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0').toUpperCase();
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+      }
+
+      function hexToRgb(hex) {
+        const rgb = parseHexRgb(hex);
+        return `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`;
       }
 
       const BUILTIN_THEME_PRESETS = {
@@ -2047,8 +2073,18 @@
       }
 
       function formatPhoneReadable(phoneStr) {
-        const clean = String(phoneStr || '').trim();
-        return clean.replace(/^\+(\d{2})(\d{3})(\d+)$/, '+$1 $2 $3');
+        const raw = String(phoneStr || '').trim();
+        if (!raw.startsWith('+')) return raw;
+        const compact = '+' + raw.slice(1).replace(/\D/g, '');
+        const cc3Match = compact.match(/^\+(370|371|372|35[1-9]|380|420|421)(\d{3})(\d+)$/);
+        if (cc3Match) {
+          return `+${cc3Match[1]} ${cc3Match[2]} ${cc3Match[3]}`;
+        }
+        const cc2Match = compact.match(/^\+(\d{2})(\d{3})(\d+)$/);
+        if (cc2Match) {
+          return `+${cc2Match[1]} ${cc2Match[2]} ${cc2Match[3]}`;
+        }
+        return raw;
       }
 
       /**
@@ -2203,6 +2239,8 @@
           slogan: "LET'S CONNECT.",
           encryptedPhone: SmartWalletCrypto.encryptField('+491700000000', defaultKey),
           encryptedEmail: SmartWalletCrypto.encryptField(`${slug}@example.com`, defaultKey),
+          obfuscatedPhone: SmartWalletCrypto.sealForSlug('+491700000000', slug),
+          obfuscatedEmail: SmartWalletCrypto.sealForSlug(`${slug}@example.com`, slug),
           location: 'Vilnius, Lithuania',
           linkedin: 'https://www.linkedin.com/',
           linkedinDisplay: `linkedin.com/in/${slug}`,
@@ -2287,8 +2325,13 @@
           photoPreview.src = prof.photoBase64;
         } else if (prof.photoUrl) {
           photoPreview.src = prof.photoUrl;
+        } else if (prof.avatarPngBase64) {
+          photoPreview.src = prof.avatarPngBase64;
+        } else {
+          photoPreview.src = `./avatar-${prof.id || 'artautas'}.png`;
         }
 
+        walletBgManuallyOverridden = false;
         const keyInput = document.getElementById('profSecretKeyInput');
         keyInput.value = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
         refreshEncryptionFields();
@@ -2305,6 +2348,7 @@
       function applyPresetToForm(presetKey) {
         const p = THEME_PRESETS[presetKey];
         if (!p) return;
+        walletBgManuallyOverridden = false;
         const sel = document.getElementById('themePresetSelect');
         if (sel) sel.value = presetKey;
         setColorInputPair('colBgStart', p.bgGradientStart);
@@ -2329,9 +2373,7 @@
       }
 
       function updateUnlockedPreviewLinks(userId, key) {
-        const relUrl = key
-          ? `index.html?u=${encodeURIComponent(userId)}&k=${encodeURIComponent(key)}`
-          : `index.html?u=${encodeURIComponent(userId)}`;
+        const relUrl = `index.html?u=${encodeURIComponent(userId || 'artautas')}`;
         const liveLink = document.getElementById('openLiveCardLink');
         if (liveLink) liveLink.href = relUrl;
         const vaultPreviewBtn = document.getElementById('openUnlockedPreviewBtn');
@@ -2347,8 +2389,14 @@
         const key = document.getElementById('profSecretKeyInput').value.trim() || DEFAULT_PROFILE_KEYS[prof.id] || '';
         sessionKeys[prof.id] = key;
 
-        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
-        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        let phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        let emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        if (!phoneDec.unlocked && prof.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          phoneDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedPhone, prof.id);
+        }
+        if (!emailDec.unlocked && prof.obfuscatedEmail && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          emailDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedEmail, prof.id);
+        }
         const unlocked = phoneDec.unlocked && emailDec.unlocked;
 
         const lockStateEl = document.getElementById('vaultLockState');
@@ -2360,10 +2408,14 @@
           lockStateEl.style.color = 'var(--emerald)';
           phoneInput.value = phoneDec.value;
           emailInput.value = emailDec.value;
+          prof.obfuscatedPhone = SmartWalletCrypto.sealForSlug(phoneDec.value, prof.id);
+          prof.obfuscatedEmail = SmartWalletCrypto.sealForSlug(emailDec.value, prof.id);
         } else if (key && phoneInput.value.trim() && emailInput.value.trim()) {
           // Re-encrypt existing decrypted form fields under the new key
           prof.encryptedPhone = SmartWalletCrypto.encryptField(phoneInput.value.trim(), key);
           prof.encryptedEmail = SmartWalletCrypto.encryptField(emailInput.value.trim(), key);
+          prof.obfuscatedPhone = SmartWalletCrypto.sealForSlug(phoneInput.value.trim(), prof.id);
+          prof.obfuscatedEmail = SmartWalletCrypto.sealForSlug(emailInput.value.trim(), prof.id);
           persistToLocal();
           lockStateEl.textContent = '🔓 Re-Encrypted with New Key';
           lockStateEl.style.color = 'var(--emerald)';
@@ -2450,6 +2502,12 @@
         }
         if (key && plainEmail) {
           prof.encryptedEmail = SmartWalletCrypto.encryptField(plainEmail, key);
+        }
+        if (plainPhone) {
+          prof.obfuscatedPhone = SmartWalletCrypto.sealForSlug(plainPhone, prof.id);
+        }
+        if (plainEmail) {
+          prof.obfuscatedEmail = SmartWalletCrypto.sealForSlug(plainEmail, prof.id);
         }
 
         updateUnlockedPreviewLinks(prof.id, key);
@@ -2540,10 +2598,31 @@
 
         let slogan = String(prof.slogan || "LET'S CONNECT.").toUpperCase().trim();
         if (!slogan.endsWith('.')) slogan += '.';
-        document.getElementById('adminPreviewSlogan').textContent = slogan;
+        const previewSloganEl = document.getElementById('adminPreviewSlogan');
+        previewSloganEl.textContent = slogan;
+        previewSloganEl.style.color = accent;
+        const previewNfc = document.getElementById('adminPreviewNfcIcon');
+        if (previewNfc) {
+          previewNfc.style.stroke = accent;
+          const dot = previewNfc.querySelector('circle');
+          if (dot) dot.setAttribute('fill', accent);
+        }
+        const previewDetails = document.getElementById('adminPreviewBackDetails');
+        if (previewDetails) previewDetails.style.color = accent;
+        const previewLiBadge = document.getElementById('adminPreviewLinkedinBadge');
+        if (previewLiBadge) {
+          previewLiBadge.style.background = accent;
+          previewLiBadge.style.color = bgEnd;
+        }
 
-        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
-        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        let phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        let emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        if (!phoneDec.unlocked && prof.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          phoneDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedPhone, prof.id);
+        }
+        if (!emailDec.unlocked && prof.obfuscatedEmail && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          emailDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedEmail, prof.id);
+        }
         document.getElementById('adminPreviewPhone').textContent = formatPhoneReadable(
           phoneDec.unlocked ? phoneDec.value : phoneDec.ciphertextPreview
         );
@@ -2560,23 +2639,37 @@
         const hubBaseUrl =
           document.getElementById('gwHubBaseUrl').value.trim() ||
           window.location.href.replace(/admin\.html.*$/, 'index.html');
-        const shareUrl = SmartWalletCrypto.buildShareUrl(hubBaseUrl, prof.id, key, false);
+        const shareUrl = SmartWalletCrypto.buildCleanUrl(hubBaseUrl, prof.id);
         document.getElementById('adminPreviewBackQr').innerHTML = SmartWalletQR.toSvgString(shareUrl, {
           ecLevel: 'M',
           margin: 0,
-          darkColor: '#D6DEE7',
+          darkColor: accent,
           lightColor: 'transparent',
           rounded: false
         });
+
+        // Update Option 1 & Option 2 dynamic theme hex descriptions & tab badges
+        const bgStartHex = String(bgStart).toUpperCase();
+        const walletHex = String(theme.walletBgHex || theme.bgCenter || '#0F2B4C').toUpperCase();
+        const bgEndHex = String(bgEnd).toUpperCase();
+        const opt2TabSub = document.getElementById('opt2TabSubtitle');
+        if (opt2TabSub) {
+          opt2TabSub.textContent = `GenericObject (${walletHex}) + 1032×336 Hero + Live Screen QR`;
+        }
+        const opt1Desc = document.getElementById('opt1ThemeDescription');
+        if (opt1Desc) {
+          const cleanThemeName = String(theme.name || 'Custom Palette')
+            .replace(/^[0-9]+\.\s*/, '')
+            .replace(/\s*\([^)]*\)$/, '');
+          opt1Desc.innerHTML =
+            `Synchronized with your <strong>${cleanThemeName}</strong> (<code>${bgStartHex}</code> → <code>${walletHex}</code> → <code>${bgEndHex}</code>) design: brushed paper grain, thin metallic frame, circular portrait badge, single-line auto-fitted Tagline, <code>${slogan}</code> + NFC wave, high-contrast QR code on a clean pad, and metallic contact details at the bottom.`;
+        }
       }
 
       /**
        * Renders Option 1: Synchronized 1080 x 1920 px Google Wallet Vertical Pass on HTML5 Canvas
-       * Matches the exact minimalist Deep Sapphire & Matte Silver design:
-       *  - Deep Sapphire gradient (#163A63 -> #0F2B4C -> #0B213B) + subtle brushed paper grain + thin silver frame
-       *  - Top Section: Centered Name (#EBF0F5 -> #B0BCC9) + 3-line single-line auto-fitted Tagline (#B8C4D0)
-       *  - Center Section: LET'S CONNECT. + NFC wave icon above a large high-contrast QR code on a clean white/silver pad
-       *  - Bottom Section: Clean matte silver contact details (+49 177 6090991 · email · Heidelberg, Germany · linkedin)
+       * Uses active profile theme colors, circular portrait/monogram avatar with metallic ring,
+       * centered name & single-line auto-fitted Tagline, slogan + NFC wave, clean QR, and contact details.
        */
       function renderOption1Canvas() {
         const prof = getActiveProfile();
@@ -2586,26 +2679,32 @@
         const W = 1080;
         const H = 1920;
 
-        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const theme = prof.theme || THEME_PRESETS['deep-sapphire'];
+        const bgStart = theme.bgGradientStart || theme.bgPrimary || '#163A63';
+        const walletBg = theme.walletBgHex || theme.bgCenter || '#0F2B4C';
+        const bgEnd = theme.bgGradientEnd || theme.bgSecondary || '#0B213B';
+        const accent = theme.accentColor || theme.accentPrimary || '#C8D2DC';
+        const accentRgb = hexToRgb(accent);
+
         const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
         const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
         const hubBaseUrl =
           document.getElementById('gwHubBaseUrl').value.trim() ||
           window.location.href.replace(/admin\.html.*$/, 'index.html');
-        const shareUrl = SmartWalletCrypto.buildShareUrl(hubBaseUrl, prof.id, key, false);
+        const shareUrl = SmartWalletCrypto.buildCleanUrl(hubBaseUrl, prof.id);
 
-        // 1. Rich Deep Sapphire Gradient (#163A63 -> #0F2B4C -> #0B213B)
+        // 1. Rich Per-Profile Gradient
         const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-        bgGrad.addColorStop(0, theme.bgPrimary || '#163A63');
-        bgGrad.addColorStop(0.5, theme.bgCenter || '#0F2B4C');
-        bgGrad.addColorStop(1, theme.bgSecondary || '#0B213B');
+        bgGrad.addColorStop(0, bgStart);
+        bgGrad.addColorStop(0.5, walletBg);
+        bgGrad.addColorStop(1, bgEnd);
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, W, H);
 
         // Top-left subtle light catch
         const lightCatch = ctx.createRadialGradient(W * 0.16, H * 0.1, 20, W * 0.16, H * 0.1, 780);
-        lightCatch.addColorStop(0, 'rgba(235, 240, 245, 0.08)');
-        lightCatch.addColorStop(1, 'rgba(235, 240, 245, 0)');
+        lightCatch.addColorStop(0, `rgba(${accentRgb}, 0.08)`);
+        lightCatch.addColorStop(1, `rgba(${accentRgb}, 0)`);
         ctx.fillStyle = lightCatch;
         ctx.fillRect(0, 0, W, H);
 
@@ -2618,21 +2717,84 @@
           ctx.restore();
         }
 
-        // Thin Silver Frame (rgba(180, 200, 225, 0.22))
+        // Thin Metallic Frame
         ctx.save();
-        ctx.strokeStyle = 'rgba(180, 200, 225, 0.22)';
+        ctx.strokeStyle = `rgba(${accentRgb}, 0.24)`;
         ctx.lineWidth = 2.5;
         ctx.strokeRect(42, 42, W - 84, H - 84);
         ctx.restore();
 
-        // 2. Top Section of Pass: Centered Name (#EBF0F5 -> #B0BCC9) + Auto-Fitted 3-Line Tagline
+        // 1.5 Circular Avatar Portrait Bubble (with Metallic Ring) at Top Center
+        const avCx = W / 2;
+        const avCy = 185;
+        const avR = 74;
+        const avatarSrc = prof.photoBase64 || prof.photoUrl || prof.avatarPngBase64 || `./avatar-${prof.id || 'artautas'}.png`;
+        let cachedImg = avatarSrc ? avatarImgCache[avatarSrc] : null;
+        if (avatarSrc && !cachedImg) {
+          const loaderImg = new Image();
+          loaderImg.onload = () => {
+            avatarImgCache[avatarSrc] = loaderImg;
+            renderOption1Canvas();
+          };
+          loaderImg.src = avatarSrc;
+        }
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetY = 8;
+        ctx.fillStyle = walletBg;
+        ctx.beginPath();
+        ctx.arc(avCx, avCy, avR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (cachedImg && cachedImg.complete && cachedImg.naturalWidth > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(avCx, avCy, avR - 3, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          const minDim = Math.min(cachedImg.naturalWidth, cachedImg.naturalHeight);
+          const sx = (cachedImg.naturalWidth - minDim) / 2;
+          const sy = prof.photoBase64 || prof.photoUrl ? Math.max(0, (cachedImg.naturalHeight - minDim) * 0.2) : (cachedImg.naturalHeight - minDim) / 2;
+          ctx.drawImage(cachedImg, sx, sy, minDim, minDim, avCx - avR, avCy - avR, avR * 2, avR * 2);
+          ctx.restore();
+        } else {
+          // Crisp Executive Initials Monogram fallback
+          const parts = String(prof.name || prof.id).replace(/,.*$/, '').trim().split(/\s+/);
+          const initials = parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : parts[0].slice(0, 2);
+          ctx.save();
+          ctx.font = '600 54px Montserrat, sans-serif';
+          ctx.fillStyle = accent;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(initials.toUpperCase(), avCx, avCy + 3);
+          ctx.restore();
+        }
+
+        // Metallic Bezel Ring + Inner Specular Sheen
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avCx, avCy, avR, 0, Math.PI * 2);
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(avCx, avCy, avR - 2.5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        // 2. Top Section of Pass: Centered Name + Auto-Fitted Tagline
         const maxContentWidth = W - 150;
         const nameScale = Number(typo.nameScale) / 100;
         const taglineScale = Number(typo.taglineScale) / 100;
         const letterSpacingEm = Number(typo.letterSpacing);
         const autoFit = typo.autoFitLines !== false;
 
-        const nameText = String(prof.name || 'ARTAUTAS ŠIMKUS, LL.M.').toUpperCase();
+        const nameText = String(prof.name || '').toUpperCase();
         let nameFontPx = Math.round(52 * nameScale);
         let nameTrackingPx = nameFontPx * 0.08;
         ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
@@ -2645,17 +2807,17 @@
           }
         }
 
-        const titleY = 275;
+        const titleY = 338;
         ctx.save();
         const titleGrad = ctx.createLinearGradient(0, titleY - nameFontPx, 0, titleY + 10);
-        titleGrad.addColorStop(0, '#EBF0F5');
-        titleGrad.addColorStop(0.5, theme.accentPrimary || '#D6DEE7');
-        titleGrad.addColorStop(1, '#B0BCC9');
+        titleGrad.addColorStop(0, '#FFFFFF');
+        titleGrad.addColorStop(0.5, accent);
+        titleGrad.addColorStop(1, `rgba(${accentRgb}, 0.78)`);
         ctx.fillStyle = titleGrad;
         drawTrackedCanvasTextCentered(ctx, nameText, W / 2, titleY, nameTrackingPx);
         ctx.restore();
 
-        // 3-Line Tagline cleanly fitted directly below Name (zero orphan wraps)
+        // Tagline cleanly fitted directly below Name (zero orphan wraps)
         const lines = autoBalanceTagline(prof.tagline);
         let tagFontPx = Math.round(28 * taglineScale);
         let tagTrackingPx = tagFontPx * letterSpacingEm;
@@ -2672,8 +2834,8 @@
         }
 
         ctx.save();
-        ctx.fillStyle = theme.accentSecondary || '#B8C4D0';
-        let lineY = titleY + 66;
+        ctx.fillStyle = `rgba(${accentRgb}, 0.92)`;
+        let lineY = titleY + 62;
         const lineHeightPx = Math.round(tagFontPx * 1.72);
         lines.forEach((lineStr) => {
           drawTrackedCanvasTextCentered(ctx, lineStr, W / 2, lineY, tagTrackingPx);
@@ -2681,34 +2843,34 @@
         });
         ctx.restore();
 
-        // 3. Center Section of Pass: LET'S CONNECT. + Contactless NFC Wave Icon + QR Code on Clean White/Silver Pad
+        // 3. Center Section of Pass: LET'S CONNECT. + Contactless NFC Wave Icon + QR Code on Clean Pad
         let slogan = String(prof.slogan || "LET'S CONNECT.").toUpperCase().trim();
         if (!slogan.endsWith('.')) slogan += '.';
-        const sloganY = 665;
+        const sloganY = 635;
         ctx.save();
         ctx.font = '500 36px Montserrat, sans-serif';
-        ctx.fillStyle = theme.accentPrimary || '#D6DEE7';
+        ctx.fillStyle = accent;
         drawTrackedCanvasTextCentered(ctx, slogan, W / 2, sloganY, 36 * 0.12);
 
-        // Contactless NFC Wave Icon centered below LET'S CONNECT.
-        ctx.strokeStyle = '#C8D2DC';
+        // Contactless NFC Wave Icon centered below slogan
+        ctx.strokeStyle = accent;
         ctx.lineWidth = 4;
         ctx.lineCap = 'round';
         [18, 32, 46].forEach((radius) => {
           ctx.beginPath();
-          ctx.arc(W / 2 - 14, sloganY + 56, radius, -Math.PI * 0.35, Math.PI * 0.35);
+          ctx.arc(W / 2 - 14, sloganY + 54, radius, -Math.PI * 0.35, Math.PI * 0.35);
           ctx.stroke();
         });
-        ctx.fillStyle = '#C8D2DC';
+        ctx.fillStyle = accent;
         ctx.beginPath();
-        ctx.arc(W / 2 - 22, sloganY + 56, 3.5, 0, Math.PI * 2);
+        ctx.arc(W / 2 - 22, sloganY + 54, 3.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // High-Contrast Scannable QR Code on Clean White/Silver Pad
+        // High-Contrast Scannable QR Code on Clean Pad
         const qrPadSize = 620;
         const qrPadX = (W - qrPadSize) / 2;
-        const qrPadY = 790;
+        const qrPadY = 755;
 
         ctx.save();
         ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
@@ -2717,15 +2879,15 @@
         SmartWalletQR.drawOnCanvas(ctx, shareUrl, qrPadX, qrPadY, qrPadSize, {
           ecLevel: 'M',
           margin: 2,
-          darkColor: '#0B213B',
+          darkColor: bgEnd,
           lightColor: '#F4F7FA',
           borderRadius: 16
         });
         ctx.restore();
 
-        // Subtle silver border around QR pad
+        // Subtle metallic border around QR pad
         ctx.save();
-        ctx.strokeStyle = 'rgba(180, 200, 225, 0.45)';
+        ctx.strokeStyle = `rgba(${accentRgb}, 0.45)`;
         ctx.lineWidth = 2;
         ctx.beginPath();
         if (typeof ctx.roundRect === 'function') {
@@ -2736,38 +2898,44 @@
         ctx.stroke();
         ctx.restore();
 
-        // 4. Bottom Section of Pass: Clean Matte Silver Contact Details (#C8D2DC)
-        const phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
-        const emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        // 4. Bottom Section of Pass: Clean Metallic Contact Details
+        let phoneDec = SmartWalletCrypto.decryptField(prof.encryptedPhone, key);
+        let emailDec = SmartWalletCrypto.decryptField(prof.encryptedEmail, key);
+        if (!phoneDec.unlocked && prof.obfuscatedPhone && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          phoneDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedPhone, prof.id);
+        }
+        if (!emailDec.unlocked && prof.obfuscatedEmail && typeof SmartWalletCrypto.unsealForSlug === 'function') {
+          emailDec = SmartWalletCrypto.unsealForSlug(prof.obfuscatedEmail, prof.id);
+        }
         const phoneStr = formatPhoneReadable(phoneDec.unlocked ? phoneDec.value : '');
         const emailStr = emailDec.unlocked ? emailDec.value : '';
         const locationStr = prof.location || 'Heidelberg, Germany';
         const linkedinDisp =
           prof.linkedinDisplay ||
-          String(prof.linkedin || 'linkedin.com/in/artautas')
+          String(prof.linkedin || 'linkedin.com')
             .replace(/^https?:\/\/(www\.)?/, '')
             .replace(/\/$/, '');
 
-        // Thin horizontal silver hairline above contact block
-        ctx.fillStyle = 'rgba(180, 200, 225, 0.18)';
-        ctx.fillRect(180, 1500, W - 360, 1.5);
+        // Thin horizontal metallic hairline above contact block
+        ctx.fillStyle = `rgba(${accentRgb}, 0.2)`;
+        ctx.fillRect(180, 1475, W - 360, 1.5);
 
         ctx.save();
         ctx.textAlign = 'center';
         ctx.font = '400 29px Plus Jakarta Sans, sans-serif';
-        ctx.fillStyle = '#C8D2DC';
+        ctx.fillStyle = accent;
 
-        let infoY = 1572;
+        let infoY = 1550;
         if (phoneStr) {
           ctx.fillText(phoneStr, W / 2, infoY);
-          infoY += 52;
+          infoY += 54;
         }
         if (emailStr) {
           ctx.fillText(emailStr, W / 2, infoY);
-          infoY += 52;
+          infoY += 54;
         }
         ctx.fillText(locationStr, W / 2, infoY);
-        infoY += 52;
+        infoY += 54;
         ctx.fillText('in  ' + linkedinDisp, W / 2, infoY);
         ctx.restore();
 
@@ -2776,7 +2944,7 @@
         document.getElementById('opt1PreviewQrBox').innerHTML = SmartWalletQR.toSvgString(shareUrl, {
           ecLevel: 'M',
           margin: 1,
-          darkColor: '#0B213B',
+          darkColor: bgEnd,
           lightColor: '#F4F7FA',
           rounded: false
         });
@@ -2784,8 +2952,6 @@
 
       /**
        * Renders Option 2: Synchronized Google Wallet Hero Banner (1032 x 336 px) on HTML5 Canvas
-       * Rich Deep Sapphire gradient (#163A63 -> #0F2B4C -> #0B213B) + brushed paper grain + thin silver frame,
-       * centered ARTAUTAS ŠIMKUS, LL.M. + single-line auto-fitted 3-line tagline.
        */
       function renderOption2HeroCanvas() {
         const prof = getActiveProfile();
@@ -2794,14 +2960,19 @@
         const ctx = canvas.getContext('2d');
         const W = 1032;
         const H = 336;
-        const theme = prof.theme || THEME_PRESETS.sapphire;
+        const theme = prof.theme || THEME_PRESETS['deep-sapphire'];
+        const bgStart = theme.bgGradientStart || theme.bgPrimary || '#163A63';
+        const walletBg = theme.walletBgHex || theme.bgCenter || '#0F2B4C';
+        const bgEnd = theme.bgGradientEnd || theme.bgSecondary || '#0B213B';
+        const accent = theme.accentColor || theme.accentPrimary || '#C8D2DC';
+        const accentRgb = hexToRgb(accent);
         const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
 
-        // 1. Deep Sapphire Gradient
+        // 1. Per-Profile Gradient
         const grad = ctx.createLinearGradient(0, 0, W, H);
-        grad.addColorStop(0, theme.bgPrimary || '#163A63');
-        grad.addColorStop(0.5, theme.bgCenter || '#0F2B4C');
-        grad.addColorStop(1, theme.bgSecondary || '#0B213B');
+        grad.addColorStop(0, bgStart);
+        grad.addColorStop(0.5, walletBg);
+        grad.addColorStop(1, bgEnd);
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
@@ -2814,8 +2985,8 @@
           ctx.restore();
         }
 
-        // Thin Silver Frame (rgba(180, 200, 225, 0.22))
-        ctx.strokeStyle = 'rgba(180, 200, 225, 0.22)';
+        // Thin Metallic Frame
+        ctx.strokeStyle = `rgba(${accentRgb}, 0.24)`;
         ctx.lineWidth = 2;
         ctx.strokeRect(18, 18, W - 36, H - 36);
 
@@ -2825,8 +2996,8 @@
         const letterSpacingEm = Number(typo.letterSpacing);
         const autoFit = typo.autoFitLines !== false;
 
-        // 2. Centered Name (#EBF0F5 -> #B0BCC9)
-        const nameText = String(prof.name || 'ARTAUTAS ŠIMKUS, LL.M.').toUpperCase();
+        // 2. Centered Name
+        const nameText = String(prof.name || '').toUpperCase();
         let nameFontPx = Math.round(38 * nameScale);
         let nameTrackingPx = nameFontPx * 0.08;
         ctx.font = `500 ${nameFontPx}px Montserrat, sans-serif`;
@@ -2842,14 +3013,14 @@
         const titleY = 122;
         ctx.save();
         const titleGrad = ctx.createLinearGradient(0, titleY - nameFontPx, 0, titleY + 8);
-        titleGrad.addColorStop(0, '#EBF0F5');
-        titleGrad.addColorStop(0.5, theme.accentPrimary || '#D6DEE7');
-        titleGrad.addColorStop(1, '#B0BCC9');
+        titleGrad.addColorStop(0, '#FFFFFF');
+        titleGrad.addColorStop(0.5, accent);
+        titleGrad.addColorStop(1, `rgba(${accentRgb}, 0.78)`);
         ctx.fillStyle = titleGrad;
         drawTrackedCanvasTextCentered(ctx, nameText, W / 2, titleY, nameTrackingPx);
         ctx.restore();
 
-        // 3. Auto-Fitted 3-Line Tagline Directly Below Name
+        // 3. Auto-Fitted Tagline Directly Below Name
         const lines = autoBalanceTagline(prof.tagline);
         let tagFontPx = Math.round(19 * taglineScale);
         let tagTrackingPx = tagFontPx * letterSpacingEm;
@@ -2866,7 +3037,7 @@
         }
 
         ctx.save();
-        ctx.fillStyle = theme.accentSecondary || '#B8C4D0';
+        ctx.fillStyle = `rgba(${accentRgb}, 0.92)`;
         let y = titleY + 52;
         const stepY = Math.round(tagFontPx * 1.75);
         lines.slice(0, 3).forEach((l) => {
@@ -2947,12 +3118,20 @@
         );
 
         // Update Google Wallet Pass Visual Mockup
+        const themeObj = prof.theme || THEME_PRESETS['deep-sapphire'];
+        const walletBgHex = themeObj.walletBgHex || themeObj.bgCenter || '#0F2B4C';
+        const accentHex = themeObj.accentColor || themeObj.accentPrimary || '#C8D2DC';
+        const bgEndHex = themeObj.bgGradientEnd || themeObj.bgSecondary || '#0B213B';
+
         const mockPassCard = document.getElementById('walletPassMockCard');
         if (mockPassCard) {
-          mockPassCard.style.backgroundColor = (prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
+          mockPassCard.style.backgroundColor = walletBgHex;
+          mockPassCard.style.borderColor = `rgba(${hexToRgb(accentHex)}, 0.34)`;
         }
         const mockAvatar = document.getElementById('mockPassAvatar');
         if (mockAvatar) {
+          mockAvatar.style.borderColor = accentHex;
+          mockAvatar.style.backgroundColor = walletBgHex;
           if (prof.avatarPngBase64) {
             mockAvatar.src = prof.avatarPngBase64;
           } else if (prof.photoBase64) {
@@ -2962,21 +3141,30 @@
           }
         }
         const mockTopTitle = document.getElementById('mockPassTopTitle');
-        if (mockTopTitle) mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
+        if (mockTopTitle) {
+          mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
+          mockTopTitle.style.color = accentHex;
+        }
         const mockName = document.getElementById('mockPassName');
         if (mockName) {
           mockName.textContent =
             (result.genericObject.header && result.genericObject.header.defaultValue.value) ||
             prof.name ||
-            'Artautas Šimkus';
+            '';
         }
         const mockSub = document.getElementById('mockPassSubheader');
         if (mockSub) {
           mockSub.textContent =
             (result.genericObject.subheader && result.genericObject.subheader.defaultValue.value) || '';
+          mockSub.style.color = `rgba(${hexToRgb(accentHex)}, 0.85)`;
         }
         const mockFocus = document.getElementById('mockPassFocus');
+        const mockFocusLabel = document.getElementById('mockPassFocusLabel');
         const focusMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'focus');
+        if (mockFocusLabel && focusMod) {
+          mockFocusLabel.textContent = focusMod.header || 'FOCUS & LOCATION';
+          mockFocusLabel.style.color = accentHex;
+        }
         if (mockFocus && focusMod) mockFocus.textContent = focusMod.body;
 
         const mockButtons = document.getElementById('mockPassButtons');
@@ -2989,12 +3177,15 @@
             .join('');
         }
 
+        const mockAltText = document.getElementById('mockPassAltText');
+        if (mockAltText) mockAltText.style.color = bgEndHex;
+
         const mockQr = document.getElementById('mockPassQrCode');
         if (mockQr) {
           mockQr.innerHTML = SmartWalletQR.toSvgString(result.genericObject.barcode.value, {
             ecLevel: 'M',
             margin: 1,
-            darkColor: '#0B213B',
+            darkColor: bgEndHex,
             lightColor: '#FFFFFF',
             rounded: false
           });
@@ -3130,6 +3321,10 @@
           const prof = db.profiles[activeUserId];
           delete db.profiles[activeUserId];
           prof.id = newId;
+          const plainPhone = document.getElementById('profPhoneInput').value.trim();
+          const plainEmail = document.getElementById('profEmailInput').value.trim();
+          if (plainPhone) prof.obfuscatedPhone = SmartWalletCrypto.sealForSlug(plainPhone, newId);
+          if (plainEmail) prof.obfuscatedEmail = SmartWalletCrypto.sealForSlug(plainEmail, newId);
           db.profiles[newId] = prof;
           sessionKeys[newId] = sessionKeys[activeUserId] || generateSecureKey16(16);
           activeUserId = newId;
@@ -3171,6 +3366,15 @@
           });
         });
 
+        function maybeAutoSyncWalletBg() {
+          if (walletBgManuallyOverridden) return;
+          const startHex = document.getElementById('colBgStartText').value.trim() || '#163A63';
+          const endHex = document.getElementById('colBgEndText').value.trim() || '#0B213B';
+          if (/^#[0-9A-Fa-f]{6}$/.test(startHex) && /^#[0-9A-Fa-f]{6}$/.test(endHex)) {
+            setColorInputPair('colWalletBgHex', deriveWalletBgHex(startHex, endHex));
+          }
+        }
+
         // 4 Theme Color Pickers & Hex text fields
         ['colBgStart', 'colBgEnd', 'colAccentColor', 'colWalletBgHex'].forEach((colId) => {
           const cInput = document.getElementById(colId);
@@ -3178,6 +3382,11 @@
           if (cInput && tInput) {
             cInput.addEventListener('input', () => {
               tInput.value = cInput.value.toUpperCase();
+              if (colId === 'colWalletBgHex') {
+                walletBgManuallyOverridden = true;
+              } else if (colId === 'colBgStart' || colId === 'colBgEnd') {
+                maybeAutoSyncWalletBg();
+              }
               if (themePresetSelect) themePresetSelect.value = 'custom';
               syncFormToProfile();
             });
@@ -3185,12 +3394,73 @@
               const val = tInput.value.trim();
               if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
                 cInput.value = val;
+                if (colId === 'colWalletBgHex') {
+                  walletBgManuallyOverridden = true;
+                } else if (colId === 'colBgStart' || colId === 'colBgEnd') {
+                  maybeAutoSyncWalletBg();
+                }
                 if (themePresetSelect) themePresetSelect.value = 'custom';
                 syncFormToProfile();
               }
             });
           }
         });
+
+        function generateThemedAvatarDataUrl(imgElement, prof) {
+          const avCanvas = document.createElement('canvas');
+          avCanvas.width = 300;
+          avCanvas.height = 300;
+          const aCtx = avCanvas.getContext('2d');
+          const walletBg = (prof && prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
+          const accentMetal = (prof && prof.theme && prof.theme.accentColor) || '#C8D2DC';
+
+          // 1. Fill Profile Wallet Background Mask
+          aCtx.fillStyle = walletBg;
+          aCtx.fillRect(0, 0, 300, 300);
+
+          // 2. Circular Clipped Portrait or Monogram
+          if (imgElement && (imgElement.naturalWidth || imgElement.width)) {
+            const w = imgElement.naturalWidth || imgElement.width;
+            const h = imgElement.naturalHeight || imgElement.height;
+            const minDim = Math.min(w, h);
+            const sx = (w - minDim) / 2;
+            const sy = Math.max(0, (h - minDim) * 0.2);
+
+            aCtx.save();
+            aCtx.beginPath();
+            aCtx.arc(150, 150, 142, 0, Math.PI * 2);
+            aCtx.closePath();
+            aCtx.clip();
+            aCtx.drawImage(imgElement, sx, sy, minDim, minDim, 8, 8, 284, 284);
+            aCtx.restore();
+          } else {
+            const parts = String((prof && (prof.name || prof.id)) || 'SW').replace(/,.*$/, '').trim().split(/\s+/);
+            const initials = parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : parts[0].slice(0, 2);
+            aCtx.save();
+            aCtx.font = 'bold 84px "Segoe UI", Montserrat, sans-serif';
+            aCtx.fillStyle = accentMetal;
+            aCtx.textAlign = 'center';
+            aCtx.textBaseline = 'middle';
+            aCtx.fillText(initials.toUpperCase(), 150, 154);
+            aCtx.restore();
+          }
+
+          // 3. 8px Metallic Accent Ring (using profile theme accentColor)
+          aCtx.beginPath();
+          aCtx.arc(150, 150, 141, 0, Math.PI * 2);
+          aCtx.strokeStyle = accentMetal;
+          aCtx.lineWidth = 8;
+          aCtx.stroke();
+
+          // 4. Subtle inner specular sheen
+          aCtx.beginPath();
+          aCtx.arc(150, 150, 137, 0, Math.PI * 2);
+          aCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          aCtx.lineWidth = 1;
+          aCtx.stroke();
+
+          return avCanvas.toDataURL('image/png');
+        }
 
         // Theme Border, Font Pairing, and Texture selects
         ['themeBorderStyle', 'themeFontPairing', 'themeTextureIntensity'].forEach((selId) => {
@@ -3220,43 +3490,8 @@
 
               const dataUrl = offCanvas.toDataURL('image/jpeg', 0.84);
 
-              // 300x300 PNG for Google Wallet logo with 8px Metallic Accent Ring
               const prof = getActiveProfile();
-              const avCanvas = document.createElement('canvas');
-              avCanvas.width = 300;
-              avCanvas.height = 300;
-              const aCtx = avCanvas.getContext('2d');
-              const walletBg = (prof && prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
-              const accentMetal = (prof && prof.theme && prof.theme.accentColor) || '#C8D2DC';
-
-              // 1. Fill Deep Sapphire / Theme Background
-              aCtx.fillStyle = walletBg;
-              aCtx.fillRect(0, 0, 300, 300);
-
-              // 2. Circular Clipped Portrait
-              aCtx.save();
-              aCtx.beginPath();
-              aCtx.arc(150, 150, 142, 0, Math.PI * 2);
-              aCtx.closePath();
-              aCtx.clip();
-              aCtx.drawImage(img, sx, sy, minDim, minDim, 8, 8, 284, 284);
-              aCtx.restore();
-
-              // 3. 8px Metallic Accent Ring (using profile theme accentColor)
-              aCtx.beginPath();
-              aCtx.arc(150, 150, 141, 0, Math.PI * 2);
-              aCtx.strokeStyle = accentMetal;
-              aCtx.lineWidth = 8;
-              aCtx.stroke();
-
-              // 4. Subtle inner specular sheen
-              aCtx.beginPath();
-              aCtx.arc(150, 150, 137, 0, Math.PI * 2);
-              aCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-              aCtx.lineWidth = 1;
-              aCtx.stroke();
-
-              const avatarDataUrl = avCanvas.toDataURL('image/png');
+              const avatarDataUrl = generateThemedAvatarDataUrl(img, prof);
               prof.photoBase64 = dataUrl;
               prof.avatarPngBase64 = avatarDataUrl;
               document.getElementById('adminPhotoPreview').src = dataUrl;
@@ -3288,12 +3523,13 @@
 
         document.getElementById('copyShareUrlBtn').addEventListener('click', async () => {
           const prof = getActiveProfile();
-          const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
-          const hubBase = window.location.href.replace(/admin\.html.*$/, 'index.html');
-          const url = SmartWalletCrypto.buildShareUrl(hubBase, prof.id, key, false);
+          const hubBase =
+            document.getElementById('gwHubBaseUrl').value.trim() ||
+            window.location.href.replace(/admin\.html.*$/, 'index.html');
+          const url = SmartWalletCrypto.buildCleanUrl(hubBase, prof.id);
           try {
             await navigator.clipboard.writeText(url);
-            showToast('Encrypted Share URL copied to clipboard!');
+            showToast('Clean Profile URL copied to clipboard!');
           } catch (e) {
             showToast(url);
           }
@@ -3319,26 +3555,26 @@
           const origHtml = btn.innerHTML;
           btn.disabled = true;
           btn.innerHTML = '<span>⏳ Pushing Live to Google Wallet...</span>';
-          persistToLocal();
+          syncFormToProfile();
           const prof = getActiveProfile();
           const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
 
-          let avatarPngBase64 = prof.avatarPngBase64 || '';
-          if (!avatarPngBase64) {
-            const photoImg = document.getElementById('adminPhotoPreview');
-            if (photoImg && photoImg.src && !photoImg.src.startsWith('data:image/svg')) {
-              try {
-                const c = document.createElement('canvas');
-                c.width = 300;
-                c.height = 300;
-                const ctx = c.getContext('2d');
-                const minDim = Math.min(photoImg.naturalWidth || photoImg.width, photoImg.naturalHeight || photoImg.height);
-                const sx = ((photoImg.naturalWidth || photoImg.width) - minDim) / 2;
-                const sy = Math.max(0, ((photoImg.naturalHeight || photoImg.height) - minDim) * 0.2);
-                ctx.drawImage(photoImg, sx, sy, minDim, minDim, 0, 0, 300, 300);
-                avatarPngBase64 = c.toDataURL('image/png');
-              } catch (e) {}
-            }
+          let avatarPngBase64 = '';
+          const photoImg = document.getElementById('adminPhotoPreview');
+          if ((prof.photoBase64 || prof.photoUrl) && photoImg && photoImg.complete && photoImg.naturalWidth > 0) {
+            try {
+              avatarPngBase64 = generateThemedAvatarDataUrl(photoImg, prof);
+            } catch (e) {}
+          } else if (!prof.photoBase64 && !prof.photoUrl) {
+            try {
+              avatarPngBase64 = generateThemedAvatarDataUrl(null, prof);
+            } catch (e) {}
+          } else {
+            avatarPngBase64 = prof.avatarPngBase64 || '';
+          }
+          if (avatarPngBase64) {
+            prof.avatarPngBase64 = avatarPngBase64;
+            persistToLocal();
           }
 
           try {
