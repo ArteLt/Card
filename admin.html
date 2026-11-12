@@ -779,6 +779,112 @@
       display: block;
     }
 
+    /* Google Wallet Native Pass Visual Preview Mockup */
+    .wallet-phone-mock {
+      max-width: 412px;
+      margin: 0 auto 16px;
+      background: #163A63;
+      border-radius: 20px;
+      border: 1px solid rgba(180, 200, 225, 0.28);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      color: #D6DEE7;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .wallet-mock-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wallet-mock-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(180, 200, 225, 0.45);
+      background: #0B213B;
+      flex-shrink: 0;
+    }
+
+    .wallet-mock-top-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #93C5FD;
+      margin-bottom: 2px;
+    }
+
+    .wallet-mock-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.04em;
+    }
+
+    .wallet-mock-sub {
+      font-size: 10.5px;
+      color: #B8C4D0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .wallet-mock-qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 16px 14px 10px;
+      margin: 2px 0;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .wallet-mock-qr-wrap svg {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+
+    .wallet-mock-alt {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: #0B213B;
+      margin-top: 6px;
+    }
+
+    .wallet-mock-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-top: 1px solid rgba(180, 200, 225, 0.15);
+      padding-top: 10px;
+    }
+
+    .wallet-mock-row-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #93C5FD;
+    }
+
+    .wallet-mock-row-val {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #EBF0F5;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
     .jwt-qr-showcase {
       display: grid;
       grid-template-columns: 164px 1fr;
@@ -876,13 +982,19 @@
         <span>Import profiles.json</span>
         <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none;" />
       </label>
-      <button type="button" id="exportJsonBtn" class="btn btn-primary">
+      <button type="button" id="exportJsonBtn" class="btn btn-secondary">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
           <polyline points="17 21 17 13 7 13 7 21"/>
           <polyline points="7 3 7 8 15 8"/>
         </svg>
         <span>Save &amp; Export profiles.json</span>
+      </button>
+      <button type="button" id="liveSyncWalletBtn" class="btn btn-primary" style="background:linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);color:#FFFFFF;border-color:rgba(147,197,253,0.5);box-shadow:0 0 14px rgba(59,130,246,0.35);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>⚡ Save &amp; Push Live to Google Wallet</span>
       </button>
     </div>
   </header>
@@ -948,6 +1060,10 @@
           <div class="field-group field-full">
             <label for="profLinkedinInput">LinkedIn Profile URL</label>
             <input type="url" id="profLinkedinInput" class="form-input" placeholder="https://www.linkedin.com/in/artautas/" />
+          </div>
+          <div class="field-group field-full">
+            <label for="profWalletTopLabelInput">Google Wallet Pass Top Label (e.g. <code>HEIDELBERG · GERMANY</code>)</label>
+            <input type="text" id="profWalletTopLabelInput" class="form-input" placeholder="HEIDELBERG · GERMANY" />
           </div>
         </div>
       </div>
@@ -1271,10 +1387,42 @@
            OPTION 2: OFFICIAL GOOGLE WALLET API PASS (GenericObject JWT + PATCH)
            ==================================================================== -->
       <div id="paneOption2" class="wallet-option-pane active" role="tabpanel">
-        <!-- 1. Hero Banner Generator (1032 x 336 px) -->
+        <!-- 1. Live Google Wallet Pass Visual Mockup -->
         <div class="form-section">
           <div class="section-subtitle">
-            <span>1. Official Google Wallet Hero Banner Generator (1032 × 336 px)</span>
+            <span>1. Live Google Wallet Single-Screen Pass (Official Layout)</span>
+            <span style="font-size:10px;padding:1px 7px;border-radius:99px;background:rgba(52,211,153,0.18);color:#6EE7B7;">
+              Zero Duplication · Clean Single Screen
+            </span>
+          </div>
+          <div class="wallet-phone-mock" id="walletPassMockCard">
+            <div class="wallet-mock-header">
+              <img id="mockPassAvatar" class="wallet-mock-avatar" src="./avatar-artautas.png" alt="Wallet Pass Avatar" />
+              <div style="min-width:0;flex:1;">
+                <div id="mockPassTopTitle" class="wallet-mock-top-title">HEIDELBERG · GERMANY</div>
+                <div id="mockPassName" class="wallet-mock-name">Artautas Šimkus, LL.M.</div>
+                <div id="mockPassSubheader" class="wallet-mock-sub">LAWYER (LL.M.) · LEGAL TRANSLATOR</div>
+              </div>
+            </div>
+            <div class="wallet-mock-qr-wrap">
+              <div id="mockPassQrCode"></div>
+              <div class="wallet-mock-alt">LET'S CONNECT</div>
+            </div>
+            <div class="wallet-mock-row">
+              <div class="wallet-mock-row-label">EXPERTISE &amp; FOCUS</div>
+              <div id="mockPassFocus" class="wallet-mock-row-val">European Company Law · Business Development · Startup Ecosystems</div>
+            </div>
+            <div class="wallet-mock-row">
+              <div class="wallet-mock-row-label">DIRECT CONTACT</div>
+              <div id="mockPassContact" class="wallet-mock-row-val">+49 177 6090991  ·  artautas.simkus@gmail.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Hero Banner Generator (1032 x 336 px) -->
+        <div class="form-section">
+          <div class="section-subtitle">
+            <span>2. Official Google Wallet Hero Banner Generator (1032 × 336 px)</span>
             <button type="button" id="downloadHeroPngBtn" class="btn btn-secondary" style="height:28px;font-size:11px;padding:0 10px;">
               Download Hero Banner PNG (1032×336)
             </button>
@@ -1284,10 +1432,10 @@
           </div>
         </div>
 
-        <!-- 2. Google Wallet API Configuration -->
+        <!-- 3. Google Wallet API Configuration -->
         <div class="form-section">
           <div class="section-subtitle">
-            <span>2. Google Cloud Issuer &amp; GenericObject Configuration</span>
+            <span>3. Google Cloud Issuer &amp; GenericObject Configuration</span>
             <span id="jwtSignModeBadge" style="font-family:var(--font-mono);color:#93C5FD;">RS256 Ready</span>
           </div>
           <div class="field-grid">
@@ -1776,6 +1924,7 @@
         document.getElementById('profSloganInput').value = prof.slogan || "LET'S CONNECT.";
         document.getElementById('profLocationInput').value = prof.location || '';
         document.getElementById('profLinkedinInput').value = prof.linkedin || '';
+        document.getElementById('profWalletTopLabelInput').value = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
 
         const typo = Object.assign({}, DEFAULT_TYPOGRAPHY, prof.typography || {});
         prof.typography = typo;
@@ -1879,6 +2028,7 @@
         prof.slogan = document.getElementById('profSloganInput').value.trim() || "LET'S CONNECT.";
         prof.location = document.getElementById('profLocationInput').value.trim();
         prof.linkedin = document.getElementById('profLinkedinInput').value.trim();
+        prof.walletTopLabel = document.getElementById('profWalletTopLabelInput').value.trim() || 'HEIDELBERG · GERMANY';
         prof.linkedinDisplay = prof.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
         prof.vcardNote = `${prof.tagline} - Let's connect!`;
 
@@ -2375,6 +2525,41 @@
           2
         );
 
+        // Update Google Wallet Pass Visual Mockup
+        const mockAvatar = document.getElementById('mockPassAvatar');
+        if (mockAvatar) {
+          if (prof.avatarPngBase64) {
+            mockAvatar.src = prof.avatarPngBase64;
+          } else if (prof.photoBase64) {
+            mockAvatar.src = prof.photoBase64;
+          } else {
+            mockAvatar.src = `avatar-${prof.id || 'artautas'}.png`;
+          }
+        }
+        const mockTopTitle = document.getElementById('mockPassTopTitle');
+        if (mockTopTitle) mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
+        const mockName = document.getElementById('mockPassName');
+        if (mockName) mockName.textContent = prof.name || 'Artautas Šimkus, LL.M.';
+        const mockSub = document.getElementById('mockPassSubheader');
+        if (mockSub) mockSub.textContent = (result.genericObject.subheader && result.genericObject.subheader.defaultValue.value) || '';
+        const mockFocus = document.getElementById('mockPassFocus');
+        const focusMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'focus');
+        if (mockFocus && focusMod) mockFocus.textContent = focusMod.body;
+        const mockContact = document.getElementById('mockPassContact');
+        const contactMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'contact');
+        if (mockContact && contactMod) mockContact.textContent = contactMod.body;
+
+        const mockQr = document.getElementById('mockPassQrCode');
+        if (mockQr) {
+          mockQr.innerHTML = SmartWalletQR.toSvgString(result.genericObject.barcode.value, {
+            ecLevel: 'M',
+            margin: 1,
+            darkColor: '#0B213B',
+            lightColor: '#FFFFFF',
+            rounded: false
+          });
+        }
+
         renderOption2Qr();
       }
 
@@ -2431,6 +2616,7 @@
           'profSloganInput',
           'profLocationInput',
           'profLinkedinInput',
+          'profWalletTopLabelInput',
           'profPhoneInput',
           'profEmailInput',
           'typoNameScale',
@@ -2520,7 +2706,7 @@
           });
         });
 
-        // Photo Upload -> Auto-Resize & Base64 Conversion for .vcf
+        // Photo Upload -> Auto-Resize & Base64 Conversion for .vcf & Google Wallet pass avatar
         document.getElementById('photoUploadInput').addEventListener('change', (e) => {
           const file = e.target.files && e.target.files[0];
           if (!file) return;
@@ -2535,18 +2721,29 @@
               const oCtx = offCanvas.getContext('2d');
               const minDim = Math.min(img.width, img.height);
               const sx = (img.width - minDim) / 2;
-              const sy = (img.height - minDim) / 2;
+              const sy = Math.max(0, (img.height - minDim) * 0.2); // subtle facial crop bias
               oCtx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
 
               const dataUrl = offCanvas.toDataURL('image/jpeg', 0.84);
+
+              // 300x300 PNG for Google Wallet logo
+              const avCanvas = document.createElement('canvas');
+              avCanvas.width = 300;
+              avCanvas.height = 300;
+              const aCtx = avCanvas.getContext('2d');
+              aCtx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 300, 300);
+              const avatarDataUrl = avCanvas.toDataURL('image/png');
+
               const prof = getActiveProfile();
               prof.photoBase64 = dataUrl;
+              prof.avatarPngBase64 = avatarDataUrl;
               document.getElementById('adminPhotoPreview').src = dataUrl;
               document.getElementById('photoSizeStatus').textContent =
-                `Embedded 400×400 JPEG (${Math.round((dataUrl.length * 3) / 4 / 1024)} KB) inside .vcf contact card`;
+                `Embedded 400×400 JPEG & 300×300 Wallet Avatar PNG inside profile`;
 
               persistToLocal();
-              showToast('vCard photo auto-resized & converted to Base64!');
+              renderAllOutputs();
+              showToast('Profile photo updated for vCard & Google Wallet pass!');
             };
             img.src = ev.target.result;
           };
@@ -2593,6 +2790,64 @@
           document.body.removeChild(a);
           setTimeout(() => URL.revokeObjectURL(url), 3000);
           showToast('Saved & downloaded encrypted profiles.json');
+        });
+
+        document.getElementById('liveSyncWalletBtn').addEventListener('click', async () => {
+          const btn = document.getElementById('liveSyncWalletBtn');
+          const origHtml = btn.innerHTML;
+          btn.disabled = true;
+          btn.innerHTML = '<span>⏳ Pushing Live to Google Wallet...</span>';
+          persistToLocal();
+          const prof = getActiveProfile();
+          const key = sessionKeys[prof.id] || DEFAULT_PROFILE_KEYS[prof.id] || '';
+
+          let avatarPngBase64 = prof.avatarPngBase64 || '';
+          if (!avatarPngBase64) {
+            const photoImg = document.getElementById('adminPhotoPreview');
+            if (photoImg && photoImg.src && !photoImg.src.startsWith('data:image/svg')) {
+              try {
+                const c = document.createElement('canvas');
+                c.width = 300;
+                c.height = 300;
+                const ctx = c.getContext('2d');
+                const minDim = Math.min(photoImg.naturalWidth || photoImg.width, photoImg.naturalHeight || photoImg.height);
+                const sx = ((photoImg.naturalWidth || photoImg.width) - minDim) / 2;
+                const sy = Math.max(0, ((photoImg.naturalHeight || photoImg.height) - minDim) * 0.2);
+                ctx.drawImage(photoImg, sx, sy, minDim, minDim, 0, 0, 300, 300);
+                avatarPngBase64 = c.toDataURL('image/png');
+              } catch (e) {}
+            }
+          }
+
+          try {
+            const resp = await fetch('/api/save-and-sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                profiles: db,
+                activeUser: prof.id,
+                avatarPngBase64: avatarPngBase64,
+                key: key
+              })
+            });
+            const data = await resp.json();
+            if (data.success) {
+              showToast('✓ Live Google Wallet pass updated over-the-air!');
+              if (data.saveUrl) {
+                document.getElementById('saveToGoogleWalletAnchor').href = data.saveUrl;
+                document.getElementById('jwtUrlCodeBlock').textContent = data.saveUrl;
+                if (lastJwtResult) lastJwtResult.saveUrl = data.saveUrl;
+                renderOption2Qr();
+              }
+            } else {
+              showToast(`Sync note: ${data.error || 'Check server'}`);
+            }
+          } catch (err) {
+            showToast('Local studio server not detected (Run: node wallet-api.js studio). Saved locally.');
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+          }
         });
 
         document.getElementById('importJsonInput').addEventListener('change', (e) => {

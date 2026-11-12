@@ -97,29 +97,19 @@
         cardTemplateOverride: {
           cardRowTemplateInfos: [
             {
-              twoItems: {
-                startItem: {
+              oneItem: {
+                item: {
                   firstValue: {
-                    fields: [{ fieldPath: "object.textModulesData['practice_areas']" }]
-                  }
-                },
-                endItem: {
-                  firstValue: {
-                    fields: [{ fieldPath: "object.textModulesData['location']" }]
+                    fields: [{ fieldPath: "object.textModulesData['focus']" }]
                   }
                 }
               }
             },
             {
-              twoItems: {
-                startItem: {
+              oneItem: {
+                item: {
                   firstValue: {
-                    fields: [{ fieldPath: "object.textModulesData['direct_phone']" }]
-                  }
-                },
-                endItem: {
-                  firstValue: {
-                    fields: [{ fieldPath: "object.textModulesData['direct_email']" }]
+                    fields: [{ fieldPath: "object.textModulesData['contact']" }]
                   }
                 }
               }
@@ -140,8 +130,7 @@
         classSuffix: (profile.walletConfig && profile.walletConfig.classSuffix) || DEFAULT_CLASS_SUFFIX,
         objectSuffix: (profile.walletConfig && profile.walletConfig.objectSuffix) || `${profile.id}_card`,
         secretKey: '',
-        hubBaseUrl: DEFAULT_HUB_BASE_URL,
-        heroBannerUrl: DEFAULT_HERO_BANNER_URL
+        hubBaseUrl: DEFAULT_HUB_BASE_URL
       },
       options || {}
     );
@@ -151,8 +140,8 @@
 
     const phoneDec = SmartWalletCrypto.decryptField(profile.encryptedPhone, opts.secretKey);
     const emailDec = SmartWalletCrypto.decryptField(profile.encryptedEmail, opts.secretKey);
-    const phoneDisplay = phoneDec.unlocked ? formatPhoneReadable(phoneDec.value) : 'Protected (Scan QR)';
-    const emailDisplay = emailDec.unlocked ? emailDec.value : 'Protected (Scan QR)';
+    const phoneDisplay = phoneDec.unlocked ? formatPhoneReadable(phoneDec.value) : '+49 177 6090991';
+    const emailDisplay = emailDec.unlocked ? emailDec.value : 'artautas.simkus@gmail.com';
 
     const shareUrl = SmartWalletCrypto.buildShareUrl(
       opts.hubBaseUrl,
@@ -169,12 +158,16 @@
             .map((s) => s.trim().toUpperCase())
             .filter(Boolean);
 
+    const subheaderLine = taglineLines[0] || 'LAWYER (LL.M.) · LEGAL TRANSLATOR';
+    const remainingLines = taglineLines.slice(1);
+    const focusBody = remainingLines.length > 0
+      ? remainingLines.join(' · ')
+      : 'European Company Law · Business Development · Startup Ecosystems';
+
     const hexBg = (profile.theme && profile.theme.bgPrimary) || '#163A63';
     const linkedinUrl = profile.linkedin || 'https://www.linkedin.com/in/artautas/';
-    const linkedinDisp =
-      profile.linkedinDisplay || linkedinUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
-    let sloganText = String(profile.slogan || "LET'S CONNECT.").toUpperCase().trim();
-    if (!sloganText.endsWith('.')) sloganText += '.';
+    const cardTitleText = profile.walletTopLabel || 'HEIDELBERG · GERMANY';
+    const avatarUrl = `https://artelt.github.io/Card/avatar-${profile.id || 'artautas'}.png`;
 
     return {
       id: objectId,
@@ -182,16 +175,21 @@
       genericType: 'GENERIC_TYPE_UNSPECIFIED',
       hexBackgroundColor: hexBg,
       state: 'ACTIVE',
+      logo: {
+        sourceUri: {
+          uri: avatarUrl
+        },
+        contentDescription: {
+          defaultValue: {
+            language: 'en-US',
+            value: profile.name || 'Profile Avatar'
+          }
+        }
+      },
       cardTitle: {
         defaultValue: {
           language: 'en-US',
-          value: 'DIGITAL EXECUTIVE CARD'
-        }
-      },
-      subheader: {
-        defaultValue: {
-          language: 'en-US',
-          value: taglineLines[0] || 'LAWYER (LL.M.) · LEGAL TRANSLATOR'
+          value: cardTitleText
         }
       },
       header: {
@@ -200,47 +198,27 @@
           value: profile.name || 'Artautas Šimkus, LL.M.'
         }
       },
-      heroImage: {
-        sourceUri: {
-          uri: opts.heroBannerUrl
-        },
-        contentDescription: {
-          defaultValue: {
-            language: 'en-US',
-            value: `${profile.name} — ${sloganText} (1032x336 Hero Banner)`
-          }
+      subheader: {
+        defaultValue: {
+          language: 'en-US',
+          value: subheaderLine
         }
       },
       barcode: {
         type: 'QR_CODE',
         value: shareUrl,
-        alternateText: sloganText
+        alternateText: "LET'S CONNECT"
       },
       textModulesData: [
         {
-          id: 'practice_areas',
+          id: 'focus',
           header: 'EXPERTISE & FOCUS',
-          body: taglineLines.join(' · ')
+          body: focusBody
         },
         {
-          id: 'location',
-          header: 'LOCATION',
-          body: profile.location || 'Heidelberg, Germany'
-        },
-        {
-          id: 'direct_phone',
-          header: 'PHONE (CELL)',
-          body: phoneDisplay
-        },
-        {
-          id: 'direct_email',
-          header: 'EMAIL',
-          body: emailDisplay
-        },
-        {
-          id: 'linkedin',
-          header: 'LINKEDIN',
-          body: linkedinDisp
+          id: 'contact',
+          header: 'DIRECT CONTACT',
+          body: `${phoneDisplay}  ·  ${emailDisplay}`
         }
       ],
       linksModuleData: {
@@ -584,6 +562,204 @@
     };
   }
 
+  /**
+   * Starts a local studio server on http://localhost:<port> that serves admin.html / index.html
+   * and provides a POST /api/save-and-sync endpoint to update profiles.json, profiles-data.js,
+   * save avatar-<user>.png, and immediately push changes live to the Google Wallet REST API.
+   */
+  function startStudioServer(port = 3000, saPath = './service-account.json') {
+    const http = require('http');
+    const server = http.createServer(async (req, res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+      if (req.method === 'OPTIONS') {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
+      const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+      let pathname = decodeURIComponent(parsedUrl.pathname);
+
+      if (req.method === 'POST' && pathname === '/api/save-and-sync') {
+        let bodyStr = '';
+        req.on('data', (chunk) => {
+          bodyStr += chunk;
+        });
+        req.on('end', async () => {
+          try {
+            const payload = JSON.parse(bodyStr || '{}');
+            const { profiles, activeUser = 'artautas', avatarPngBase64, key } = payload;
+
+            // 1. Save avatar PNG if provided
+            if (avatarPngBase64) {
+              const cleanB64 = avatarPngBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+              const avatarFileName = `avatar-${activeUser}.png`;
+              const avatarFilePath = nodePath.join(process.cwd(), avatarFileName);
+              nodeFs.writeFileSync(avatarFilePath, Buffer.from(cleanB64, 'base64'));
+              console.log(`[STUDIO] Saved ${avatarFileName} (${Buffer.from(cleanB64, 'base64').length} bytes)`);
+            }
+
+            // 2. Save profiles.json & profiles-data.js
+            if (profiles) {
+              const profilesPath = nodePath.join(process.cwd(), 'profiles.json');
+              nodeFs.writeFileSync(profilesPath, JSON.stringify(profiles, null, 2), 'utf8');
+
+              const jsContent = `/**\n * SMART WALLET CARDS · BUNDLED MULTI-USER PROFILES DATABASE\n */\nwindow.SMART_WALLET_PROFILES = ${JSON.stringify(profiles, null, 2)};\n`;
+              nodeFs.writeFileSync(nodePath.join(process.cwd(), 'profiles-data.js'), jsContent, 'utf8');
+              console.log(`[STUDIO] Updated profiles.json and profiles-data.js`);
+            }
+
+            // 3. Update local-keys.js if key is provided
+            let activeKey = key;
+            const localKeysPath = nodePath.join(process.cwd(), 'local-keys.js');
+            if (key && nodeFs.existsSync(localKeysPath)) {
+              try {
+                let lk = nodeFs.readFileSync(localKeysPath, 'utf8');
+                const keyRegex = new RegExp(`("${activeUser}"|'${activeUser}'|${activeUser})\\s*:\\s*['"][^'"]*['"]`);
+                if (keyRegex.test(lk)) {
+                  lk = lk.replace(keyRegex, `'${activeUser}': '${key}'`);
+                } else {
+                  lk = lk.replace(/window\.SMART_WALLET_LOCAL_KEYS\s*=\s*\{/, `window.SMART_WALLET_LOCAL_KEYS = {\n  '${activeUser}': '${key}',`);
+                }
+                nodeFs.writeFileSync(localKeysPath, lk, 'utf8');
+              } catch (e) {
+                console.warn('[STUDIO] Could not update local-keys.js:', e.message);
+              }
+            } else if (!activeKey && nodeFs.existsSync(localKeysPath)) {
+              try {
+                const lk = nodeFs.readFileSync(localKeysPath, 'utf8');
+                const match = lk.match(new RegExp(`${activeUser}\\s*:\\s*['"]([^'"]+)['"]`));
+                if (match && match[1]) activeKey = match[1];
+              } catch (e) {}
+            }
+
+            // 4. Load Service Account & Sync with Google Wallet API
+            let serviceAccount = null;
+            if (nodeFs.existsSync(saPath)) {
+              try {
+                serviceAccount = JSON.parse(nodeFs.readFileSync(saPath, 'utf8'));
+              } catch (e) {}
+            }
+
+            if (!serviceAccount || !serviceAccount.private_key) {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(
+                JSON.stringify({
+                  success: false,
+                  error: 'service-account.json not found or missing private_key. Local files saved successfully.'
+                })
+              );
+              return;
+            }
+
+            const updatedDb = JSON.parse(
+              nodeFs.readFileSync(nodePath.join(process.cwd(), 'profiles.json'), 'utf8')
+            );
+            const prof = updatedDb.profiles[activeUser];
+            if (!prof) {
+              throw new Error(`Profile "${activeUser}" not found in profiles.json`);
+            }
+
+            const issuerId = (prof.walletConfig && prof.walletConfig.issuerId) || DEFAULT_ISSUER_ID;
+            const classSuffix = (prof.walletConfig && prof.walletConfig.classSuffix) || DEFAULT_CLASS_SUFFIX;
+            const objectSuffix = (prof.walletConfig && prof.walletConfig.objectSuffix) || `${activeUser}_card`;
+
+            const jwtResult = await createSaveToWalletJwt(prof, {
+              issuerId,
+              classSuffix,
+              objectSuffix,
+              secretKey: activeKey || '',
+              skinnyJwt: true,
+              serviceAccountEmail: serviceAccount.client_email,
+              privateKeyPem: serviceAccount.private_key
+            });
+
+            console.log(`[STUDIO] Pushing live pass update to Google Wallet API for ${prof.name} (${activeUser})...`);
+            const syncRes = await syncClassAndObjectToGoogleWallet(
+              jwtResult.genericClass,
+              jwtResult.genericObject,
+              serviceAccount
+            );
+
+            console.log(`[STUDIO] Class: ${syncRes.classResult.operation} [HTTP ${syncRes.classResult.statusCode}]`);
+            console.log(`[STUDIO] Object: ${syncRes.objectResult.operation} [HTTP ${syncRes.objectResult.statusCode}]`);
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(
+              JSON.stringify({
+                success: true,
+                message: 'Successfully updated live Google Wallet pass over-the-air!',
+                classResult: syncRes.classResult,
+                objectResult: syncRes.objectResult,
+                saveUrl: jwtResult.saveUrl,
+                objectId: jwtResult.genericObject.id,
+                classId: jwtResult.genericClass.id
+              })
+            );
+          } catch (err) {
+            console.error('[STUDIO] Error during /api/save-and-sync:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+          }
+        });
+        return;
+      }
+
+      // Static file serving
+      if (pathname === '/' || pathname === '') {
+        pathname = '/admin.html';
+      }
+
+      const safePath = nodePath.normalize(nodePath.join(process.cwd(), pathname));
+      if (!safePath.startsWith(process.cwd())) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
+
+      if (!nodeFs.existsSync(safePath) || nodeFs.statSync(safePath).isDirectory()) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+        return;
+      }
+
+      const ext = nodePath.extname(safePath).toLowerCase();
+      const mimeTypes = {
+        '.html': 'text/html; charset=utf-8',
+        '.js': 'application/javascript; charset=utf-8',
+        '.json': 'application/json; charset=utf-8',
+        '.css': 'text/css; charset=utf-8',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.vcf': 'text/vcard; charset=utf-8',
+        '.ico': 'image/x-icon'
+      };
+
+      const contentType = mimeTypes[ext] || 'application/octet-stream';
+      res.writeHead(200, { 'Content-Type': contentType });
+      nodeFs.createReadStream(safePath).pipe(res);
+    });
+
+    server.listen(port, () => {
+      console.log('========================================================================');
+      console.log(`  SMART WALLET CARDS · VISUAL ADMIN STUDIO & LIVE GOOGLE WALLET SERVER`);
+      console.log('========================================================================');
+      console.log(`  Local Admin URL: http://localhost:${port}/admin.html`);
+      console.log(`  Card Hub URL   : http://localhost:${port}/index.html`);
+      console.log(`  Sync Endpoint  : http://localhost:${port}/api/save-and-sync (POST)`);
+      console.log(`  Issuer ID      : ${DEFAULT_ISSUER_ID}`);
+      console.log(`  Status         : Ready for one-click live pass updates`);
+      console.log('========================================================================\n');
+    });
+
+    return server;
+  }
+
   // ============================================================================
   // NODE.JS CLI RUNNER (`node wallet-api.js [sync|generate|patch|class|object]`)
   // ============================================================================
@@ -599,6 +775,13 @@
       }
 
       const userId = getFlag('user', 'artautas');
+      const port = parseInt(getFlag('port', '3000'), 10);
+      const saPath = getFlag('credentials', process.env.GOOGLE_APPLICATION_CREDENTIALS || './service-account.json');
+
+      if (command === 'studio' || command === 'server') {
+        startStudioServer(port, saPath);
+        return;
+      }
 
       // Load local key from local-keys.js if available and not passed via --key
       let defaultLocalKey = '';
@@ -616,7 +799,6 @@
       const classSuffix = getFlag('class', DEFAULT_CLASS_SUFFIX);
       const hubBaseUrl = getFlag('url', DEFAULT_HUB_BASE_URL);
       const heroBannerUrl = getFlag('hero', DEFAULT_HERO_BANNER_URL);
-      const saPath = getFlag('credentials', process.env.GOOGLE_APPLICATION_CREDENTIALS || './service-account.json');
 
       const profilesPath = nodePath.join(process.cwd(), 'profiles.json');
       if (!nodeFs.existsSync(profilesPath)) {
@@ -655,15 +837,16 @@
         hubBaseUrl,
         heroBannerUrl,
         includeClassInJwt: true,
-        skinnyJwt: false,
+        skinnyJwt: true,
         serviceAccountEmail:
           (serviceAccount && serviceAccount.client_email) || DEFAULT_SERVICE_ACCOUNT_EMAIL,
         privateKeyPem: (serviceAccount && serviceAccount.private_key) || ''
       });
 
+      const cleanGenericObject = JSON.parse(JSON.stringify(result.genericObject));
       const outFlag = getFlag('out', '');
       if (outFlag) {
-        nodeFs.writeFileSync(outFlag, JSON.stringify(result.genericObject, null, 2), 'utf8');
+        nodeFs.writeFileSync(outFlag, JSON.stringify(cleanGenericObject, null, 2), 'utf8');
       }
 
       console.log('========================================================================');
@@ -674,7 +857,7 @@
       console.log(`  Theme Hex      : ${result.genericObject.hexBackgroundColor} (Deep Sapphire)`);
       console.log(`  GenericClass   : ${result.genericClass.id}`);
       console.log(`  GenericObject  : ${result.genericObject.id}`);
-      console.log(`  Hero Image URL : ${result.genericObject.heroImage.sourceUri.uri}`);
+      console.log(`  Logo Avatar    : ${result.genericObject.logo ? result.genericObject.logo.sourceUri.uri : 'None'}`);
       console.log(`  Barcode QR URL : ${result.genericObject.barcode.value}`);
       console.log(`  Signing Mode   : ${result.signedMode}`);
       console.log('------------------------------------------------------------------------');
@@ -694,7 +877,7 @@
         try {
           const syncRes = await syncClassAndObjectToGoogleWallet(
             result.genericClass,
-            result.genericObject,
+            cleanGenericObject,
             serviceAccount
           );
           console.log(
@@ -732,6 +915,8 @@
     buildGenericObject,
     buildJwtClaims,
     createSaveToWalletJwt,
-    buildPatchCliCommand
+    buildPatchCliCommand,
+    syncClassAndObjectToGoogleWallet,
+    startStudioServer
   };
 });

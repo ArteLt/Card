@@ -17,6 +17,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "STARTUP ECOSYSTEMS"
       ],
       "slogan": "LET'S CONNECT.",
+      "walletTopLabel": "HEIDELBERG · GERMANY",
       "encryptedPhone": "SWC1:c94a17e280b3:652bd366e6e5:4318b55f0286abb32ce2840def",
       "encryptedEmail": "SWC1:d52f98a416e7:03d515f09f7d:4d55b6fc7fd4fd87bf6ec2f3f326adff83fe3b2d8c7c1589df",
       "location": "Heidelberg, Germany",
@@ -57,6 +58,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "CULTURAL ECOSYSTEMS"
       ],
       "slogan": "LET'S CONNECT.",
+      "walletTopLabel": "HEIDELBERG · GERMANY",
       "encryptedPhone": "SWC1:e41908b12a3c:7091d23ffba5:60e4279cee93a29df39a04d8ca",
       "encryptedEmail": "SWC1:f90123d45c68:00ed61f1b269:c14115165b710d42f8a58328ac560393a7752f",
       "location": "Heidelberg, Germany",
@@ -97,6 +99,7 @@ window.SMART_WALLET_DEFAULT_PROFILES = {
         "STRATEGIC ADVISORY"
       ],
       "slogan": "LET'S CONNECT.",
+      "walletTopLabel": "HEIDELBERG · GERMANY",
       "encryptedPhone": "SWC1:a51234e98b77:75714bc22fad:8364f956c27b2ea2d1ee0b9fdd",
       "encryptedEmail": "SWC1:b87654f32d11:00939c41ec93:e0cee8172b22407cfbd41ac572eab739673876",
       "location": "Germany",
