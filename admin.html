@@ -12,7 +12,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Marcellus&family=Montserrat:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -398,6 +398,13 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.75);
+      --accent-rgb: 200, 210, 220;
+    }
+
+    .mini-card-surface > *,
+    .preview-card-face > * {
+      position: relative;
+      z-index: 3;
     }
 
     /* Encryption Vault Box */
@@ -562,6 +569,158 @@
       overflow: hidden;
       background: linear-gradient(135deg, var(--sapphire-primary) 0%, var(--sapphire-mid) 50%, var(--sapphire-secondary) 100%);
       border: 1px solid rgba(180, 200, 225, 0.18);
+      --accent-rgb: 200, 210, 220;
+    }
+
+    .preview-card-face::before,
+    .mini-card-surface::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 14% 12%, rgba(235, 240, 245, 0.08) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .preview-card-face::after,
+    .mini-card-surface::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* 8 Executive Border & Frame Styles */
+    .preview-card-face[data-border-style="single-silver-frame"],
+    .mini-card-surface[data-border-style="single-silver-frame"] {
+      border: 1px solid rgba(var(--accent-rgb), 0.30);
+      box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.16);
+    }
+
+    .preview-card-face[data-border-style="double-executive-frame"],
+    .mini-card-surface[data-border-style="double-executive-frame"] {
+      border: 1.5px solid rgba(var(--accent-rgb), 0.48);
+      box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.42), inset 0 0 0 4.5px rgba(var(--accent-rgb), 0.34);
+    }
+
+    .preview-card-face[data-border-style="minimal-borderless"],
+    .mini-card-surface[data-border-style="minimal-borderless"] {
+      border: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(var(--accent-rgb), 0.06);
+    }
+
+    .preview-card-face[data-border-style="corner-monogram-brackets"],
+    .mini-card-surface[data-border-style="corner-monogram-brackets"] {
+      border: 1px solid rgba(var(--accent-rgb), 0.14);
+      box-shadow: none;
+    }
+    .preview-card-face[data-border-style="corner-monogram-brackets"]::after,
+    .mini-card-surface[data-border-style="corner-monogram-brackets"]::after {
+      inset: 9px;
+      background:
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top left / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top left / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top right / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top right / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom left / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom left / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom right / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom right / 2px 18px no-repeat;
+    }
+
+    .preview-card-face[data-border-style="art-deco-stepped"],
+    .mini-card-surface[data-border-style="art-deco-stepped"] {
+      border: 1px solid rgba(var(--accent-rgb), 0.36);
+      box-shadow:
+        inset 0 0 0 6px transparent,
+        inset 0 0 0 7px rgba(var(--accent-rgb), 0.36),
+        inset 0 0 0 11px transparent,
+        inset 0 0 0 12px rgba(var(--accent-rgb), 0.20);
+    }
+    .preview-card-face[data-border-style="art-deco-stepped"]::after,
+    .mini-card-surface[data-border-style="art-deco-stepped"]::after {
+      inset: 6px;
+      background:
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top left / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top left / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) 14px 10px / 10px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) 10px 14px / 1.5px 10px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top right / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top right / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom left / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom left / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom right / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom right / 1.5px 14px no-repeat;
+    }
+
+    .preview-card-face[data-border-style="beveled-bullion-ingot"],
+    .mini-card-surface[data-border-style="beveled-bullion-ingot"] {
+      border: 2px solid rgba(var(--accent-rgb), 0.54);
+      box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.28),
+        inset -2px -2px 0 rgba(0, 0, 0, 0.58),
+        inset 0 0 0 6px rgba(0, 0, 0, 0.22),
+        inset 0 0 0 7px rgba(var(--accent-rgb), 0.36);
+    }
+
+    .preview-card-face[data-border-style="top-bottom-accent-bars"],
+    .mini-card-surface[data-border-style="top-bottom-accent-bars"] {
+      border: 1px solid rgba(var(--accent-rgb), 0.16);
+      box-shadow:
+        inset 0 4px 0 0 rgba(var(--accent-rgb), 0.85),
+        inset 0 -4px 0 0 rgba(var(--accent-rgb), 0.85);
+    }
+
+    .preview-card-face[data-border-style="floating-halo-frame"],
+    .mini-card-surface[data-border-style="floating-halo-frame"] {
+      border: 1px solid rgba(var(--accent-rgb), 0.22);
+      box-shadow:
+        inset 0 0 24px rgba(var(--accent-rgb), 0.24),
+        inset 0 0 0 8px transparent,
+        inset 0 0 0 9px rgba(var(--accent-rgb), 0.45);
+    }
+
+    /* 6 Card Texture & Surface Finishes */
+    .preview-card-face[data-texture="subtle-grain"]::before,
+    .mini-card-surface[data-texture="subtle-grain"]::before {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 0),
+        radial-gradient(circle at 14% 12%, rgba(235, 240, 245, 0.08) 0%, transparent 55%);
+      background-size: 4px 4px, 100% 100%;
+    }
+
+    .preview-card-face[data-texture="brushed-metal"]::before,
+    .mini-card-surface[data-texture="brushed-metal"]::before {
+      background:
+        linear-gradient(118deg, transparent 18%, rgba(255, 255, 255, 0.09) 46%, transparent 72%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 3px);
+    }
+
+    .preview-card-face[data-texture="smooth-matte"]::before,
+    .mini-card-surface[data-texture="smooth-matte"]::before {
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.025) 0%, transparent 75%);
+    }
+
+    .preview-card-face[data-texture="carbon-weave"]::before,
+    .mini-card-surface[data-texture="carbon-weave"]::before {
+      background-color: transparent;
+      background-image:
+        linear-gradient(45deg, rgba(0, 0, 0, 0.22) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.22) 75%),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+    }
+
+    .preview-card-face[data-texture="pinstripe-guilloche"]::before,
+    .mini-card-surface[data-texture="pinstripe-guilloche"]::before {
+      background:
+        repeating-linear-gradient(45deg, rgba(var(--accent-rgb), 0.07) 0px, rgba(var(--accent-rgb), 0.07) 1px, transparent 1px, transparent 8px),
+        repeating-linear-gradient(-45deg, rgba(var(--accent-rgb), 0.045) 0px, rgba(var(--accent-rgb), 0.045) 1px, transparent 1px, transparent 8px);
+    }
+
+    .preview-card-face[data-texture="radial-spotlight"]::before,
+    .mini-card-surface[data-texture="radial-spotlight"]::before {
+      background: radial-gradient(ellipse 68% 66% at 50% 42%, rgba(var(--accent-rgb), 0.18) 0%, rgba(var(--accent-rgb), 0.04) 48%, rgba(0, 0, 0, 0.36) 100%);
     }
 
     .preview-card-front {
@@ -601,7 +760,7 @@
 
     .preview-tagline-line {
       display: inline-block;
-      font-family: var(--font-display);
+      font-family: var(--font-sans);
       color: #B8C4D0;
       font-size: 0.62rem;
       font-weight: 500;
@@ -1283,25 +1442,38 @@
           <div class="field-group">
             <label for="themeBorderStyle">Border &amp; Frame Style</label>
             <select id="themeBorderStyle" class="form-input">
-              <option value="single-silver-frame">Single Metallic Frame (Default)</option>
-              <option value="double-executive-frame">Double Executive Frame (Certificates)</option>
-              <option value="minimal-borderless">Minimal Borderless (Seamless Edge)</option>
+              <option value="single-silver-frame">Classic Metallic Hairline</option>
+              <option value="double-executive-frame">Double Executive Frame</option>
+              <option value="minimal-borderless">Minimalist Borderless Edge</option>
+              <option value="corner-monogram-brackets">Architectural Corner Brackets</option>
+              <option value="art-deco-stepped">Art Deco Stepped Corners</option>
+              <option value="beveled-bullion-ingot">3D Beveled Bullion Ingot</option>
+              <option value="top-bottom-accent-bars">Signature Top &amp; Bottom Bars</option>
+              <option value="floating-halo-frame">Floating Inner Halo Glow</option>
             </select>
           </div>
           <div class="field-group">
             <label for="themeFontPairing">Typography &amp; Font Pairing</label>
             <select id="themeFontPairing" class="form-input">
-              <option value="cinzel-inter">Cinzel &amp; Inter (Classic Executive)</option>
-              <option value="inter-modern">Inter &amp; Modern Sans (Clean Tech)</option>
-              <option value="cormorant-inter">Cormorant &amp; Inter (Editorial Luxury Serif)</option>
+              <option value="cinzel-inter">Classic Executive (Cinzel + Inter)</option>
+              <option value="cormorant-inter">Editorial Luxury Serif (Cormorant + Inter)</option>
+              <option value="inter-modern">Clean Tech Sans (Inter Bold + Medium)</option>
+              <option value="playfair-plusjakarta">Diplomatic Prestige (Playfair + Plus Jakarta Sans)</option>
+              <option value="syne-dm-sans">Creative Studio Avant-Garde (Syne + DM Sans)</option>
+              <option value="bodoni-montserrat">Haute Couture Moda (Bodoni Moda + Montserrat)</option>
+              <option value="space-grotesk-inter">Venture &amp; FinTech (Space Grotesk + Inter)</option>
+              <option value="marcellus-mulish">Hospitality &amp; Heritage (Marcellus + Mulish)</option>
             </select>
           </div>
           <div class="field-group field-full">
             <label for="themeTextureIntensity">Card Texture &amp; Finish</label>
             <select id="themeTextureIntensity" class="form-input">
-              <option value="subtle-grain">Subtle Paper Grain (Default)</option>
-              <option value="brushed-metal">Brushed Metallic Sheen</option>
-              <option value="smooth-matte">Smooth Silk Matte (Flat)</option>
+              <option value="subtle-grain">Fine Cotton Paper Grain</option>
+              <option value="brushed-metal">Brushed Anodized Metal</option>
+              <option value="smooth-matte">Smooth Matte Velvet</option>
+              <option value="carbon-weave">Micro Carbon Weave</option>
+              <option value="pinstripe-guilloche">Banknote Guilloché Pinstripe</option>
+              <option value="radial-spotlight">Studio Radial Spotlight</option>
             </select>
           </div>
         </div>
@@ -1721,6 +1893,41 @@
         const rgb = parseHexRgb(hex);
         return `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`;
       }
+
+      const FONT_PAIRINGS = {
+        'cinzel-inter': {
+          display: "'Cinzel', 'Montserrat', serif",
+          body: "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"
+        },
+        'cormorant-inter': {
+          display: "'Cormorant Garamond', 'Times New Roman', serif",
+          body: "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"
+        },
+        'inter-modern': {
+          display: "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif",
+          body: "'Inter', -apple-system, sans-serif"
+        },
+        'playfair-plusjakarta': {
+          display: "'Playfair Display', Georgia, serif",
+          body: "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif"
+        },
+        'syne-dm-sans': {
+          display: "'Syne', 'Montserrat', sans-serif",
+          body: "'DM Sans', 'Inter', -apple-system, sans-serif"
+        },
+        'bodoni-montserrat': {
+          display: "'Bodoni Moda', 'Playfair Display', Georgia, serif",
+          body: "'Montserrat', 'Inter', -apple-system, sans-serif"
+        },
+        'space-grotesk-inter': {
+          display: "'Space Grotesk', 'Inter', -apple-system, sans-serif",
+          body: "'Inter', -apple-system, sans-serif"
+        },
+        'marcellus-mulish': {
+          display: "'Marcellus', 'Cinzel', serif",
+          body: "'Mulish', 'Inter', -apple-system, sans-serif"
+        }
+      };
 
       const BUILTIN_THEME_PRESETS = {
         'deep-sapphire': {
@@ -2586,29 +2793,22 @@
         const backFace = document.getElementById('adminPreviewBackFace');
         const miniSurface = document.getElementById('miniCardSurface');
 
+        const borderStyle = theme.borderStyle || 'single-silver-frame';
+        const textureStyle = theme.textureIntensity || 'subtle-grain';
         [frontFace, backFace, miniSurface].forEach((el) => {
           if (!el) return;
           el.style.background = cardGrad;
-          if (theme.borderStyle === 'double-executive-frame') {
-            el.style.border = `1.5px solid rgba(${accentRgb}, 0.45)`;
-            el.style.boxShadow = `inset 0 0 0 3px rgba(0, 0, 0, 0.4), inset 0 0 0 4.5px rgba(${accentRgb}, 0.32)`;
-          } else if (theme.borderStyle === 'minimal-borderless') {
-            el.style.border = 'none';
-            el.style.boxShadow = 'none';
-          } else {
-            // single-silver-frame
-            el.style.border = `1px solid rgba(${accentRgb}, 0.28)`;
-            el.style.boxShadow = `inset 0 0 0 1px rgba(${accentRgb}, 0.18)`;
-          }
+          el.style.border = '';
+          el.style.boxShadow = '';
+          el.style.setProperty('--accent-rgb', accentRgb);
+          el.setAttribute('data-border-style', borderStyle);
+          el.setAttribute('data-texture', textureStyle);
         });
 
-        // Font Pairing
-        const displayFont = theme.fontPairing === 'cormorant-inter'
-          ? "'Cormorant Garamond', 'Times New Roman', serif"
-          : (theme.fontPairing === 'inter-modern'
-              ? "'Inter', 'Plus Jakarta Sans', sans-serif"
-              : "'Cinzel', 'Montserrat', serif");
-        const sansFont = "'Inter', 'Plus Jakarta Sans', sans-serif";
+        // 8 Curated Font Pairings (Heading font -> Card Name & Slogan, Body font -> Tagline & Details)
+        const pair = FONT_PAIRINGS[theme.fontPairing || 'cinzel-inter'] || FONT_PAIRINGS['cinzel-inter'];
+        const displayFont = pair.display;
+        const bodyFont = pair.body;
 
         const nameUpper = String(prof.name || '').toUpperCase();
         const titleEl = document.getElementById('adminPreviewTitle');
@@ -2630,7 +2830,7 @@
           lines.forEach((l) => {
             const d = document.createElement('div');
             d.className = 'preview-tagline-line';
-            d.style.fontFamily = displayFont;
+            d.style.fontFamily = bodyFont;
             d.style.color = accent;
             d.textContent = l;
             container.appendChild(d);
@@ -2646,6 +2846,7 @@
         if (!slogan.endsWith('.')) slogan += '.';
         const previewSloganEl = document.getElementById('adminPreviewSlogan');
         previewSloganEl.textContent = slogan;
+        previewSloganEl.style.fontFamily = displayFont;
         previewSloganEl.style.color = accent;
         const previewNfc = document.getElementById('adminPreviewNfcIcon');
         if (previewNfc) {
@@ -2654,7 +2855,10 @@
           if (dot) dot.setAttribute('fill', accent);
         }
         const previewDetails = document.getElementById('adminPreviewBackDetails');
-        if (previewDetails) previewDetails.style.color = accent;
+        if (previewDetails) {
+          previewDetails.style.color = accent;
+          previewDetails.style.fontFamily = bodyFont;
+        }
         const previewLiBadge = document.getElementById('adminPreviewLinkedinBadge');
         if (previewLiBadge) {
           previewLiBadge.style.background = accent;

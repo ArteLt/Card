@@ -93,11 +93,26 @@
                 );
               }
             }
-            if (th.borderStyle === 'double-executive-frame') {
-              root.style.setProperty('--card-border', '1.5px solid color-mix(in srgb, var(--accent-metal) 45%, transparent)');
-            } else if (th.borderStyle === 'minimal-borderless') {
-              root.style.setProperty('--card-border', 'none');
-              root.style.setProperty('--card-inset-shadow', 'none');
+            if (th.fontPairing) {
+              var fpMap = {
+                'cinzel-inter': ["'Cinzel', 'Montserrat', serif", "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"],
+                'cormorant-inter': ["'Cormorant Garamond', 'Times New Roman', serif", "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"],
+                'inter-modern': ["'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif", "'Inter', -apple-system, sans-serif"],
+                'playfair-plusjakarta': ["'Playfair Display', Georgia, serif", "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif"],
+                'syne-dm-sans': ["'Syne', 'Montserrat', sans-serif", "'DM Sans', 'Inter', -apple-system, sans-serif"],
+                'bodoni-montserrat': ["'Bodoni Moda', 'Playfair Display', Georgia, serif", "'Montserrat', 'Inter', -apple-system, sans-serif"],
+                'space-grotesk-inter': ["'Space Grotesk', 'Inter', -apple-system, sans-serif", "'Inter', -apple-system, sans-serif"],
+                'marcellus-mulish': ["'Marcellus', 'Cinzel', serif", "'Mulish', 'Inter', -apple-system, sans-serif"]
+              };
+              var pair = fpMap[th.fontPairing] || fpMap['cinzel-inter'];
+              root.style.setProperty('--font-display', pair[0]);
+              root.style.setProperty('--font-sans', pair[1]);
+            }
+            if (th.borderStyle) {
+              root.setAttribute('data-border-style', th.borderStyle);
+            }
+            if (th.textureIntensity) {
+              root.setAttribute('data-texture', th.textureIntensity);
             }
           }
         }
@@ -105,10 +120,10 @@
     })();
   </script>
 
-  <!-- Geometric & Executive Luxury Typography -->
+  <!-- Geometric & Executive Luxury Typography (8 Curated Font Pairings) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Marcellus&family=Montserrat:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -153,7 +168,7 @@
       overflow-x: hidden;
     }
 
-    /* Pixel 11 Pro XL (412x915 CSS viewport) centered container */
+    /* Pixel 11 Pro XL (412x915 CSS viewport) centered container — Unified Reveal */
     .hub-shell {
       width: 100%;
       max-width: 412px;
@@ -163,6 +178,13 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .hub-shell.is-ready {
+      opacity: 1;
+      visibility: visible;
     }
 
     /* Admin utility bar — hidden unless ?admin=1 is in the URL */
@@ -211,14 +233,6 @@
       align-items: center;
       gap: 12px;
       width: 100%;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.25s ease-out, visibility 0.25s ease-out;
-    }
-
-    .card-stage.is-ready {
-      opacity: 1;
-      visibility: visible;
     }
 
     .card-scene {
@@ -266,7 +280,7 @@
       box-shadow: var(--card-inset-shadow, none);
     }
 
-    /* Top-left subtle paper sheen */
+    /* Subtle paper sheen + Tactile Texture Overlay */
     .card-face::before {
       content: '';
       position: absolute;
@@ -274,6 +288,125 @@
       background: radial-gradient(circle at 14% 12%, rgba(235, 240, 245, 0.08) 0%, transparent 55%);
       pointer-events: none;
       z-index: 1;
+    }
+
+    /* Architectural Corner & Accent Border Overlay */
+    .card-face::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* 8 Executive Border & Frame Styles */
+    html[data-border-style="single-silver-frame"] .card-face {
+      border: 1px solid rgba(var(--accent-rgb), 0.30);
+      box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.16);
+    }
+
+    html[data-border-style="double-executive-frame"] .card-face {
+      border: 1.5px solid rgba(var(--accent-rgb), 0.48);
+      box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.42), inset 0 0 0 4.5px rgba(var(--accent-rgb), 0.34);
+    }
+
+    html[data-border-style="minimal-borderless"] .card-face {
+      border: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(var(--accent-rgb), 0.06);
+    }
+
+    html[data-border-style="corner-monogram-brackets"] .card-face {
+      border: 1px solid rgba(var(--accent-rgb), 0.14);
+      box-shadow: none;
+    }
+    html[data-border-style="corner-monogram-brackets"] .card-face::after {
+      inset: 9px;
+      background:
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top left / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top left / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top right / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) top right / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom left / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom left / 2px 18px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom right / 18px 2px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.85), rgba(var(--accent-rgb), 0.85)) bottom right / 2px 18px no-repeat;
+    }
+
+    html[data-border-style="art-deco-stepped"] .card-face {
+      border: 1px solid rgba(var(--accent-rgb), 0.36);
+      box-shadow:
+        inset 0 0 0 6px transparent,
+        inset 0 0 0 7px rgba(var(--accent-rgb), 0.36),
+        inset 0 0 0 11px transparent,
+        inset 0 0 0 12px rgba(var(--accent-rgb), 0.20);
+    }
+    html[data-border-style="art-deco-stepped"] .card-face::after {
+      inset: 6px;
+      background:
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top left / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top left / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) 14px 10px / 10px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) 10px 14px / 1.5px 10px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top right / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) top right / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom left / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom left / 1.5px 14px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom right / 14px 1.5px no-repeat,
+        linear-gradient(rgba(var(--accent-rgb), 0.65), rgba(var(--accent-rgb), 0.65)) bottom right / 1.5px 14px no-repeat;
+    }
+
+    html[data-border-style="beveled-bullion-ingot"] .card-face {
+      border: 2px solid rgba(var(--accent-rgb), 0.54);
+      box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.28),
+        inset -2px -2px 0 rgba(0, 0, 0, 0.58),
+        inset 0 0 0 6px rgba(0, 0, 0, 0.22),
+        inset 0 0 0 7px rgba(var(--accent-rgb), 0.36);
+    }
+
+    html[data-border-style="top-bottom-accent-bars"] .card-face {
+      border: 1px solid rgba(var(--accent-rgb), 0.16);
+      box-shadow:
+        inset 0 4px 0 0 rgba(var(--accent-rgb), 0.85),
+        inset 0 -4px 0 0 rgba(var(--accent-rgb), 0.85);
+    }
+
+    html[data-border-style="floating-halo-frame"] .card-face {
+      border: 1px solid rgba(var(--accent-rgb), 0.22);
+      box-shadow:
+        inset 0 0 24px rgba(var(--accent-rgb), 0.24),
+        inset 0 0 0 8px transparent,
+        inset 0 0 0 9px rgba(var(--accent-rgb), 0.45);
+    }
+
+    /* 6 Card Texture & Surface Finishes */
+    html[data-texture="brushed-metal"] .card-face::before {
+      background:
+        linear-gradient(118deg, transparent 18%, rgba(255, 255, 255, 0.09) 46%, transparent 72%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 3px);
+    }
+
+    html[data-texture="smooth-matte"] .card-face::before {
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.025) 0%, transparent 75%);
+    }
+
+    html[data-texture="carbon-weave"] .card-face::before {
+      background-color: transparent;
+      background-image:
+        linear-gradient(45deg, rgba(0, 0, 0, 0.22) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.22) 75%),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+    }
+
+    html[data-texture="pinstripe-guilloche"] .card-face::before {
+      background:
+        repeating-linear-gradient(45deg, rgba(var(--accent-rgb), 0.07) 0px, rgba(var(--accent-rgb), 0.07) 1px, transparent 1px, transparent 8px),
+        repeating-linear-gradient(-45deg, rgba(var(--accent-rgb), 0.045) 0px, rgba(var(--accent-rgb), 0.045) 1px, transparent 1px, transparent 8px);
+    }
+
+    html[data-texture="radial-spotlight"] .card-face::before {
+      background: radial-gradient(ellipse 68% 66% at 50% 42%, rgba(var(--accent-rgb), 0.18) 0%, rgba(var(--accent-rgb), 0.04) 48%, rgba(0, 0, 0, 0.36) 100%);
     }
 
     /* Fine Matte Paper / Brushed Texture Overlay */
@@ -339,7 +472,7 @@
 
     .tagline-line {
       display: inline-block;
-      font-family: var(--font-display);
+      font-family: var(--font-sans);
       color: color-mix(in srgb, var(--accent-metal) 92%, #FFFFFF 8%);
       font-size: 0.62rem;
       font-weight: 500;
@@ -948,7 +1081,7 @@
       <button type="button" id="saveVcardBtn" class="hub-btn hub-btn-primary">
         <div class="btn-left">
           <div class="btn-icon-box" id="vcardBtnIconBox">
-            <img id="vcardBtnAvatar" class="vcard-btn-avatar" src="" alt="" style="display:none;" />
+            <img id="vcardBtnAvatar" class="vcard-btn-avatar" src="" alt="" fetchpriority="high" decoding="sync" style="display:none;" />
           </div>
           <div class="btn-copy">
             <span class="btn-title">Save to Contacts</span>
@@ -1307,44 +1440,38 @@
         root.style.setProperty('--silver-title', accent);
         root.style.setProperty('--silver-tagline', theme.accentSecondary || accent);
 
-        // Font Pairing
+        // 8 Curated Typography & Font Pairings (Heading Font -> Card Name / Slogan, Body Font -> Tagline / UI)
+        const FONT_PAIRINGS = {
+          'cinzel-inter': ["'Cinzel', 'Montserrat', serif", "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"],
+          'cormorant-inter': ["'Cormorant Garamond', 'Times New Roman', serif", "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif"],
+          'inter-modern': ["'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif", "'Inter', -apple-system, sans-serif"],
+          'playfair-plusjakarta': ["'Playfair Display', Georgia, serif", "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif"],
+          'syne-dm-sans': ["'Syne', 'Montserrat', sans-serif", "'DM Sans', 'Inter', -apple-system, sans-serif"],
+          'bodoni-montserrat': ["'Bodoni Moda', 'Playfair Display', Georgia, serif", "'Montserrat', 'Inter', -apple-system, sans-serif"],
+          'space-grotesk-inter': ["'Space Grotesk', 'Inter', -apple-system, sans-serif", "'Inter', -apple-system, sans-serif"],
+          'marcellus-mulish': ["'Marcellus', 'Cinzel', serif", "'Mulish', 'Inter', -apple-system, sans-serif"]
+        };
         const pairing = theme.fontPairing || 'cinzel-inter';
-        if (pairing === 'inter-modern') {
-          root.style.setProperty('--font-display', "'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif");
-          root.style.setProperty('--font-sans', "'Inter', -apple-system, sans-serif");
-        } else if (pairing === 'cormorant-inter') {
-          root.style.setProperty('--font-display', "'Cormorant Garamond', 'Times New Roman', serif");
-          root.style.setProperty('--font-sans', "'Inter', 'Plus Jakarta Sans', sans-serif");
-        } else {
-          // cinzel-inter (Classic Executive)
-          root.style.setProperty('--font-display', "'Cinzel', 'Montserrat', serif");
-          root.style.setProperty('--font-sans', "'Inter', 'Plus Jakarta Sans', sans-serif");
-        }
+        const pair = FONT_PAIRINGS[pairing] || FONT_PAIRINGS['cinzel-inter'];
+        root.style.setProperty('--font-display', pair[0]);
+        root.style.setProperty('--font-sans', pair[1]);
 
-        // Border Style
+        // 8 Executive Border & Frame Styles
         const borderStyle = theme.borderStyle || 'single-silver-frame';
-        if (borderStyle === 'double-executive-frame') {
-          root.style.setProperty('--card-border', `1.5px solid rgba(${accentRgb}, 0.45)`);
-          root.style.setProperty('--card-inset-shadow', `inset 0 0 0 3px rgba(0, 0, 0, 0.4), inset 0 0 0 4.5px rgba(${accentRgb}, 0.32)`);
-        } else if (borderStyle === 'minimal-borderless') {
-          root.style.setProperty('--card-border', 'none');
-          root.style.setProperty('--card-inset-shadow', 'none');
-        } else {
-          // single-silver-frame
-          root.style.setProperty('--card-border', `1px solid rgba(${accentRgb}, 0.28)`);
-          root.style.setProperty('--card-inset-shadow', `inset 0 0 0 1px rgba(${accentRgb}, 0.18)`);
-        }
+        root.setAttribute('data-border-style', borderStyle);
 
-        // Texture Intensity
+        // 6 Card Texture & Surface Finishes
         const texture = theme.textureIntensity || 'subtle-grain';
-        if (texture === 'brushed-metal') {
-          root.style.setProperty('--texture-opacity', '0.18');
-        } else if (texture === 'smooth-matte') {
-          root.style.setProperty('--texture-opacity', '0.01');
-        } else {
-          // subtle-grain
-          root.style.setProperty('--texture-opacity', '0.08');
-        }
+        root.setAttribute('data-texture', texture);
+        const textureOpacities = {
+          'subtle-grain': '0.08',
+          'brushed-metal': '0.12',
+          'smooth-matte': '0.01',
+          'carbon-weave': '0.03',
+          'pinstripe-guilloche': '0.03',
+          'radial-spotlight': '0.04'
+        };
+        root.style.setProperty('--texture-opacity', textureOpacities[texture] || '0.08');
       }
 
       function getCurrentShareUrl() {
@@ -1497,8 +1624,8 @@
           studioLink.href = `admin.html?u=${encodeURIComponent(currentProfile.id)}`;
         }
 
-        const stage = document.querySelector('.card-stage');
-        if (stage) stage.classList.add('is-ready');
+        const hubShell = document.querySelector('.hub-shell');
+        if (hubShell) hubShell.classList.add('is-ready');
       }
 
       /**
@@ -1722,20 +1849,13 @@
         });
       }
 
-      async function init() {
-        await loadProfilesDatabase();
-        const boot = window.__SWC_BOOTSTRAP || {};
-        const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+      function applyResolvedProfile(store, targetUser, key, isAdmin) {
+        profilesStore = store;
         const defaultId = (profilesStore && profilesStore.defaultProfile) || 'artautas';
-        const targetUser = boot.requestedUser || boot.user || creds.user || defaultId;
-
         const resolved = SmartWalletCrypto.resolveProfileEntry(profilesStore, targetUser, defaultId);
         currentProfile = resolved.profile;
-        // Backward compatibility: preserve ?k= in memory if passed, while keeping address bar clean
-        currentKey = boot.key || creds.key || '';
+        currentKey = key || '';
 
-        const searchParams = new URLSearchParams(window.location.search);
-        const isAdmin = Boolean(boot.isAdmin || searchParams.get('admin') === '1');
         if (isAdmin) {
           document.getElementById('adminTopBar').classList.add('visible');
         }
@@ -1752,8 +1872,47 @@
           );
         } catch (e) {}
 
-        setupInteractions();
         renderProfileUI();
+      }
+
+      async function init() {
+        const boot = window.__SWC_BOOTSTRAP || {};
+        const creds = SmartWalletCrypto.parseUrlCredentials(window.location);
+        const targetUser = boot.requestedUser || boot.user || creds.user || 'artautas';
+        const key = boot.key || creds.key || '';
+        const searchParams = new URLSearchParams(window.location.search);
+        const isAdmin = Boolean(boot.isAdmin || searchParams.get('admin') === '1');
+
+        setupInteractions();
+
+        // 1. Synchronous instant paint from pre-loaded profiles-data.js (<15ms unified reveal)
+        if (window.SMART_WALLET_DEFAULT_PROFILES && window.SMART_WALLET_DEFAULT_PROFILES.profiles) {
+          applyResolvedProfile(window.SMART_WALLET_DEFAULT_PROFILES, targetUser, key, isAdmin);
+
+          // Silent non-blocking background check for newer profiles.json updates
+          if (window.location.protocol !== 'file:') {
+            fetch('./profiles.json?t=' + Date.now(), { cache: 'no-store' })
+              .then((res) => (res.ok ? res.json() : null))
+              .then((fresh) => {
+                if (fresh && fresh.profiles) {
+                  try {
+                    localStorage.removeItem(STORAGE_KEY);
+                  } catch (e) {}
+                  const curTs = Date.parse((profilesStore && profilesStore.updatedAt) || 0) || 0;
+                  const freshTs = Date.parse(fresh.updatedAt || 0) || 0;
+                  if (freshTs > curTs) {
+                    applyResolvedProfile(fresh, targetUser, key, isAdmin);
+                  }
+                }
+              })
+              .catch(() => {});
+          }
+          return;
+        }
+
+        // 2. Fallback only if profiles-data.js wasn't loaded
+        await loadProfilesDatabase();
+        applyResolvedProfile(profilesStore, targetUser, key, isAdmin);
       }
 
       init();
