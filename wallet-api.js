@@ -104,15 +104,6 @@
                   }
                 }
               }
-            },
-            {
-              oneItem: {
-                item: {
-                  firstValue: {
-                    fields: [{ fieldPath: "object.textModulesData['contact']" }]
-                  }
-                }
-              }
             }
           ]
         }
@@ -164,8 +155,51 @@
       ? remainingLines.join(' · ')
       : 'European Company Law · Business Development · Startup Ecosystems';
 
+    // 1. ELIMINATE DOUBLED "LL.M." IN HEADER:
+    // Strip ", LL.M." from Wallet pass header if subheader already contains "LL.M."
+    // so the main name stays on ONE clean horizontal line.
+    let cleanHeader = String(profile.name || 'Artautas Šimkus').trim();
+    if (/LL\.?M\.?/i.test(subheaderLine)) {
+      cleanHeader = cleanHeader.replace(/,\s*LL\.?M\.?/i, '').trim();
+    }
+
+    // 2. FOCUS & LOCATION single row below QR:
+    const locationStr = profile.location || 'Heidelberg, Germany';
+    const cleanFocus = focusBody.replace(/European Company Law/i, 'EU Company Law');
+    const fullFocusBody = `${cleanFocus}  |  ${locationStr}`;
+
+    // 3. 1-TAP ACTION BUTTONS IN linksModuleData.uris (Zero duplicate plain text):
+    const uris = [
+      {
+        id: 'digital_card_hub',
+        uri: shareUrl,
+        description: '🌐 Open Interactive 3D Business Card & Save Contact'
+      },
+      {
+        id: 'linkedin_profile',
+        uri: profile.linkedin || 'https://www.linkedin.com/in/artautas/',
+        description: '💼 Connect on LinkedIn'
+      }
+    ];
+
+    if (phoneDisplay) {
+      const telClean = phoneDisplay.replace(/[^0-9+]/g, '');
+      uris.push({
+        id: 'phone_call',
+        uri: `tel:${telClean}`,
+        description: `📞 Call ${phoneDisplay}`
+      });
+    }
+
+    if (emailDisplay) {
+      uris.push({
+        id: 'email_direct',
+        uri: `mailto:${emailDisplay}`,
+        description: `✉️ Email ${emailDisplay}`
+      });
+    }
+
     const hexBg = (profile.theme && profile.theme.walletBgHex) || (profile.theme && profile.theme.bgPrimary) || '#0F2B4C';
-    const linkedinUrl = profile.linkedin || 'https://www.linkedin.com/in/artautas/';
     const cardTitleText = profile.walletTopLabel || 'HEIDELBERG · GERMANY';
     const avatarUrl = profile.avatarUrl || `https://artelt.github.io/Card/avatar-${profile.id || 'artautas'}.png`;
 
@@ -195,7 +229,7 @@
       header: {
         defaultValue: {
           language: 'en-US',
-          value: profile.name || 'Artautas Šimkus, LL.M.'
+          value: cleanHeader
         }
       },
       subheader: {
@@ -212,28 +246,12 @@
       textModulesData: [
         {
           id: 'focus',
-          header: 'EXPERTISE & FOCUS',
-          body: focusBody
-        },
-        {
-          id: 'contact',
-          header: 'DIRECT CONTACT',
-          body: `${phoneDisplay}  ·  ${emailDisplay}`
+          header: 'FOCUS & LOCATION',
+          body: fullFocusBody
         }
       ],
       linksModuleData: {
-        uris: [
-          {
-            id: 'digital_card_hub',
-            uri: shareUrl,
-            description: 'Open Interactive 3D Digital Business Card'
-          },
-          {
-            id: 'linkedin_profile',
-            uri: linkedinUrl,
-            description: 'Open LinkedIn Profile'
-          }
-        ]
+        uris: uris
       }
     };
   }

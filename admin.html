@@ -885,6 +885,37 @@
       word-break: break-word;
     }
 
+    .wallet-mock-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px solid rgba(180, 200, 225, 0.15);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+
+    .wallet-mock-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #E2E8F0;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 7px 10px;
+      transition: all 0.15s ease;
+      word-break: break-word;
+    }
+
+    .wallet-mock-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
     .jwt-qr-showcase {
       display: grid;
       grid-template-columns: 164px 1fr;
@@ -1458,13 +1489,10 @@
               <div class="wallet-mock-alt">LET'S CONNECT</div>
             </div>
             <div class="wallet-mock-row">
-              <div class="wallet-mock-row-label">EXPERTISE &amp; FOCUS</div>
-              <div id="mockPassFocus" class="wallet-mock-row-val">European Company Law · Business Development · Startup Ecosystems</div>
+              <div class="wallet-mock-row-label">FOCUS &amp; LOCATION</div>
+              <div id="mockPassFocus" class="wallet-mock-row-val">EU Company Law · Business Development · Startup Ecosystems  |  Heidelberg, Germany</div>
             </div>
-            <div class="wallet-mock-row">
-              <div class="wallet-mock-row-label">DIRECT CONTACT</div>
-              <div id="mockPassContact" class="wallet-mock-row-val">+49 177 6090991  ·  artautas.simkus@gmail.com</div>
-            </div>
+            <div class="wallet-mock-buttons" id="mockPassButtons"></div>
           </div>
         </div>
 
@@ -2760,15 +2788,30 @@
         const mockTopTitle = document.getElementById('mockPassTopTitle');
         if (mockTopTitle) mockTopTitle.textContent = prof.walletTopLabel || 'HEIDELBERG · GERMANY';
         const mockName = document.getElementById('mockPassName');
-        if (mockName) mockName.textContent = prof.name || 'Artautas Šimkus, LL.M.';
+        if (mockName) {
+          mockName.textContent =
+            (result.genericObject.header && result.genericObject.header.defaultValue.value) ||
+            prof.name ||
+            'Artautas Šimkus';
+        }
         const mockSub = document.getElementById('mockPassSubheader');
-        if (mockSub) mockSub.textContent = (result.genericObject.subheader && result.genericObject.subheader.defaultValue.value) || '';
+        if (mockSub) {
+          mockSub.textContent =
+            (result.genericObject.subheader && result.genericObject.subheader.defaultValue.value) || '';
+        }
         const mockFocus = document.getElementById('mockPassFocus');
         const focusMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'focus');
         if (mockFocus && focusMod) mockFocus.textContent = focusMod.body;
-        const mockContact = document.getElementById('mockPassContact');
-        const contactMod = (result.genericObject.textModulesData || []).find((m) => m.id === 'contact');
-        if (mockContact && contactMod) mockContact.textContent = contactMod.body;
+
+        const mockButtons = document.getElementById('mockPassButtons');
+        if (mockButtons && result.genericObject.linksModuleData && Array.isArray(result.genericObject.linksModuleData.uris)) {
+          mockButtons.innerHTML = result.genericObject.linksModuleData.uris
+            .map(
+              (u) =>
+                `<a href="${u.uri}" target="_blank" rel="noopener" class="wallet-mock-btn">${u.description}</a>`
+            )
+            .join('');
+        }
 
         const mockQr = document.getElementById('mockPassQrCode');
         if (mockQr) {
@@ -2971,15 +3014,43 @@
 
               const dataUrl = offCanvas.toDataURL('image/jpeg', 0.84);
 
-              // 300x300 PNG for Google Wallet logo
+              // 300x300 PNG for Google Wallet logo with 8px Metallic Accent Ring
+              const prof = getActiveProfile();
               const avCanvas = document.createElement('canvas');
               avCanvas.width = 300;
               avCanvas.height = 300;
               const aCtx = avCanvas.getContext('2d');
-              aCtx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 300, 300);
-              const avatarDataUrl = avCanvas.toDataURL('image/png');
+              const walletBg = (prof && prof.theme && prof.theme.walletBgHex) || '#0F2B4C';
+              const accentMetal = (prof && prof.theme && prof.theme.accentColor) || '#C8D2DC';
 
-              const prof = getActiveProfile();
+              // 1. Fill Deep Sapphire / Theme Background
+              aCtx.fillStyle = walletBg;
+              aCtx.fillRect(0, 0, 300, 300);
+
+              // 2. Circular Clipped Portrait
+              aCtx.save();
+              aCtx.beginPath();
+              aCtx.arc(150, 150, 142, 0, Math.PI * 2);
+              aCtx.closePath();
+              aCtx.clip();
+              aCtx.drawImage(img, sx, sy, minDim, minDim, 8, 8, 284, 284);
+              aCtx.restore();
+
+              // 3. 8px Metallic Accent Ring (using profile theme accentColor)
+              aCtx.beginPath();
+              aCtx.arc(150, 150, 141, 0, Math.PI * 2);
+              aCtx.strokeStyle = accentMetal;
+              aCtx.lineWidth = 8;
+              aCtx.stroke();
+
+              // 4. Subtle inner specular sheen
+              aCtx.beginPath();
+              aCtx.arc(150, 150, 137, 0, Math.PI * 2);
+              aCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+              aCtx.lineWidth = 1;
+              aCtx.stroke();
+
+              const avatarDataUrl = avCanvas.toDataURL('image/png');
               prof.photoBase64 = dataUrl;
               prof.avatarPngBase64 = avatarDataUrl;
               document.getElementById('adminPhotoPreview').src = dataUrl;
