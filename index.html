@@ -10,7 +10,61 @@
   <meta name="theme-color" content="#121316" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Artautas Šimkus, LL.M. · Digital Business Card</title>
+  <title>Digital Business Card</title>
+
+  <!-- Profiles Data & Cryptography Pre-loaded in Head for Zero-Flash Startup -->
+  <script src="profiles-data.js"></script>
+  <script src="crypto-vault.js"></script>
+  <script>
+    // Synchronous Pre-Paint Theme & Profile Resolver
+    // Applies target profile's theme CSS variables before initial browser paint
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var targetUser = params.get('u');
+        if (!targetUser && window.location.hash) {
+          var hashMatch = window.location.hash.match(/^#([a-zA-Z0-9_-]+)/);
+          if (hashMatch) targetUser = hashMatch[1];
+        }
+        var store = null;
+        try {
+          var local = localStorage.getItem('smart_wallet_profiles_v2_4');
+          if (local) store = JSON.parse(local);
+        } catch (e) {}
+        if (!store && window.SMART_WALLET_DEFAULT_PROFILES) {
+          store = window.SMART_WALLET_DEFAULT_PROFILES;
+        }
+        if (store && store.profiles) {
+          var defaultId = store.defaultProfile || 'artautas';
+          var prof = (targetUser && store.profiles[targetUser]) || store.profiles[defaultId] || Object.values(store.profiles)[0];
+          if (prof) {
+            if (prof.name) {
+              document.title = prof.name + ' · Digital Business Card';
+            }
+            if (prof.theme) {
+              var th = prof.theme;
+              var root = document.documentElement;
+              if (th.bgGradientStart) root.style.setProperty('--bg-start', th.bgGradientStart);
+              if (th.bgGradientEnd) root.style.setProperty('--bg-end', th.bgGradientEnd);
+              if (th.accentColor) {
+                root.style.setProperty('--accent-metal', th.accentColor);
+                var m = th.accentColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+                if (m) {
+                  root.style.setProperty('--accent-rgb', parseInt(m[1], 16) + ', ' + parseInt(m[2], 16) + ', ' + parseInt(m[3], 16));
+                }
+              }
+              if (th.borderStyle === 'double-executive-frame') {
+                root.style.setProperty('--card-border', '1.5px solid rgba(' + (th.accentColor || '#C8D2DC') + ', 0.45)');
+              } else if (th.borderStyle === 'minimal-borderless') {
+                root.style.setProperty('--card-border', 'none');
+                root.style.setProperty('--card-inset-shadow', 'none');
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Geometric & Executive Luxury Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -115,6 +169,14 @@
       align-items: center;
       gap: 12px;
       width: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease-out, visibility 0.25s ease-out;
+    }
+
+    .card-stage.is-ready {
+      opacity: 1;
+      visibility: visible;
     }
 
     .card-scene {
@@ -774,12 +836,8 @@
             </svg>
 
             <div class="front-content">
-              <h1 id="cardFrontName" class="front-title">ARTAUTAS ŠIMKUS, LL.M.</h1>
-              <div id="cardFrontTaglines" class="front-tagline-stack">
-                <div class="tagline-line">LAWYER (LL.M.) · LEGAL TRANSLATOR</div>
-                <div class="tagline-line">EUROPEAN COMPANY LAW · BUSINESS DEVELOPMENT</div>
-                <div class="tagline-line">STARTUP ECOSYSTEMS</div>
-              </div>
+              <h1 id="cardFrontName" class="front-title"></h1>
+              <div id="cardFrontTaglines" class="front-tagline-stack"></div>
             </div>
           </div>
 
@@ -807,18 +865,18 @@
               </div>
 
               <div class="back-details-column">
-                <a id="cardBackPhoneRow" href="#" class="back-detail-row" data-no-flip="true">
-                  <span id="cardBackPhoneText">Protected</span>
+                <a id="cardBackPhoneRow" href="#" class="back-detail-row" data-no-flip="true" style="display:none;">
+                  <span id="cardBackPhoneText"></span>
                 </a>
-                <a id="cardBackEmailRow" href="#" class="back-detail-row" data-no-flip="true">
-                  <span id="cardBackEmailText">Protected</span>
+                <a id="cardBackEmailRow" href="#" class="back-detail-row" data-no-flip="true" style="display:none;">
+                  <span id="cardBackEmailText"></span>
                 </a>
                 <div class="back-detail-row">
-                  <span id="cardBackLocationText">Heidelberg, Germany</span>
+                  <span id="cardBackLocationText"></span>
                 </div>
-                <a id="cardBackLinkedinRow" href="https://www.linkedin.com/in/artautas/" target="_blank" rel="noopener noreferrer" class="back-detail-row" data-no-flip="true">
+                <a id="cardBackLinkedinRow" href="#" target="_blank" rel="noopener noreferrer" class="back-detail-row" data-no-flip="true">
                   <span class="back-linkedin-badge">in</span>
-                  <span id="cardBackLinkedinText">linkedin.com/in/artautas</span>
+                  <span id="cardBackLinkedinText"></span>
                 </a>
               </div>
             </div>
@@ -847,7 +905,7 @@
       <button type="button" id="saveVcardBtn" class="hub-btn hub-btn-primary">
         <div class="btn-left">
           <div class="btn-icon-box" id="vcardBtnIconBox">
-            <img id="vcardBtnAvatar" class="vcard-btn-avatar" src="./artautas.jpg" alt="" />
+            <img id="vcardBtnAvatar" class="vcard-btn-avatar" src="" alt="" style="display:none;" />
           </div>
           <div class="btn-copy">
             <span class="btn-title">Save to Contacts</span>
@@ -864,7 +922,7 @@
       <!-- 2. "Open LinkedIn Profile" (Secondary CTA) -->
       <a
         id="linkedinCtaBtn"
-        href="https://www.linkedin.com/in/artautas/"
+        href="#"
         target="_blank"
         rel="noopener noreferrer"
         class="hub-btn hub-btn-glass"
@@ -877,7 +935,7 @@
           </div>
           <div class="btn-copy">
             <span class="btn-title">Open LinkedIn Profile</span>
-            <span class="btn-subtitle" id="linkedinSubtitle">linkedin.com/in/artautas · Native App Deep-Link</span>
+            <span class="btn-subtitle" id="linkedinSubtitle"></span>
           </div>
         </div>
         <svg class="btn-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -976,10 +1034,8 @@
   <!-- Toast feedback -->
   <div id="toastMsg" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- Zero-Server Shared Scripts -->
-  <script src="crypto-vault.js"></script>
+  <!-- Zero-Server Shared QR Engine -->
   <script src="qr-engine.js"></script>
-  <script src="profiles-data.js"></script>
   <script>
     (function () {
       'use strict';
@@ -1361,10 +1417,17 @@
         document.getElementById('qrModalBox').innerHTML = qrSvg;
         document.getElementById('qrModalProfileName').textContent = currentProfile.name;
 
+        if (currentProfile.name) {
+          document.title = `${currentProfile.name} · Digital Business Card`;
+        }
+
         const studioLink = document.getElementById('studioNavLink');
         if (studioLink) {
           studioLink.href = `admin.html?u=${encodeURIComponent(currentProfile.id)}&k=${encodeURIComponent(currentKey)}`;
         }
+
+        const stage = document.querySelector('.card-stage');
+        if (stage) stage.classList.add('is-ready');
       }
 
       /**

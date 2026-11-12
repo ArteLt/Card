@@ -151,9 +151,6 @@
 
     const subheaderLine = taglineLines[0] || 'LAWYER (LL.M.) · LEGAL TRANSLATOR';
     const remainingLines = taglineLines.slice(1);
-    const focusBody = remainingLines.length > 0
-      ? remainingLines.join(' · ')
-      : 'European Company Law · Business Development · Startup Ecosystems';
 
     // 1. ELIMINATE DOUBLED "LL.M." IN HEADER:
     // Strip ", LL.M." from Wallet pass header if subheader already contains "LL.M."
@@ -163,10 +160,40 @@
       cleanHeader = cleanHeader.replace(/,\s*LL\.?M\.?/i, '').trim();
     }
 
-    // 2. FOCUS & LOCATION single row below QR:
-    const locationStr = profile.location || 'Heidelberg, Germany';
-    const cleanFocus = focusBody.replace(/European Company Law/i, 'EU Company Law');
-    const fullFocusBody = `${cleanFocus}  |  ${locationStr}`;
+    // 2. FOCUS & LOCATION without hardcoded fallbacks
+    const locationStr = (profile.location || '').trim();
+    let focusStr = (profile.walletFocus || '').trim();
+    if (!focusStr && remainingLines.length > 0) {
+      focusStr = remainingLines.join(' · ');
+    }
+    focusStr = focusStr.replace(/European Company Law/i, 'EU Company Law');
+
+    let textModules = [];
+    if (focusStr && locationStr) {
+      textModules.push({
+        id: 'focus',
+        header: 'FOCUS & LOCATION',
+        body: `${focusStr}  |  ${locationStr}`
+      });
+    } else if (focusStr) {
+      textModules.push({
+        id: 'focus',
+        header: 'FOCUS & SPECIALTIES',
+        body: focusStr
+      });
+    } else if (locationStr) {
+      textModules.push({
+        id: 'focus',
+        header: 'LOCATION',
+        body: locationStr
+      });
+    } else {
+      textModules.push({
+        id: 'focus',
+        header: 'DIGITAL EXECUTIVE PASS',
+        body: cleanHeader
+      });
+    }
 
     // 3. 1-TAP ACTION BUTTONS IN linksModuleData.uris (Zero duplicate plain text):
     const uris = [
@@ -243,13 +270,7 @@
         value: shareUrl,
         alternateText: "LET'S CONNECT"
       },
-      textModulesData: [
-        {
-          id: 'focus',
-          header: 'FOCUS & LOCATION',
-          body: fullFocusBody
-        }
-      ],
+      textModulesData: textModules,
       linksModuleData: {
         uris: uris
       }
@@ -646,6 +667,12 @@
               try {
                 currentDb = JSON.parse(nodeFs.readFileSync(profilesPath, 'utf8'));
               } catch (e) {}
+            }
+
+            if (Array.isArray(payload.customPresets)) {
+              currentDb.customPresets = payload.customPresets;
+            } else if (profiles && Array.isArray(profiles.customPresets)) {
+              currentDb.customPresets = profiles.customPresets;
             }
 
             const userProfileData = (profiles && profiles.profiles && profiles.profiles[activeUser]) ||
