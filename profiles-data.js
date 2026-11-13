@@ -1,7 +1,7 @@
 /** Auto-generated fallback for file:// protocol (100% encrypted, zero plaintext PII, zero keys) */
 window.SMART_WALLET_DEFAULT_PROFILES = {
   "version": "2.4.0",
-  "updatedAt": "2026-11-13T00:12:01.904Z",
+  "updatedAt": "2026-11-13T00:14:08.027Z",
   "defaultProfile": "artautas",
   "securityPolicy": "AES-XOR-SHA256-SWC1 (noindex, nofollow, zero-plaintext, zero-hardcoded-key)",
   "profiles": {
